@@ -1,0 +1,106 @@
+
+/* Sidebar/Palette Styles */
+.palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+    gap: 8px;
+    padding: 10px;
+}
+
+.q-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    border: 1px solid #e2e8f0;
+}
+
+/* Status Indicators */
+.q-marked { background-color: #9333ea !important; color: white; border: 2px solid #7e22ce; }
+.q-answered { background-color: #059669 !important; color: white; }
+.q-current { ring: 2px solid #4f46e5; transform: scale(1.05); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+
+
+/* Ensure main container fills the viewport minus header */
+.flex-1.min-h-0 {
+    height: calc(100vh - 64px); /* Adjust '64px' to match your header height */
+}
+
+/* Make sure scrollbars are clean */
+#desktop-palette, #mobile-palette-drawer {
+    scrollbar-width: thin;
+}
+
+#desktop-palette::-webkit-scrollbar, 
+#mobile-palette-drawer::-webkit-scrollbar {
+    width: 6px;
+}
+
+#desktop-palette::-webkit-scrollbar-thumb, 
+#mobile-palette-drawer::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 10px;
+}
+
+
+/* Palette Grid Container */
+#palette-grid, #mobile-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Base Palette Button */
+.qp-btn {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background-color: #f9fafb;
+    font-weight: 600;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+
+.qp-btn:hover {
+    transform: scale(1.05);
+    border-color: #9ca3af;
+}
+
+/* State-Specific Styling */
+.qp-answered { 
+    background-color: #22c55e; /* Green */
+    color: white; 
+    border: none; 
+}
+
+.qp-marked { 
+    background-color: #a855f7; /* Purple */
+    color: white; 
+    border: none; 
+}
+
+.qp-visited { 
+    background-color: #ef4444; /* Red - Visited, not answered */
+    color: white; 
+    border: none; 
+}
+
+.qp-not-visited { 
+    background-color: #f3f4f6; 
+    color: #4b5563; 
+}
+
+/* Current Selection Highlight */
+.qp-current { 
+    outline: 3px solid #3b82f6; 
+    outline-offset: 1px;
+    border: 1px solid #fff;
+}

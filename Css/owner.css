@@ -1,0 +1,425 @@
+:root {
+    --primary: #FF9933; /* Saffron */
+    --secondary: #00F3FF; 
+    --dark: #050505;
+    --glass: rgba(255, 255, 255, 0.05);
+    --sidebar-width: 260px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    cursor: none; 
+}
+
+body {
+    background-color: var(--dark);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    font-size: 1rem; /* Ensure text size adjusts based on screen */
+    margin: 0;   
+}
+
+/* --- CUSTOM CURSOR --- */
+#cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--secondary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    mix-blend-mode: difference;
+}
+
+#cursor-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+}
+
+/* --- BACKGROUND LAYERS --- */
+#vanta-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: -2; 
+    opacity: 0.8;
+}
+
+#map-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100vh;
+    background-image: url('/pictures/u67.jpg'); 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: -1;
+    opacity: 1.7; 
+    mask-image: radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
+    -webkit-mask-image: radial-gradient(circle, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 80%);
+    filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.3)) contrast(1.1);
+    mix-blend-mode: screen; 
+    pointer-events: none;
+    animation: mapPulse 8s infinite ease-in-out;
+}
+
+/* Animation for Map */
+@keyframes mapPulse {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.8; }
+}
+
+/* --- TYPOGRAPHY & ANIMATION --- */
+.glitch {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 5rem;
+    font-weight: 900;
+    position: relative;
+    color: white;
+    text-transform: uppercase;
+}
+
+.glitch::before, .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.glitch::before {
+    left: 2px;
+    text-shadow: -2px 0 var(--primary);
+    clip: rect(24px, 550px, 90px, 0);
+    animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+    left: -2px;
+    text-shadow: -2px 0 var(--secondary);
+    clip: rect(85px, 550px, 140px, 0);
+    animation: glitch-anim 2.5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% { clip: rect(10px, 9999px, 30px, 0); }
+    20% { clip: rect(80px, 9999px, 100px, 0); }
+    40% { clip: rect(10px, 9999px, 120px, 0); }
+    100% { clip: rect(40px, 9999px, 60px, 0); }
+}
+
+@keyframes glitch-anim-2 {
+    0% { clip: rect(60px, 9999px, 80px, 0); }
+    20% { clip: rect(20px, 9999px, 40px, 0); }
+    100% { clip: rect(90px, 9999px, 10px, 0); }
+}
+
+/* --- SECTION & GRID LAYOUTS --- */
+section {
+    min-height: 100vh;
+    padding: 4rem 10%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+}
+
+.hero-content h2 {
+    color: var(--secondary);
+    letter-spacing: 5px;
+    margin-bottom: 1rem;
+    font-family: 'Orbitron';
+    text-shadow: 0 0 10px rgba(0,0,0,0.8);
+}
+
+.prime-line {
+    margin-top: 2rem;
+    padding: 1rem;
+    border-left: 4px solid var(--primary);
+    background: linear-gradient(90deg, rgba(255,153,51,0.2) 0%, rgba(0,0,0,0) 100%);
+    font-style: italic;
+    font-size: 1.2rem;
+    backdrop-filter: blur(2px);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.45); /* Semi-transparent */
+    backdrop-filter: blur(10px);    /* This makes it look premium */
+    border: 1px solid rgba(255, 153, 51, 0.3); /* Subtle Saffron border */
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    border-color: #ff9933;
+    box-shadow: 0 0 20px rgba(255, 153, 51, 0.2);
+    transform: translateY(-5px);
+}
+
+
+.stat-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--primary);
+    box-shadow: 0 0 20px rgba(255, 153, 51, 0.3);
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Orbitron';
+}
+
+.stat-label {
+    color: #aaa;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.terminal-window {
+    background: rgba(10, 10, 10, 0.9);
+    border: 1px solid var(--secondary);
+    border-radius: 5px;
+    box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+    font-family: 'Courier New', monospace;
+    padding: 1rem;
+    margin-top: 2rem;
+}
+
+.terminal-header {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #333;
+    padding-bottom: 0.5rem;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.red { background: #ff5f56; }
+.yellow { background: #ffbd2e; }
+.green { background: #27c93f; }
+
+.cmd-line {
+    color: var(--secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* --- PROJECT LIST --- */
+.project-item {
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed #333;
+    display: flex;
+    justify-content: space-between;
+    transition: 0.2s;
+    flex-wrap: wrap; 
+}
+
+.project-item:hover {
+    background: rgba(0, 243, 255, 0.1);
+    padding-left: 10px;
+    color: var(--secondary);
+}
+
+.project-list a {
+    color: inherit;
+    text-decoration: none;
+    cursor: none; 
+}
+
+.badge-container {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    flex-wrap: wrap; /* Ensure badges wrap on small screens */
+}
+
+.badge {
+    background: rgba(255, 255, 255, 0.05); /* Glassmorphism style */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 153, 51, 0.3);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 12px; /* Slightly more modern than 50px */
+    font-family: 'Orbitron';
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s ease;
+}
+
+.badge:hover {
+    background: var(--primary);
+    box-shadow: 0 0 25px var(--primary);
+    transform: translateY(-3px);
+}
+
+.badge-img {
+    width: 54px;  
+    height: 54px; 
+    border-radius: 50%; /* Makes the photos circular */
+    object-fit: cover;
+    border: 2px solid var(--primary);
+    margin-left: 4px;
+}
+
+.highlight { color: var(--secondary); }
+.highlight-pol { color: var(--primary); }
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: #666;
+    background: rgba(0,0,0,0.8);
+}
+
+#progress {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background: var(--primary);
+    width: 0%;
+    z-index: 10000;
+}
+
+/* --- MEDIA QUERIES --- */
+
+/* For larger screens like tablets and desktops */
+@media (min-width: 768px) {
+    .glitch {
+        font-size: 4rem; /* Adjust glitch text size */
+    }
+
+    section {
+        padding: 4rem 8%;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Wider columns */
+    }
+
+    .stat-card {
+        padding: 3rem;
+    }
+
+    .badge {
+        font-size: 1.1rem; /* Slightly larger font size for larger screens */
+    }
+}
+
+/* For mobile devices and small screens */
+@media (max-width: 768px) {
+    body {
+        font-size: 0.9rem; /* Slightly smaller font on mobile */
+    }
+
+    .glitch {
+        font-size: 3rem; /* Decrease font size for small screens */
+    }
+
+    section {
+        padding: 4rem 5%;
+    }
+
+    #map-bg {
+        background-size: cover; 
+        width: 120vw; /* Adjust map size for small screens */
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr; /* Stack stats grid on mobile */
+    }
+
+    .badge-container {
+        justify-content: center; /* Center badges on mobile */
+    }
+
+    .badge {
+        font-size: 1rem; /* Smaller font size for mobile */
+        padding: 0.5rem 1rem; /* Reduce padding */
+    }
+
+    .stat-card {
+        padding: 1.5rem; /* Reduce padding for smaller screens */
+    }
+
+    .project-item {
+        font-size: 0.9rem; /* Reduce font size in project items */
+    }
+
+    footer {
+        font-size: 0.7rem; /* Smaller footer text on mobile */
+    }
+
+    /* Ensure the custom cursor also resizes on smaller screens */
+    #cursor {
+        width: 16px;
+        height: 16px;
+    }
+
+    #cursor-dot {
+        width: 4px;
+        height: 4px;
+    }
+}
+
+/* For very small screens like portrait mobile devices */
+@media (max-width: 480px) {
+    body {
+        font-size: 0.8rem; /* Reduce font size even more */
+    }
+
+    .glitch {
+        font-size: 2.5rem; /* Reduce font size for tiny screens */
+    }
+
+    section {
+        padding: 3rem 4%;
+    }
+
+    .badge {
+        font-size: 0.9rem;
+        padding: 0.4rem 1rem; /* Further reduce padding */
+    }
+
+    .stat-card {
+        padding: 1rem; /* Reduce card padding */
+    }
+
+    footer {
+        font-size: 0.6rem; /* Further reduce footer text */
+    }
+}

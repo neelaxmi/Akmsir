@@ -1,0 +1,557 @@
+/* --- 🛠 1. RESET & VARIABLES (UPGRADED) --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+    /* SPACING */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 32px;
+    --spacing-xl: 64px;
+
+    /* RADIUS */
+    --border-radius-sm: 8px;
+    --border-radius-md: 16px;
+    --border-radius-full: 50px;
+    
+    /* TRANSITIONS */
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* FONT */
+    --font-main: 'Poppins', sans-serif;
+
+    /* 🆕 FONT SIZES (Modular Scale) */
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-lg: 1.25rem;
+    --font-size-xl: 1.875rem;
+    --font-size-h1: 2.5rem;
+    --font-size-h2: 2rem;
+
+    /* 🆕 FONT WEIGHTS */
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 600;
+    --font-weight-bold: 800;
+
+    /* 🆕 Z-INDICES */
+    --z-level-sticky: 100;
+    --z-level-modal: 1000;
+}
+
+/* 🆕 Accessibility: Use :focus-visible for better focus handling */
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+*:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+}
+
+/* --- Theme Definitions (UPGRADED with Accent RGB) --- */
+.theme-default {
+    --color-primary: #1976D2;
+    --color-primary-rgb: 25, 118, 210;
+    --color-accent: #00C853;
+    --color-accent-rgb: 0, 200, 83; /* Added */
+    --color-bg: #F4F7FA;
+    --color-surface: #FFFFFF;
+    --color-text-main: #1A202C;
+    --color-text-muted: #718096;
+    --color-border: #E2E8F0;
+    --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 20px 50px rgba(25, 118, 210, 0.12);
+}
+
+.theme-dark {
+    --color-primary: #64B5F6;
+    --color-primary-rgb: 100, 181, 246;
+    --color-accent: #81C784;
+    --color-accent-rgb: 129, 199, 132; /* Added */
+    --color-bg: #121212;
+    --color-surface: #1E1E1E;
+    --color-text-main: #E2E8F0;
+    --color-text-muted: #A0AEC0;
+    --color-border: #2D3748;
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.7);
+}
+
+.theme-minimalist {
+    --color-primary: #E91E63;
+    --color-primary-rgb: 233, 30, 99;
+    --color-accent: #03A9F4;
+    --color-accent-rgb: 3, 169, 244; /* Added */
+    --color-bg: #FFFFFF;
+    --color-surface: #FAFAFA;
+    --color-text-main: #111;
+    --color-text-muted: #999;
+    --color-border: #EEE;
+    --shadow-soft: 0 2px 10px rgba(0,0,0,0.05);
+    --shadow-hover: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    font-family: var(--font-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+/* --- 🧩 2. LAYOUT COMPONENTS (UPGRADED) --- */
+
+.container {
+    max-width: 1200px;
+    margin-inline: auto; /* 🆕 Use logical property */
+    padding: 0 var(--spacing-lg);
+    width: 100%;
+}
+
+/* Modern Sticky Header with Glassmorphism */
+.main-header {
+    background-color: rgba(var(--color-primary-rgb), 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(var(--color-primary-rgb), 0.1);
+    padding: var(--spacing-md) 0;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-level-sticky); /* Use variable */
+    transition: var(--transition-smooth);
+}
+
+.header-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--spacing-sm);
+}
+
+/* --- 🖼️ LOGO & BRANDING --- */
+
+.logo-wrapper {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: var(--color-surface);
+    padding: 4px;
+    box-shadow: 
+        0 0 0 2px var(--color-bg),
+        0 0 0 5px var(--color-primary),
+        0 10px 20px rgba(var(--color-primary-rgb), 0.2);
+    transition: var(--transition-bounce);
+    margin-bottom: 5px;
+}
+
+.logo-wrapper:hover {
+    transform: rotate(5deg) scale(1.05);
+    box-shadow: 
+        0 0 0 3px var(--color-bg),
+        0 0 0 7px var(--color-primary), 
+        0 15px 30px rgba(var(--color-primary-rgb), 0.3);
+}
+
+.logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.title {
+    font-size: clamp(var(--font-size-h2), 4vw, var(--font-size-h1)); /* Use variable */
+    font-weight: var(--font-weight-bold); /* Use variable */
+    color: var(--color-primary);
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.subtitle {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-sm); /* Use variable */
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* --- 🎨 3. THEME SWITCHER --- */
+
+.controls-section {
+    margin: var(--spacing-lg) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.theme-switcher {
+    display: flex;
+    gap: var(--spacing-sm);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-sm);
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    justify-content: center;
+}
+
+.theme-switcher::-webkit-scrollbar {
+    display: none;
+}
+
+.theme-btn {
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    padding: 8px 16px;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    white-space: nowrap;
+    font-weight: var(--font-weight-medium); /* Use variable */
+    font-size: var(--font-size-sm); /* Use variable */
+    transition: var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theme-btn:hover, .theme-btn.active {
+    background-color: var(--color-primary);
+    color: white;
+    border-color: var(--color-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.3);
+}
+
+/* --- 🔍 4. SEARCH BAR --- */
+
+.search-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.search-input {
+    width: 100%;
+    padding: 16px 50px;
+    border-radius: var(--border-radius-md);
+    border: 2px solid transparent;
+    background-color: var(--color-surface);
+    color: var(--color-text-main);
+    font-size: var(--font-size-base); /* Use variable */
+    font-family: inherit;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    /* 🆕 Use accent for the focus ring for better contrast */
+    box-shadow: 0 0 0 4px rgba(var(--color-accent-rgb), 0.15);
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-primary);
+    font-size: var(--font-size-base);
+    pointer-events: none;
+}
+
+.clear-search {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-muted);
+    cursor: pointer;
+    display: none;
+    transition: color 0.2s;
+}
+
+.clear-search:hover {
+    color: var(--color-primary);
+}
+
+/* --- 📇 5. CARDS --- */
+
+main {
+    flex: 1;
+}
+
+.notifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--spacing-lg);
+    padding-bottom: var(--spacing-xl);
+}
+
+.teacher-card {
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-bounce);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    opacity: 0;
+    animation: slideUp 0.6s ease forwards;
+}
+
+.teacher-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(var(--color-primary-rgb), 0.3); /* Enhanced hover border */
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.avatar-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2px solid var(--color-primary);
+    padding: 2px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #eee;
+}
+
+.rank-badge {
+    position: absolute;
+    bottom: -5px;
+    right: -8px;
+    background: var(--color-accent);
+    color: white;
+    font-size: 0.6rem;
+    font-weight: var(--font-weight-bold); /* Use variable */
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.teacher-details h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: 2px;
+    line-height: 1.2;
+}
+
+.teacher-details .designation {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-medium);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-body {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin-bottom: var(--spacing-lg);
+    flex-grow: 1;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: var(--spacing-md);
+    border-top: 1px dashed var(--color-border);
+}
+
+.tag {
+    background-color: rgba(var(--color-primary-rgb), 0.1);
+    color: var(--color-primary);
+    padding: 4px 12px;
+    border-radius: var(--border-radius-full);
+    font-size: 0.75rem;
+    font-weight: var(--font-weight-medium);
+}
+
+.btn-profile {
+    color: var(--color-text-main);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-base);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+}
+
+.btn-profile:hover {
+    color: var(--color-primary);
+}
+
+.btn-profile i {
+    transition: transform 0.2s;
+}
+
+.btn-profile:hover i {
+    transform: translateX(4px);
+}
+
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text-muted);
+}
+
+/* --- 👣 FOOTER (New) --- */
+
+.main-footer {
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: var(--spacing-lg) 0;
+    margin-top: var(--spacing-xl);
+    text-align: center;
+}
+
+.footer-content p {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-base);
+    margin-bottom: var(--spacing-xs);
+}
+
+.footer-links {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-sm);
+}
+
+.footer-link {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: var(--font-size-lg);
+    transition: color 0.2s;
+}
+
+.footer-link:hover {
+    color: var(--color-primary);
+}
+
+/* --- 📟 MODAL --- */
+
+.modal-backdrop {
+    display: none;
+    position: fixed;
+    z-index: var(--z-level-modal); /* Use variable */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.show {
+    display: flex; /* Ensure it is displayed when 'show' */
+    opacity: 1;
+}
+
+.modal-card {
+    background-color: var(--color-surface);
+    width: 90%;
+    max-width: 450px;
+    padding: 30px;
+    border-radius: var(--border-radius-md);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(0.9);
+    transition: transform 0.3s;
+    position: relative;
+    text-align: center;
+}
+
+.modal-backdrop.show .modal-card {
+    transform: scale(1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+.btn-telegram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background-color: #0088cc;
+    color: white;
+    border-radius: var(--border-radius-sm);
+    text-decoration: none;
+    font-weight: var(--font-weight-medium);
+    box-shadow: 0 4px 14px rgba(0, 136, 204, 0.4);
+    transition: transform 0.2s;
+}
+
+.btn-telegram:hover {
+    transform: translateY(-2px);
+}
+
+/* --- 📱 RESPONSIVE --- */
+@media (max-width: 768px) {
+    .title { font-size: 1.8rem; }
+    .container { padding: 0 var(--spacing-md); }
+    .theme-switcher { justify-content: flex-start; }
+    .logo-wrapper { width: 60px; height: 60px; }
+}
+
+
+
+
+
+
+
