@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title & SEO Description -->
+    <title>Prateek Jain - Physics Masterclass for IIT JEE & NEET UG | Neelaxmi</title>
+    <meta name="description" content="Join Prateek Jain for expert Physics classes tailored for IIT JEE & NEET UG. Access free quizzes and daily exam updates on Neelaxmi - The Helper.">
+    <link rel="canonical" href="https://classupdates.netlify.app/prateek-jain"> <!-- Remember to update this URL -->
+    
+    <!-- Open Graph (Social Sharing) -->
+    <meta property="og:title" content="Prateek Jain - Physics for IIT JEE & NEET UG | Neelaxmi">
+    <meta property="og:description" content="Expert Physics guidance for IIT JEE and NEET UG. Join Neelaxmi for free quizzes and updates.">
+    <meta property="og:image" content="/pictures/neelaxmi.png">
+    <meta property="og:url" content="https://classupdates.netlify.app/prateek-jain">
+    <meta property="og:type" content="website">
+    
+    <!-- Browser & App Metadata -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neelaxmi">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
+    
+    <!-- Search Engine Verification -->
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" type="text/css" href="/css/teacher.css">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485462286791974" crossorigin="anonymous"></script>
+</head>
+<body data-theme="default-ui">
+    
+    <button class="menu-toggle" onclick="toggleSidebar()">
+    <i class="fas fa-bars"></i>
+</button>
+
+<nav class="sidebar" id="sidebar">
+    <a href="/index.html" class="nav-link active"><i class="fas fa-home"></i> Home</a>
+    <a href="/quiz/DASHBOARD.HTML" class="nav-link"><i class="fas fa-brain"></i> DASHBOARD</a>
+    <a href="https://akmsirdiscussion.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-comments"></i> AKM SIR DISCUSSION</a>
+    <a href="https://neetcountdown2026.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-clock"></i> NEET COUNTDOWN</a>
+    <a href="https://saksenquiz.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-lightbulb"></i> SAKSEN QUIZ CORNER</a>
+    <a href="https://dppanalysis.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-chart-bar"></i> DPP ANALYSIS</a>
+    <a href="#" target="_blank" class="nav-link"><i class="fas fa-calendar-check"></i> SCHEDULE TRACKER</a>
+    <a href="http://diwalisak.netlify.app/" target="_blank" class="nav-link"><i class="fas fa-firework"></i> DIWALI VFX</a>
+    <a href="https://telegram.me/saksen_main_bot" target="_blank" class="nav-link"><i class="fab fa-telegram"></i> MAIN BOT</a>
+
+    <div style="margin-top: auto; padding: 20px; font-size: 0.75rem; color: #64748b;">
+        © <span id="year"></span> TEAM SAKSEN
+    </div>
+</nav>
+
+
+    <div class="max-w-6xl mx-auto px-4 md:px-8 pt-4">
+        <div id="theme-switcher" class="flex flex-wrap gap-2 p-2 card rounded-xl shadow-lg border-none">
+            </div>
+    </div>
+    
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <header class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-8 pb-6 border-b border-border">
+            
+            <div class="flex items-center space-x-4">
+                <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full overflow-hidden border-2 border-border flex-shrink-0">
+                    <img src="/pictures/pj.jpg" onerror="this.src='https://placehold.co/128x128/000/fff?text=PJ'" alt="PRATEEK JAIN" class="w-full h-full object-cover">
+                </div>
+                <h1 class="text-3xl font-extrabold text-primary">PRATEEK JAIN</h1>
+            </div>
+            
+            <div class="flex flex-col md:flex-row md:ml-auto items-start md:items-center space-y-4 md:space-y-0 md:space-x-8">
+                <div class="flex space-x-6 text-center">
+                    <div class="text-primary">
+                        <div class="text-xl font-bold" id="watchMinsDisplay">...</div>
+                        <div class="text-xs text-secondary">WATCH MINS</div>
+                    </div>
+                    <div class="text-primary">
+                        <div class="text-xl font-bold flex items-center justify-center">
+                            <span id="dedicationsDisplay">...</span>
+                            <span class="ml-1 text-yellow-500">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="text-xs text-secondary">DEDICATIONS</div>
+                    </div>
+                    <div class="text-primary">
+                        <div class="text-xl font-bold" id="followersDisplay">...</div>
+                        <div class="text-xs text-secondary">FOLLOWERS</div>
+                    </div>
+                </div>
+                
+                <a href="https://example.com/prateekjain-profile-link" target="_blank" 
+                   class="px-6 py-2 rounded-lg font-semibold bg-accent text-accent-text hover:opacity-90 transition w-full md:w-w-auto text-center inline-block">
+                    Follow
+                </a>
+            </div>
+        </header>
+
+        <nav class="mt-8">
+            <div class="flex space-x-6 overflow-x-auto whitespace-nowrap border-b border-border">
+                
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold tab-active" data-tab="Free classes">FREE CLASSES YT</a>
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold" data-tab="Courses">COURSES</a>
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold " data-tab="module_pdf">MODULE PDF</a>
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold " data-tab="modules">MODULES</a>
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold" data-tab="quizzes">QUIZZES</a>
+
+                <a href="#" class="tab nav-tab py-3 text-sm font-semibold  " data-tab="About">About</a>
+            </div>
+        </nav>
+
+        <div id="filter-area" class="mt-6 flex space-x-4">
+            <button id="tab-latest" class="px-4 py-1.5 rounded-full text-sm font-medium border border-accent bg-accent text-accent-text transition">
+                Latest
+            </button>
+        </div>
+
+        <div id="dynamic-content-area" class="mt-8">
+            </div>
+
+    </div>
+
+    <div id="pdf-viewer-container">
+        <button class="close-pdf" onclick="closePdf()">&times;</button>
+        <iframe id="pdf-frame" src=""></iframe>
+    </div>
+
+<script>
+        
+        // ----------------------------------------------------------------------
+        // 1. FIREBASE SETUP
+        // ----------------------------------------------------------------------
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
+          authDomain: "gallery-83144.firebaseapp.com",
+          projectId: "gallery-83144",
+          storageBucket: "gallery-83144.firebasestorage.app",
+          messagingSenderId: "1005577519231",
+          appId: "1:1005577519231:web:638899904126ae78cdff4a"
+        };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const EDUCATOR_DOC_PATH = "educators/prateek_jain";
+
+        const MAIN_THUMBNAIL_URL = "/pictures/pjsir.jpg"; 
+        const COMPANY_LOGO_URL = "/pictures/neelaxmi.png"; 
+        
+        const body = document.body;
+        const themeSwitcher = document.getElementById('theme-switcher');
+        const contentArea = document.getElementById('dynamic-content-area');
+        const filterArea = document.getElementById('filter-area');
+
+        // State to hold current data for filtering
+        let activeTabCollection = []; 
+        let activeTabName = '';
+
+        // ----------------------------------------------------------------------
+        // 1.5 MODULE DATA (JSON)
+        // ----------------------------------------------------------------------
+        const modulesData = {
+          "metadata": {
+            "instructor": "PRATEEK JAIN SIR",
+            "target_audience": "NEET UG & JEE MAIN Aspirants",
+            "created_by": "Team SAKSEN"
+          },
+          "courses": [
+            { "title": "Units & Dimensions", "download_link": "https://drive.google.com/drive/folders/11aw51b8sIVJ_ptYJzsBx-Enf2jrQ3JBR?usp=sharing" },
+            { "title": "Vectors", "download_link": "https://drive.google.com/drive/folders/1Qa5pizqei0CUKCrbuBtRPJlCr6nROxAg?usp=sharing" },
+            { "title": "Kinematics - Set 1", "download_link": "https://drive.google.com/drive/folders/1uRaTcaSIi6H5hyTeI8BdVsoNIcbTrfV2?usp=sharing" },
+            { "title": "Kinematics - Set 2", "download_link": "https://drive.google.com/drive/folders/1AZ7AHiYSBO-IbsHsRrhzy0I0XN8u5d6d?usp=sharing" },
+            { "title": "NLM & Friction", "download_link": "https://drive.google.com/drive/folders/1322zwgqz3jGITgUL27dY95n9GOh2xNy8?usp=sharing" },
+            { "title": "WEP & Vertical Circular Motion", "download_link": "https://drive.google.com/drive/folders/1SlHZjBHDG44qGqsadp1BaS6_XCQMX-G1?usp=sharing" },
+            { "title": "Gravitation[TEAM SAKSEN]", "download_link": "https://drive.google.com/drive/folders/1g-uCXiX9tFyb7pnvzK0vUsmrQPOPKgoG?usp=sharing" },
+            { "title": "Elasticity, Thermal Expansion & Calorimetry", "download_link": "https://drive.google.com/drive/folders/1aewV86Sc8IGMDmxyWnPezYWi2-o48ggq?usp=sharing" },
+            { "title": "Fluid Mechanics", "download_link": "https://drive.google.com/drive/folders/1nUhUH3q3sI895mvXZ1p6P1nF5NgN1_IP?usp=sharing" },
+            { "title": "KTG & Thermodynamics", "download_link": "https://drive.google.com/drive/folders/1ULAZ7E8Pvt-7aSvoP3t9VyQIiG4puvz0?usp=sharing" },
+            { "title": "Current Electricity", "download_link": "https://drive.google.com/drive/folders/10_dILc2ZK6cLDN3A2qQx3AwAg2QcyDZd?usp=sharing" },
+            { "title": "EM Waves", "download_link": "https://drive.google.com/drive/folders/1JFU86upNUJnJEJaXwflO14tb2UOGqEWKv?usp=sharing" },
+            { "title": "EMI (Electromagnetic Induction)", "download_link": "https://drive.google.com/drive/folders/16WkpU9tkXPphfe2UGHmrBFL8zyEkCuRy?usp=sharing" },
+            { "title": "Moving Charges and Magnetism", "download_link": "https://drive.google.com/drive/folders/1Bc5dl-iIDTs1m3mv-YAzpEL5GqGBLTz9?usp=sharing" },
+            { "title": "Magnetism & Matter", "download_link": "https://drive.google.com/drive/folders/19c83b28res1MVggwugQsy3UPqqMDmV-u?usp=sharing" },
+            { "title": "Capacitors", "download_link": "https://drive.google.com/drive/folders/1DrBix9lCpwV2zKDE2xRP1nPwc6EzPB7o?usp=sharing" },
+            { "title": "Wave Optics", "download_link": "https://drive.google.com/drive/folders/1F-C9NdmOA1cbgaReWrzC382F_Ro0f-LL?usp=sharing" },
+            { "title": "Electrostatics", "download_link": "https://drive.google.com/drive/folders/1BOI4P65TCU3E5jcJlJD8nzOqbgzvk_R0?usp=sharing" },
+            { "title": "AC (Alternating Current)", "download_link": "https://drive.google.com/drive/folders/1ntpeYFs2rvIqi6f28-K6nzSYVjEJuOdY?usp=sharing" },
+            { "title": "Rotational Motion[TEAM SAKSEN]", "download_link": "https://drive.google.com/drive/folders/19c83b28res1MVggwugQsy3UPqqMDmV-u?usp=sharing" },
+            { "title": "String Waves", "download_link": "https://drive.google.com/drive/folders/192e2zwbi5p9dkmM903BJEmY4IJiJ6sMY?usp=sharing" },
+            { "title": "Sound Waves", "download_link": "https://drive.google.com/drive/folders/1PDL9ThrKyk0LON_qTbsdhiYoyJ19pipA?usp=sharing" },
+            { "title": "Geometric Optics & Dispersion", "download_link": "https://drive.google.com/drive/folders/1AZ7AHiYSBO-IbsHsRrhzy0I0XN8u5d6d?usp=sharing" },
+            { "title": "Modern Physics & Nuclear Physics", "download_link": "https://drive.google.com/drive/folders/1YivqjNHYcyaYku4OIq6BEGn8efkFWUeA?usp=sharing" }
+          ],
+          "social_links": [
+            { "title": "JOIN US", "url": "https://telegram.me/saksen_journey_offical" },
+            { "title": "Prateek sir other material", "url": "https://telegram.me/pj_sir_dpp_module" }
+          ]
+        };
+
+        // NEW: Module PDF Data Array
+        const modulePdfLinks = [
+            { 
+                title: "Electrostatics - Full PDF", 
+                link: "https://drive.google.com/file/d/YOUR_DRIVE_ID_HERE/view?usp=sharing", 
+                subject: "Electrostatics" 
+            },
+            { 
+                title: "Optics - Practice Sheet", 
+                link: "https://drive.google.com/file/d/ANOTHER_DRIVE_ID/view?usp=sharing", 
+                subject: "Optics" 
+            },
+            // Add more PDFs here
+        ];
+        
+        // ----------------------------------------------------------------------
+        // 2. UTILITY & SKELETON LOADER
+        // ----------------------------------------------------------------------
+        
+        function formatStat(num) {
+            if (num === null || num === undefined) return '0';
+            if (num >= 1000000) return (num / 1000000).toFixed(0) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+            return num;
+        };
+
+        function formatViewCount(num) {
+            if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+            return num;
+        }
+
+        function getSkeletonLoader() {
+            return Array(6).fill(0).map(() => `
+                <div class="card rounded-xl overflow-hidden h-72">
+                    <div class="h-44 bg-gray-200 skeleton w-full"></div>
+                    <div class="p-4 space-y-3">
+                        <div class="h-4 bg-gray-200 skeleton rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-200 skeleton rounded w-1/2"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function fetchAndRenderStats() {
+            db.doc(EDUCATOR_DOC_PATH).get()
+                .then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById('watchMinsDisplay').textContent = formatStat(data.watchmin);
+                        document.getElementById('dedicationsDisplay').textContent = formatStat(data.dedications);
+                        document.getElementById('followersDisplay').textContent = formatStat(data.followers);
+                    }
+                });
+        }
+        
+        // ----------------------------------------------------------------------
+        // 3. DYNAMIC CONTENT & SMART FILTERING LOGIC
+        // ----------------------------------------------------------------------
+
+        async function fetchAndRenderContent(collectionName) {
+            activeTabName = collectionName;
+            
+            contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${getSkeletonLoader()}</div>`;
+            filterArea.innerHTML = ''; 
+
+            try {
+                const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection(collectionName)
+                                        .where('status', '==', 'approved')
+                                        .orderBy('createdAt', 'desc') 
+                                        .get();
+
+                let contentArray = [];
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    data.timeText = data.createdAt ? data.createdAt.toDate().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Date N/A';
+                    contentArray.push(data);
+                });
+
+                activeTabCollection = contentArray;
+                
+                // GENERATE FILTERS
+                generateDynamicFilters(contentArray);
+
+                renderFilteredContent(contentArray);
+
+            } catch (error) {
+                console.error("Error fetching content:", error);
+                contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading content: ${error.message}</div>`;
+            }
+        }
+
+
+        function generateDynamicFilters(data) {
+            if(!data || data.length === 0) return;
+
+            // Collect all unique tags from multiple fields
+            const tags = new Set();
+            
+            data.forEach(item => {
+                if (item.subject) tags.add(item.subject);
+                if (item.class) tags.add(item.class);     // Checks for 'class' field (e.g. 11th)
+                if (item.status) tags.add(item.status);   // Checks for 'status' field (e.g. Ongoing)
+                if (item.detailedChapter) tags.add(item.detailedChapter);
+
+            });
+            
+            const uniqueTags = [...tags];
+
+            let html = `<button class="filter-btn active" onclick="applyFilter('all', this)">All</button>`;
+            
+            uniqueTags.forEach(tag => {
+                html += `<button class="filter-btn" onclick="applyFilter('${tag}', this)">${tag}</button>`;
+            });
+
+            filterArea.innerHTML = html;
+        }
+
+        window.applyFilter = function(criteria, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            if (criteria === 'all') {
+                renderFilteredContent(activeTabCollection);
+            } else {
+                // Smart Filter: Checks if the criteria matches ANY of the fields
+                const filtered = activeTabCollection.filter(item => 
+                    (item.subject === criteria) || 
+                    (item.class === criteria) || 
+                    (item.status === criteria) ||
+                    (item.language === criteria)||
+                    (item.detailedChapter === criteria)
+                );
+                renderFilteredContent(filtered);
+            }
+        }
+
+        function renderFilteredContent(data) {
+            if (activeTabName === 'free_classes') {
+                renderFreeClassCards(data);
+            } else if (activeTabName === 'courses') {
+                renderCourseCards(data);
+            }
+        }
+        
+        function renderFreeClassCards(contentArray) {
+            if (contentArray.length === 0) {
+                contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No free classes found for this filter.</div>`;
+                return;
+            }
+            
+            const cardsHtml = contentArray.map(item => {
+                const thumb = MAIN_THUMBNAIL_URL;
+                const logo = COMPANY_LOGO_URL;
+                const dateDisplay = item.timeText || 'Date N/A';
+                
+                return `
+                    <a href="${item.link}" target="_blank" class="card block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+                        <div class="relative w-full h-44 overflow-hidden">
+                            <img src="${thumb}" alt="${item.title}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md bg-white">
+                                <img src="${logo}" class="w-full h-full object-cover">
+                            </div>
+                            ${item.viewsCount ? `<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded backdrop-blur-sm flex items-center"><svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>${formatViewCount(item.viewsCount)}</div>` : ''}
+                        </div>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <div class="flex items-center mb-2 gap-2">
+                                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wide">
+                                    ${item.subject || 'Physics'}
+                                </span>
+                                ${item.class ? `<span class="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase tracking-wide">${item.class}</span>` : ''}
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 leading-snug mb-3 group-hover:text-blue-600 transition-colors">
+                                ${item.title}
+                            </h3>
+                            <div class="flex items-center gap-3 mb-4 text-sm">
+                                <div class="flex items-center text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                                    <svg class="w-4 h-4 mr-1.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <span class="font-medium">Starts: ${dateDisplay}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center mb-2 gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wide">        ${quiz.subject || 'Physics'}
+                            </span>
+                            ${quiz.class ? `<span class="text-xs font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase tracking-wide">${quiz.class}</span>` : ''}
+                            ${quiz.detailedChapter ? `<span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase tracking-wide truncate max-w-[150px]" title="${quiz.detailedChapter}">${quiz.detailedChapter}</span>` : ''}
+                            </div>
+
+                            <div class="relative bg-gray-50 rounded-lg p-3 mb-4 border border-gray-100">
+                                <p class="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                                    ${item.description || 'No description provided.'}
+                                </p>
+                            </div>
+                            <div class="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+                                <span class="text-xs text-gray-400 font-medium">${item.language || 'Hindi'}</span>
+                                <span class="text-sm font-semibold text-blue-600 flex items-center">
+                                    Watch Now 
+                                    <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+            
+            contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">${cardsHtml}</div>`;
+        }
+        
+        function renderFilteredContent(data) {
+            if (activeTabName === 'free_classes') {
+        renderFreeClassCards(data);
+    } else if (activeTabName === 'courses') {
+        renderCourseCards(data);
+    } else if (activeTabName === 'quizzes') {
+        renderQuizCardsUI(data); // Call a dedicated UI-only function
+    } else if (activeTabName === 'aplo') {
+        renderAploCards(data);
+    }
+}
+
+function renderQuizCardsUI(quizzesArray) {
+    if (!quizzesArray || quizzesArray.length === 0) {
+        contentArea.innerHTML = `<div class="p-8 text-center text-gray-500">😔 No quizzes found for this filter.</div>`;
+        return;
+    }
+    
+    const cardsHtml = quizzesArray.map(quiz => {
+        const activeQuizID = quiz.targetQuizId || quiz.id || 'default';
+        const title = quiz.title || 'Untitled Quiz';
+        const subject = quiz.subject || 'Physics';
+        const questions = quiz.questions || 'N/A';
+        const thumbnailImg = quiz.thumbnail || '/pictures/pjsir.jpg';
+        
+        return `
+            <div class="card overflow-hidden rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 h-full flex flex-col bg-white">
+                <div class="relative h-44 w-full overflow-hidden">
+                    <img src="${thumbnailImg}" alt="${title}" class="w-full h-full object-cover">
+                    <div class="absolute top-3 right-3">
+                        <span class="text-[10px] font-bold text-blue-600 bg-white/95 px-2 py-1 rounded border border-blue-100 uppercase tracking-widest shadow-sm">
+                            ${subject}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-5 flex flex-col flex-grow">
+                    <div class="flex items-center mb-3 gap-2 flex-wrap">
+                        ${quiz.class ? `<span class="text-[10px] font-bold text-gray-600 bg-gray-100 px-2 py-0.5 rounded border border-gray-200 uppercase tracking-wide">${quiz.class}</span>` : ''}
+                        ${quiz.detailedChapter ? `<span class="text-[10px] font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase tracking-wide truncate max-w-[140px]" title="${quiz.detailedChapter}">${quiz.detailedChapter}</span>` : ''}
+                    </div>
+
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 leading-snug line-clamp-2 min-h-[3.5rem]">
+                        ${title}
+                    </h3>
+
+                    <div class="mt-auto">
+                        <div class="flex items-center text-xs text-gray-500 mb-4">
+                            <i class="fas fa-list-ul mr-2 text-blue-500"></i>
+                            <span class="font-bold text-gray-800 mr-1">${questions}</span> Questions
+                        </div>
+                        <a href="/quiz/quizzes.html?uid=${activeQuizID}" 
+                           class="w-full text-center py-2.5 block text-sm font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-md">
+                            Attempt Quiz 🚀
+                        </a>
+                    </div>
+                </div>
+            </div>`;
+    }).join('');
+    
+    contentArea.innerHTML = `
+        <div class="mb-8 border-l-4 border-blue-600 pl-4">
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">🎯 Available Quizzes</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
+    `;
+}
+
+function renderCourseCards(courseArray) {
+    if (courseArray.length === 0) {
+        contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No courses found.</div>`;
+        return;
+    }
+    
+    const cardsHtml = courseArray.map(course => {
+        const thumb = MAIN_THUMBNAIL_URL;
+        const dateDisplay = course.timeText || 'Date N/A';
+        
+        return `
+            <a href="${course.link}" target="_blank" class="card block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+                
+                <div class="relative w-full h-44 overflow-hidden">
+                    <img src="${thumb}" alt="${course.name}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                    <div class="absolute bottom-3 left-4 text-white font-bold flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.208 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.832 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.832 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.168 18 16.5 18s-3.332.477-4.5 1.253"></path></svg>
+                        Full Course
+                    </div>
+                </div>
+
+                <div class="p-5 flex flex-col flex-grow">
+                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">${course.name}</h3>
+                    
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            Start: ${dateDisplay}
+                        </span>
+                        
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-purple-100 text-purple-800">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${course.duration || 'N/A Duration'}
+                        </span>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-3 rounded-lg border border-gray-100 mb-4">
+                       <p class="text-sm text-gray-600 leading-relaxed">
+                           <span class="font-bold text-gray-800">Summary:</span> ${course.description || 'No description available.'}
+                       </p>
+                    </div>
+
+                    <div class="mt-auto">
+                        <button class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md flex justify-center items-center">
+                            View Course
+                        </button>
+                    </div>
+                </div>
+            </a>
+        `;
+    }).join('');
+    
+    contentArea.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>`;
+}
+
+ 
+        function rendermodulesFromJSON() {
+            filterArea.innerHTML = ''; 
+            const modules = modulesData.courses;
+            
+            if (modules.length === 0) {
+                contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No modules found.</div>`;
+                return;
+            }
+
+            const headerHtml = `
+                <div class="mb-6 border-l-4 border-accent pl-4">
+                    <h2 class="text-2xl font-bold text-primary">Module Topics</h2>
+                    <p class="text-sm text-secondary">Comprehensive study materials and notes.</p>
+                </div>
+            `;
+
+            const cardsHtml = modules.map(module => `
+                <div class="card relative bg-white border border-gray-200 rounded-lg p-5 hover:shadow-lg transition-all duration-300 flex flex-col justify-between group">
+                    <div class="absolute top-4 right-4 text-gray-100 pointer-events-none group-hover:text-gray-50 transition-colors">
+                        <svg class="w-16 h-16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="mb-3 text-blue-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-6 leading-tight">${module.title}</h3>
+                    </div>
+                    <div class="relative z-10 mt-auto">
+                        <a href="${module.download_link}" target="_blank" class="flex items-center justify-center w-full py-2.5 px-4 rounded-lg border border-blue-600 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition-colors">
+                            Access Drive
+                            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            contentArea.innerHTML = `
+                <div class="animate-fade-in">
+                    ${headerHtml}
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        // ----------------------------------------------------------------------
+        // NEW: PDF VIEWER FUNCTIONS & RENDERER
+        // ----------------------------------------------------------------------
+
+        function injectPdfViewer() {
+            // Check if element exists, if not, create it (though we added it in HTML already, this is a fallback)
+            if (!document.getElementById('pdf-viewer-container')) {
+                const viewerHTML = `
+                    <div id="pdf-viewer-container">
+                        <button class="close-pdf" onclick="closePdf()">&times;</button>
+                        <iframe id="pdf-frame" src=""></iframe>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', viewerHTML);
+            }
+        }
+
+        function openPdf(link) {
+            let previewLink = link;
+            if (link.includes('drive.google.com') && (link.includes('/view') || link.includes('/edit'))) {
+                previewLink = link.replace(/\/view.*/, '/preview').replace(/\/edit.*/, '/preview');
+            }
+            
+            const container = document.getElementById('pdf-viewer-container');
+            const frame = document.getElementById('pdf-frame');
+            if(container && frame) {
+                frame.src = previewLink;
+                container.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent scrolling background
+            }
+        }
+
+        function closePdf() {
+            const container = document.getElementById('pdf-viewer-container');
+            const frame = document.getElementById('pdf-frame');
+            if(container && frame) {
+                frame.src = ''; 
+                container.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+/* -------------------------------------------------------------------------- */
+/* DYNAMIC PDF FETCHING                        */
+/* -------------------------------------------------------------------------- */
+
+async function fetchAndRenderModulePdfs() {
+            filterArea.innerHTML = ''; // Hide filtering buttons for this view
+
+    contentArea.innerHTML = `<div class="p-8 text-center text-secondary">Loading Modules...</div>`;
+    
+    try {
+        // Fetching from Firebase sub-collection 'module_pdfs'
+        const snapshot = await db.doc(EDUCATOR_DOC_PATH).collection('module_pdfs')
+            .where('status', '==', 'approved')
+            .orderBy('createdAt', 'desc')
+            .get();
+
+        let pdfArray = [];
+        snapshot.forEach(doc => {
+            pdfArray.push(doc.data());
+        });
+
+        if (pdfArray.length === 0) {
+            contentArea.innerHTML = `<div class="p-8 text-center text-secondary">No PDF modules found in database.</div>`;
+            return;
+        }
+
+        const cardsHtml = pdfArray.map(item => {
+            return `
+                <div onclick="openPdf('${item.link}')" class="card cursor-pointer block bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 group h-full flex flex-col relative">
+                    <div class="relative w-full h-44 overflow-hidden">
+                        <img src="${MAIN_THUMBNAIL_URL}" alt="Class Thumbnail" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute bottom-3 left-3 w-10 h-10 rounded-full border-2 border-white overflow-hidden shadow-md z-10">
+                            <img src="${COMPANY_LOGO_URL}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                             <div class="bg-white/90 rounded-full p-3 shadow-lg">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                         <div class="flex items-center mb-2">
+                             <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 uppercase tracking-wide">
+                                 ${item.subject || 'PDF Module'}
+                             </span>
+                         </div>
+                         <h3 class="text-lg font-bold text-primary leading-snug mb-1 group-hover:text-accent transition-colors">
+                             ${item.title}
+                         </h3>
+                         <p class="text-xs text-secondary mt-auto pt-2 flex items-center">
+                            <span class="w-2 h-2 rounded-full bg-green-500 mr-2"></span> Click to Open PDF
+                         </p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        contentArea.innerHTML = `
+            <div class="mb-6 border-l-4 border-red-500 pl-4">
+                 <h2 class="text-2xl font-bold text-primary">📄 Module PDFs</h2>
+                 <p class="text-sm text-secondary">Fetched dynamically from Firebase. Click to read.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
+        `;
+        
+        injectPdfViewer();
+
+    } catch (error) {
+        console.error("Error fetching PDFs:", error);
+        contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Error loading PDFs: ${error.message}</div>`;
+    }
+}
+
+        // ----------------------------------------------------------------------
+        // 4. TAB NAVIGATION & RENDERERS
+        // ----------------------------------------------------------------------
+
+function renderOtherContent(tabName) {
+    filterArea.innerHTML = '';
+    
+        if (tabName === 'About') {
+            // Added the RETURN keyword here
+            return `
+                <div class="max-w-5xl mx-auto space-y-8 animate-fade-in pb-12">
+                    <div class="about-card rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-accent/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                            <div class="relative group">
+                                <div class="absolute -inset-1 bg-gradient-to-r from-blue-600 to-cyan-400 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                                <img src="/pictures/pjsir.jpg" class="relative w-48 h-48 md:w-56 md:h-56 rounded-2xl object-cover shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]" alt="Prateek Jain Sir">
+                            </div>
+    
+                            <div class="flex-grow text-center md:text-left">
+                                <span class="stat-pill px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-4 inline-block shadow-lg">Rank 1 Physics Faculty</span>
+                                <h2 class="text-4xl md:text-5xl font-black text-primary mb-4 tracking-tight">Prateek Jain <span class="text-accent text-2xl">Sir</span></h2>
+                                <p class="text-xl italic text-secondary mb-6 font-medium">"0% Tricks. 100% Concepts."</p>
+                                
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">10+</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Years Exp.</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">AIR 6</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Top Rank</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">IIT-K</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Research</span>
+                                    </div>
+                                    <div class="bg-white/50 p-3 rounded-xl border border-white/50 backdrop-blur-sm">
+                                        <span class="block text-2xl font-black text-primary">#1</span>
+                                        <span class="text-[10px] uppercase text-secondary font-bold tracking-widest">Unacademy</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    
+    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="about-card rounded-2xl p-6 space-y-6">
+                            <h3 class="text-xl font-black text-primary flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white text-sm">
+                                    <i class="fas fa-microscope"></i>
+                                </div>
+                                Academic Research
+                            </h3>
+                            <p class="text-secondary leading-relaxed border-l-2 border-accent pl-4">
+                                Conducted significant **Research Work with HC Verma Sir** at IIT Kanpur, focusing on advanced pedagogical methods in Physics.
+                            </p>
+                            <div class="space-y-4">
+                                <div class="accomplishment-item p-3 rounded-lg">
+                                    <span class="block font-bold text-primary">Founder @Physicsaholics</span>
+                                    <span class="text-xs text-secondary">Leading the revolution in conceptual Physics learning.</span>
+                                </div>
+                                <div class="accomplishment-item p-3 rounded-lg">
+                                    <span class="block font-bold text-primary">Ex-Senior Faculty Kota</span>
+                                    <span class="text-xs text-secondary">Taught at CP Kota & FIITJEE (Delhi/Indore).</span>
+                                </div>
+                            </div>
+                        </div>
+    
+                        <div class="about-card rounded-2xl p-6">
+                            <h3 class="text-xl font-black text-primary mb-6 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white text-sm">
+                                    <i class="fas fa-bullhorn"></i>
+                                </div>
+                                Global Recognition
+                            </h3>
+                            <ul class="space-y-4">
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Featured in **THE HINDU** & National News.
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Interviewed by **International Media**.
+                                </li>
+                                <li class="flex items-center gap-3 text-sm text-secondary">
+                                    <i class="fas fa-check-circle text-green-500"></i> Organized KVPY Workshops for Teachers.
+                                </li>
+                            </ul>
+                            
+                            <div class="mt-8 grid grid-cols-2 gap-3">
+                                <a href="https://t.me/NEET_PHYSICS" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                    <i class="fab fa-telegram-plane"></i> NEET
+                                </a>
+                                <a href="https://t.me/iitjee_physics" class="flex items-center justify-center gap-2 py-3 bg-[#0088cc] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                    <i class="fab fa-telegram-plane"></i> JEE
+                                    
+                                    
+                                <a href="https://m.youtube.com/@PhysicsbyPrateekJain" class="flex items-center justify-center gap-2 py-3 bg-[#FF0000] text-white rounded-xl font-bold text-xs hover:opacity-90 transition shadow-lg">
+                                <i class="fab fa-youtube"></i> YOUTUBE
+                            </a>
+                            
+                                </div>
+                        </div>
+                    </div>
+                    
+                    
+                    // Add this section after the Expertise/Batch Enquiry card (at the end of the return string)
+<div class="about-card rounded-2xl p-8 bg-white border border-gray-100 shadow-xl overflow-hidden relative group">
+    <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+        <!-- Left Side: Logo/Branding -->
+        <div class="flex-shrink-0">
+            <div class="relative">
+                <div class="absolute -inset-2 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                <img src="/pictures/neelaxmi.png" class="relative w-24 h-24 md:w-32 md:h-32 rounded-full object-contain bg-white p-2 shadow-inner" alt="App Logo">
+            </div>
+        </div>
+
+        <!-- Right Side: Content & Action -->
+        <div class="flex-grow text-center md:text-left space-y-4">
+            <div>
+                <h3 class="text-2xl font-black text-primary">Download Official App</h3>
+                <p class="text-secondary text-sm md:text-base max-w-md mt-2 leading-relaxed">
+                    Access premium lectures, daily practice problems, and real-time doubt clearing. Take your Physics preparation everywhere you go.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center md:justify-start gap-4">
+                <a href="https://classupdates.netlify.app/pjsir.apk" 
+                   target="_blank" 
+                   class="flex items-center gap-3 px-6 py-3 bg-black text-white rounded-xl transition-all duration-300 hover:bg-gray-800 hover:shadow-xl hover:-translate-y-1 active:scale-95">
+                    <i class="fab fa-google-play text-2xl"></i>
+                    <div class="text-left">
+                        <p class="text-[10px] uppercase font-bold leading-none opacity-70">Let's </p>
+                        <p class="text-lg font-bold leading-none">DOWNLOAD</p>
+                    </div>
+                </a>
+                
+                <div class="hidden lg:flex items-center text-xs font-bold text-green-600 bg-green-50 px-3 py-1 rounded-full self-center">
+                    <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span>
+                    Latest Version 4.2 Available
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+                    <div class="about-card rounded-2xl p-6 bg-gradient-to-r from-gray-900 to-blue-900 text-white border-none">
+                        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                <span class="text-xs font-black text-blue-400 uppercase tracking-widest">Expertise</span>
+                                <p class="text-lg font-bold">NEET | IIT JEE Main & Advanced | Olympiads</p>
+                            </div>
+                            <a href="https://wa.me/message/7042223369" target="_blank" class="px-6 py-3 bg-white text-blue-900 rounded-xl font-black text-sm hover:scale-105 transition active:scale-95">
+                                Batch Enquiry <i class="fab fa-whatsapp ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    
+    
+    
+    // Add default return for other tabs if needed
+    return `<div class="p-8 text-center text-secondary">Content for ${tabName} coming soon.</div>`;
+}
+const tabContentRenderers = {
+    'Free classes': () => fetchAndRenderContent('free_classes'),
+    'Courses': () => fetchAndRenderContent('courses'),
+    'quizzes': () => fetchAndRenderContent('quizzes'), // New
+    'modules': () => rendermodulesFromJSON(),
+    'module_pdf': () => fetchAndRenderModulePdfs(),
+    'About': () => contentArea.innerHTML = renderOtherContent('About'),
+
+    
+};
+
+        function loadTabContent(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabName) {
+                    tab.classList.add('tab-active');
+                } else {
+                    tab.classList.remove('tab-active');
+                }
+            });
+
+            if (tabContentRenderers[tabName]) {
+                tabContentRenderers[tabName]();
+            } else {
+                contentArea.innerHTML = `<div class="p-8 text-center text-red-500">Content not available for ${tabName}.</div>`;
+            }
+        }
+        
+        // --- THEME SWITCHER LOGIC ---
+        const THEME_KEY = 'pj_profile_theme';
+        const themes = [
+            { id: 'default-ui', name: 'Default', icon: '☀️' },
+            { id: 'dark', name: 'Dark', icon: '🌙' },
+            { id: 'vibrant', name: 'Vibrant', icon: '🟢' },
+            { id: 'minimalist', name: 'Minimalist', icon: '⚪' },
+            { id: 'unacademy-inspired', name: 'Unacademy', icon: '⚫' }
+        ];
+
+        function switchTheme(themeId) {
+            body.setAttribute('data-theme', themeId);
+            localStorage.setItem(THEME_KEY, themeId);
+            updateThemeButtons(themeId);
+        }
+
+        function renderThemeButtons(currentTheme) {
+            themeSwitcher.innerHTML = themes.map(theme => `
+                <button class="theme-btn ${theme.id === currentTheme ? 'active' : ''}" data-theme-id="${theme.id}" >
+                    ${theme.icon} ${theme.name}
+                </button>
+            `).join('');
+        }
+
+        function updateThemeButtons(activeTheme) {
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                if (btn.dataset.themeId === activeTheme) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+
+        // ----------------------------------------------------------------------
+        // 5. INITIALIZATION
+        // ----------------------------------------------------------------------
+        const savedTheme = localStorage.getItem(THEME_KEY) || 'default-ui';
+        
+        renderThemeButtons(savedTheme);
+        body.setAttribute('data-theme', savedTheme);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inject PDF Viewer into body if not already present
+            injectPdfViewer();
+            
+            const navTabs = document.querySelectorAll('.nav-tab');
+            navTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const tabName = e.currentTarget.getAttribute('data-tab');
+                    loadTabContent(tabName);
+                });
+            });
+            
+            themeSwitcher.addEventListener('click', (e) => {
+                const themeButton = e.target.closest('.theme-btn');
+                if (themeButton && themeButton.dataset.themeId) {
+                    switchTheme(themeButton.dataset.themeId);
+                }
+            });
+            
+            fetchAndRenderStats();
+            
+            // Set Default Tab to COURSES
+            loadTabContent('Courses');
+        });
+    </script>
+    
+    <script src="/history.js"></script>
+    <script src="/js/head-loader.js"></script>
+</body>
+</html>

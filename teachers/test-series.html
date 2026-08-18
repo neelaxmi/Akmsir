@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO & Title -->
+    <title>SAKSEN | NEET UG & JEE Main Test Hub | PYQs & Practice Papers | Neelaxmi</title>
+    <meta name="description" content="Access the ultimate Test Hub for NEET UG & JEE Main. Practice CBT-based mock tests, all PYQs, sample papers, and NTA/NMC-aligned content at Neelaxmi.">
+    <link rel="canonical" href="https://classupdates.netlify.app/">
+
+    <!-- Open Graph (Social Sharing) -->
+    <meta property="og:title" content="SAKSEN | NEET & JEE Test Hub">
+    <meta property="og:description" content="Practice NEET UG & JEE Main with PYQs, CBT mocks, and NTA-aligned test papers.">
+    <meta property="og:image" content="/pictures/neelaxmi.png">
+    <meta property="og:url" content="https://classupdates.netlify.app/">
+    <meta property="og:type" content="website">
+
+    <!-- Browser & App Meta -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neelaxmi">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
+
+    <!-- Verification -->
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw">
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/style.css">
+
+    <!-- Scripts -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485462286791974" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+</head>
+
+<style>
+    :root {
+        --bg-dark: #020617;
+        --card-glass: rgba(15, 23, 42, 0.8);
+    }
+
+    * { scroll-behavior: smooth; }
+
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background: radial-gradient(circle at top right, #1e293b, #020617);
+        color: #f1f5f9;
+        min-height: 100vh;
+    }
+
+    .glass-panel {
+        background: var(--card-glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .tech-card { position: relative; transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+    .tech-card:hover { transform: translateY(-8px); box-shadow: 0 0 20px var(--tc-glow, rgba(59,130,246,0.5)); border-color: var(--tc-accent, #3b82f6); }
+
+    .shimmer-text {
+        background: linear-gradient(90deg, #fff, #3b82f6, #fff);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #020617; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+    .page-section { padding-top: 3rem; padding-bottom: 1rem; scroll-margin-top: 90px; }
+
+    .section-eyebrow {
+        font-family: 'Poppins', sans-serif;
+        font-size: 11px; font-weight: 800; letter-spacing: 0.35em; text-transform: uppercase;
+        display: flex; align-items: center; gap: 12px;
+    }
+    .section-eyebrow .rule { flex: 0 0 40px; height: 1px; background: currentColor; opacity: 0.5; }
+
+    .section-heading { font-family: 'Poppins', sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.23,1,0.32,1); }
+    .reveal.in-view { opacity: 1; transform: translateY(0); }
+
+    #toast {
+        position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+        background: #0f172a; border: 1px solid rgba(255,255,255,0.12); color: #f1f5f9;
+        padding: 12px 20px; border-radius: 12px; font-size: 13px; font-weight: 600;
+        opacity: 0; pointer-events: none; transition: all 0.35s ease; z-index: 100;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4); max-width: 90vw; text-align: center;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ============ Batch detail header (glass, accent-tinted) ============ */
+    .batch-hero {
+        position: relative;
+        background: linear-gradient(155deg, rgba(15,23,42,0.92), rgba(2,6,23,0.96));
+        border: 1px solid rgba(255,255,255,0.08);
+        overflow: hidden;
+    }
+    .batch-hero.is-aits {
+        background: linear-gradient(155deg, rgba(28,22,10,0.92), rgba(10,10,15,0.96));
+        border-color: rgba(212, 175, 55, 0.22);
+    }
+    .batch-hero.is-aits::before {
+        content: '';
+        position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(212,175,55,0.07), transparent 30%);
+        animation: aits-rotate 10s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes aits-rotate { to { transform: rotate(360deg); } }
+
+    .batch-divider { position: relative; border-top: 1px dashed rgba(255,255,255,0.18); margin: 24px 0; }
+    .batch-divider::before, .batch-divider::after {
+        content: ''; position: absolute; top: -10px; width: 20px; height: 20px; border-radius: 999px; background: #020617;
+    }
+    .batch-divider::before { left: -34px; }
+    .batch-divider::after { right: -34px; }
+
+    .share-btn {
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: 0.12em;
+        background: linear-gradient(90deg, var(--sb-c1, #3b82f6), var(--sb-c2, #60a5fa));
+        color: #0b1220;
+        box-shadow: 0 4px 18px var(--sb-glow, rgba(59,130,246,0.35));
+        transition: all 0.3s;
+    }
+    .share-btn:hover { box-shadow: 0 6px 26px var(--sb-glow, rgba(59,130,246,0.5)); transform: translateY(-2px); }
+
+    /* Timeline (AITS) */
+    .timeline { position: relative; padding-left: 46px; }
+    .timeline::before {
+        content: ''; position: absolute; left: 17px; top: 6px; bottom: 6px; width: 2px;
+        background: linear-gradient(to bottom, rgba(212,175,55,0.5), rgba(212,175,55,0.05));
+    }
+    .timeline-item { position: relative; margin-bottom: 28px; }
+    .timeline-item:last-child { margin-bottom: 0; }
+    .timeline-dot {
+        position: absolute; left: -46px; top: 2px; width: 36px; height: 36px; border-radius: 999px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 12px;
+        background: #0c0a06; border: 2px solid rgba(212,175,55,0.35); color: #d4af37; z-index: 2;
+    }
+    .timeline-item.is-live .timeline-dot { border-color: #4ade80; color: #4ade80; box-shadow: 0 0 14px rgba(74,222,128,0.5); }
+    .timeline-item.is-unlocked .timeline-dot { border-color: #d4af37; background: #d4af37; color: #1a1408; }
+    .timeline-card { background: rgba(15, 15, 20, 0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; transition: all 0.3s; }
+    .timeline-item.is-unlocked .timeline-card:hover { border-color: rgba(212,175,55,0.4); box-shadow: 0 0 20px rgba(212,175,55,0.15); }
+
+    .status-ribbon {
+        font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+    }
+    .status-ribbon.locked { background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.25); }
+    .status-ribbon.live { background: rgba(34, 197, 94, 0.12); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.4); animation: pulse 1.8s ease-in-out infinite; }
+    @keyframes pulse { 50% { opacity: 0.55; } }
+
+    .subject-row { border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 10px; margin-top: 10px; }
+    .subject-label { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+
+    .aits-cta { font-family: 'Poppins', sans-serif; letter-spacing: 0.14em; }
+    .aits-cta.locked-btn { background: rgba(255,255,255,0.03); color: #64748b; border: 1px solid rgba(255,255,255,0.06); cursor: not-allowed; }
+    .aits-cta.unlocked-btn { background: linear-gradient(90deg, #d4af37, #f5d576); color: #1a1408; border: 1px solid #f5d576; box-shadow: 0 4px 18px rgba(212, 175, 55, 0.3); }
+    .aits-cta.unlocked-btn:hover { box-shadow: 0 6px 24px rgba(212, 175, 55, 0.5); }
+
+    /* ============ Batch picker cards (light, tappable entry points) ============ */
+    .batch-card {
+        position: relative;
+        background: linear-gradient(160deg, #eef2ff 0%, #f8fafc 100%);
+        border: 1px solid rgba(15, 23, 42, 0.06);
+        border-radius: 20px;
+        padding: 26px;
+        min-height: 220px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        overflow: hidden;
+        cursor: pointer;
+        text-align: left;
+        transition: transform 0.35s cubic-bezier(0.23,1,0.32,1), box-shadow 0.35s;
+    }
+    .batch-card:hover { transform: translateY(-6px); box-shadow: 0 18px 34px rgba(15, 23, 42, 0.25); }
+    .batch-card-title { color: #0f172a; font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.01em; }
+    .batch-card-sub { color: #475569; font-size: 12px; font-weight: 600; margin-top: 4px; }
+    .batch-card-view { color: #2563eb; font-weight: 800; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; margin-top: 18px; }
+    .batch-card-view i { transition: transform 0.25s; }
+    .batch-card:hover .batch-card-view i { transform: translateX(4px); }
+
+    .batch-card-art { position: absolute; right: -8px; bottom: -8px; width: 140px; height: 140px; z-index: 0; }
+    .batch-card-art .art-blob { position: absolute; right: 6px; bottom: 6px; width: 92px; height: 92px; border-radius: 28px; transform: rotate(12deg); opacity: 0.9; }
+    .batch-card-art .art-icon-main { position: absolute; right: 30px; bottom: 30px; font-size: 34px; z-index: 1; }
+    .batch-card-art .art-chip {
+        position: absolute; width: 30px; height: 30px; border-radius: 999px;
+        display: flex; align-items: center; justify-content: center; font-size: 12px; color: #1a1408;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 2;
+    }
+
+    .card-share-btn {
+        position: absolute; top: 14px; right: 14px; width: 32px; height: 32px; border-radius: 999px;
+        background: rgba(255,255,255,0.75); display: flex; align-items: center; justify-content: center;
+        color: #0f172a; font-size: 13px; z-index: 5; transition: all 0.2s; border: 1px solid rgba(15,23,42,0.08);
+    }
+    .card-share-btn:hover { background: #fff; transform: scale(1.08); }
+
+    #batch-detail.hidden { display: none; }
+    .batch-back-btn { transition: color 0.2s; }
+</style>
+<body class="p-4 md:p-8">
+
+    <div id="toast"></div>
+
+    <div class="max-w-5xl mx-auto">
+
+        <!-- ============ HERO ============ -->
+        <header class="glass-panel rounded-3xl p-6 md:p-10 mb-6 flex flex-col items-center text-center gap-6 border-none">
+            <div class="relative">
+                <div class="absolute inset-0 bg-blue-500 blur-2xl opacity-20 animate-pulse"></div>
+                <img src="/pictures/neelaxmi.png" alt="Logo" class="relative w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover border border-white/10">
+            </div>
+            <div>
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tighter shimmer-text">TEST CENTER</h1>
+                <p class="text-blue-400 font-mono text-xs tracking-[0.3em] uppercase mt-2">NEELAXMI v3.0</p>
+            </div>
+
+            <div class="flex gap-8 px-8 py-4 bg-white/5 rounded-2xl border border-white/5">
+                <div class="text-center">
+                    <span class="block text-2xl font-black text-white" id="watchMinsDisplay">...</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Analytics</span>
+                </div>
+                <div class="w-px h-10 bg-white/10"></div>
+                <div class="text-center">
+                    <span class="block text-2xl font-black text-white" id="followersDisplay">...</span>
+                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-widest">Candidates</span>
+                </div>
+            </div>
+
+            <a href="#batch" class="text-[11px] font-bold uppercase tracking-widest px-5 py-2.5 rounded-full border border-blue-500/30 text-blue-300 hover:bg-blue-500/10 transition">
+                <i class="fas fa-layer-group mr-1"></i> Browse Batches
+            </a>
+        </header>
+
+        <!-- ============ BATCHES (single entry point) ============ -->
+        <section id="batch" class="page-section reveal">
+            <div class="section-eyebrow text-blue-400 mb-3">
+                <span class="rule"></span><span>Everything, in one place</span>
+            </div>
+            <h2 class="section-heading text-3xl md:text-4xl text-white mb-2">Choose Your Batch</h2>
+            <p class="text-slate-400 text-sm mb-8 max-w-md">Open a batch to see everything inside it — and share it straight to a friend's phone.</p>
+
+            <!-- Batch picker -->
+            <div id="batch-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <!-- Batch detail: hidden until a card is opened -->
+            <div id="batch-detail" class="hidden mt-10">
+                <button onclick="closeBatchDetail()" class="batch-back-btn flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-slate-400 hover:text-white mb-5">
+                    <i class="fas fa-arrow-left"></i> All Batches
+                </button>
+
+                <div id="batch-hero-content" class="batch-hero rounded-3xl p-6 md:p-10 mb-10"></div>
+
+                <div id="batch-body"></div>
+            </div>
+        </section>
+
+        <footer class="text-center py-14 text-slate-600 text-xs">
+            &copy; <span id="year"></span> Neelaxmi. Built for NEET UG &amp; JEE Main aspirants.
+        </footer>
+
+    </div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDAZ_xwRd_uJcf-Gzv58HA9f_HZ7BCCJ8g",
+        authDomain: "gallery-83144.firebaseapp.com",
+        projectId: "gallery-83144",
+        storageBucket: "gallery-83144.firebasestorage.app",
+        messagingSenderId: "1005577519231",
+        appId: "1:1005577519231:web:638899904126ae78cdff4a"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const EDUCATOR_PATH = "educators/TEST_SERIES";
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ============================================================
+    // BATCHES — everything the user can open lives behind a card.
+    // type: 'tests' -> Firestore "courses" (PDF papers, was "Test Series")
+    //       'quiz'  -> Firestore "quizzes" (was "Live Quiz")
+    //       'aits'  -> static syllabus timeline (AITS 2027)
+    // ============================================================
+    const BATCH_META = [
+        {
+            id: 'freetests', type: 'tests',
+            title: 'Free Tests', subtitle: 'PDF Practice Papers · NEET & JEE',
+            code: 'Batch Code · FREE-TESTS',
+            description: 'Downloadable PDF test papers and practice sets, organised by subject. Free for everyone, no sign-up needed.',
+            accent: '#3b82f6', accentGlow: 'rgba(59,130,246,0.5)', accent2: '#93c5fd',
+            iconMain: 'fa-file-pdf',
+            chips: [
+                { icon: 'fa-download', bg: '#93c5fd', pos: 'top:6px; right:6px;' },
+                { icon: 'fa-book', bg: '#60a5fa', pos: 'bottom:36px; left:0;' }
+            ],
+            stats: [
+                { icon: 'fa-file-pdf', label: 'PDF Papers' },
+                { icon: 'fa-infinity', label: 'Unlimited Access' },
+                { icon: 'fa-gift', label: 'Always Free' }
+            ]
+        },
+        {
+            id: 'jeepyq', type: 'quiz',
+            title: 'JEE PYQ', subtitle: 'Live Ranked Quizzes · JEE Main',
+            code: 'Batch Code · JEE-PYQ',
+            description: 'Previous Year Question quizzes with instant scoring — attempt live and climb the leaderboard against other aspirants.',
+            accent: '#eab308', accentGlow: 'rgba(234,179,8,0.5)', accent2: '#fde047',
+            iconMain: 'fa-bolt',
+            chips: [
+                { icon: 'fa-question-circle', bg: '#fde68a', pos: 'top:6px; right:6px;' },
+                { icon: 'fa-stopwatch', bg: '#fbbf24', pos: 'bottom:36px; left:0;' }
+            ],
+            stats: [
+                { icon: 'fa-bolt', label: 'Live Ranking' },
+                { icon: 'fa-history', label: 'Previous Year Qs' },
+                { icon: 'fa-medal', label: 'Leaderboard' }
+            ]
+        },
+        {
+            id: 'aits2027', type: 'aits',
+            title: 'AITS 2027', subtitle: 'NEET UG · All India Test Series',
+            code: 'Batch Code · AITS-2027',
+            description: '7 ranked NEET tests, syllabus-synced with your lectures. Free to join — invite friends to compete on the same leaderboard.',
+            accent: '#d4af37', accentGlow: 'rgba(212,175,55,0.45)', accent2: '#f5d576',
+            iconMain: 'fa-laptop-code',
+            chips: [
+                { icon: 'fa-trophy', bg: '#fbbf24', pos: 'top:6px; right:6px;' },
+                { icon: 'fa-flask', bg: '#34d399', pos: 'bottom:36px; left:0;' }
+            ],
+            stats: [
+                { icon: 'fa-layer-group', label: '7 Tests' },
+                { icon: 'fa-calendar-check', label: 'Ends 29 Oct 2026' },
+                { icon: 'fa-lock-open', label: 'Auto-unlocks per date' }
+            ]
+        }
+    ];
+
+    // ============================================================
+    // AITS 2027 syllabus — preserved from the original Minor 1–7
+    // plan. targetQuizId stays null until live test UIDs are
+    // issued; cards unlock automatically on their date but show a
+    // "link coming soon" toast until a UID is set.
+    // ============================================================
+    const AITS_DATA = [
+        { testNumber: 1, testName: 'Minor-1', date: '2026-08-24', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Basic Mathematics Used in Physics, Vectors',
+          chemistry: 'Thermodynamics',
+          biology: 'Cell – The Unit of Life (Complete Chapter)',
+          targetQuizId: "IEwB0H8GYOrzw07rgNTY" },
+        { testNumber: 2, testName: 'Minor-2', date: '2026-09-04', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Modern Physics, Kinematics (till taught)',
+          chemistry: 'Thermodynamics, Mole Concept',
+          biology: 'Cell Cycle and Cell Division (Complete), Animal Kingdom (Complete), Structural Organisation in Animals — Animal Tissue (Complete)',
+          targetQuizId: null },
+        { testNumber: 3, testName: 'Minor-3', date: '2026-09-15', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Kinematics (Complete)',
+          chemistry: 'Chemical Equilibrium & Chemical Kinetics',
+          biology: 'Structural Organisation in Animals (Animal Tissue), Breathing and Exchange of Gases, Body Fluids and Circulation, Excretory Products and their Elimination',
+          targetQuizId: null },
+        { testNumber: 4, testName: 'Minor-4', date: '2026-09-26', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Laws of Motion and Friction (Complete), Work-Power-Energy (Complete), Collision and Centre of Mass (Complete), Circular Motion (Complete)',
+          chemistry: 'Chemical Bonding, Coordination Compounds (Upto 7 Lectures)',
+          biology: 'Chemical Coordination and Integration, Organisms and Populations (till Positive Interactions)',
+          targetQuizId: null },
+        { testNumber: 5, testName: 'Minor-5', date: '2026-10-07', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Rotational Motion & Gravitation',
+          chemistry: 'Coordination Compounds & d-f Block (Upto 3 Lectures)',
+          biology: 'Photosynthesis in Higher Plants, Plant Kingdom',
+          targetQuizId: null },
+        { testNumber: 6, testName: 'Minor-6', date: '2026-10-18', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Oscillations (Complete), Wave Motion — Classification, Speed, Intensity & Interference of Waves (Upto Beats)',
+          chemistry: 'P-Block (Lec 5 to last), Classification and Nomenclature',
+          biology: 'Respiration in Plants, Plant Growth and Development',
+          targetQuizId: null },
+        { testNumber: 7, testName: 'Minor-7', date: '2026-10-29', testTime: '9:30 AM – 9:30 PM', pattern: 'NEET',
+          physics: 'Wave Motion (Beats to Stationary Waves), Electrostatics (Upto Potential Energy)',
+          chemistry: 'Classification and Nomenclature (Lec 5 to last), Isomerism (Without Optical Isomerism)',
+          biology: 'Morphology of Flowering Plants',
+          targetQuizId: null }
+    ];
+
+    // --- STATE ---
+    let testSeriesData = null;   // null = not fetched yet
+    let quizData = null;
+    let currentBatchId = null;
+
+    // --- TOAST ---
+    let toastTimer = null;
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 3200);
+    }
+
+    // --- STATS ---
+    async function fetchStats() {
+        const doc = await db.doc(EDUCATOR_PATH).get();
+        if (doc.exists) {
+            document.getElementById('watchMinsDisplay').textContent = doc.data().watchmin || '0';
+            document.getElementById('followersDisplay').textContent = doc.data().followers || '0';
+        }
+    }
+
+    // --- GENERIC FILTER BUILDER ---
+    function buildFilters(data, containerEl, onSelect) {
+        containerEl.innerHTML = '';
+        if (!data || data.length === 0) { containerEl.classList.add('opacity-0'); return; }
+
+        const tags = new Set();
+        data.forEach(item => {
+            if (item.subject) tags.add(item.subject);
+            if (item.category) tags.add(item.category);
+            if (item.class) tags.add(item.class);
+        });
+
+        let html = `<button class="px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border bg-blue-600 border-blue-400 text-white" data-val="all">All</button>`;
+        tags.forEach(tag => {
+            html += `<button class="px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase transition-all border bg-white/5 border-white/10 text-slate-400 hover:border-blue-500" data-val="${tag}">${tag}</button>`;
+        });
+        containerEl.innerHTML = html;
+        containerEl.classList.remove('opacity-0');
+
+        containerEl.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                containerEl.querySelectorAll('button').forEach(b => {
+                    b.classList.remove('bg-blue-600', 'border-blue-400', 'text-white');
+                    b.classList.add('bg-white/5', 'border-white/10', 'text-slate-400');
+                });
+                btn.classList.add('bg-blue-600', 'border-blue-400', 'text-white');
+
+                const val = btn.dataset.val;
+                if (val === 'all') { onSelect(data); return; }
+                onSelect(data.filter(item => item.subject === val || item.category === val || item.class === val));
+            });
+        });
+    }
+
+    // --- FREE TESTS (courses collection) ---
+    async function loadFreeTests() {
+        const grid = document.getElementById('detail-grid');
+        grid.innerHTML = `<div class="col-span-full py-16 text-center font-mono text-slate-500 tracking-widest animate-pulse">INITIALIZING DATABASE_SYNC...</div>`;
+        try {
+            if (testSeriesData === null) {
+                const snap = await db.doc(EDUCATOR_PATH).collection('courses').where('status', '==', 'approved').get();
+                testSeriesData = [];
+                snap.forEach(doc => testSeriesData.push({ id: doc.id, ...doc.data() }));
+            }
+            buildFilters(testSeriesData, document.getElementById('detail-filters'), renderTests);
+            renderTests(testSeriesData);
+        } catch (err) {
+            console.error(err);
+            grid.innerHTML = `<div class="col-span-full text-red-400 text-center">Connection Failed.</div>`;
+        }
+    }
+
+    function renderTests(dataArray) {
+        const grid = document.getElementById('detail-grid');
+        let html = dataArray.map(data => `
+            <div class="glass-panel tech-card rounded-2xl p-6 group" style="--tc-accent:#3b82f6; --tc-glow:rgba(59,130,246,0.5);">
+                <div class="flex items-start justify-between mb-6">
+                    <div class="bg-blue-500/10 p-3 rounded-xl">
+                        <i class="fas fa-file-pdf text-2xl text-blue-500"></i>
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-bold border border-white/10 px-2 py-1 rounded tracking-tighter uppercase">
+                        ${data.subject || 'Document'}
+                    </span>
+                </div>
+                <h3 class="text-xl font-bold mb-2 group-hover:text-blue-400 transition-colors">${data.name || data.title}</h3>
+                <p class="text-slate-400 text-sm mb-8 line-clamp-2">${data.description || 'Access high-quality PDF test materials.'}</p>
+                <a href="${data.link}" target="_blank" class="block w-full text-center py-3 bg-white/5 hover:bg-blue-600 rounded-xl font-bold text-xs tracking-widest uppercase transition-all border border-white/5 hover:border-blue-400">
+                    OPEN REPOSITORY <i class="fas fa-arrow-right ml-2 text-[10px]"></i>
+                </a>
+            </div>`).join('');
+        grid.innerHTML = html || `<div class="col-span-full text-center text-slate-500">Empty Directory.</div>`;
+    }
+
+    // --- JEE PYQ (quizzes collection) ---
+    async function loadJeePyq() {
+        const grid = document.getElementById('detail-grid');
+        grid.innerHTML = `<div class="col-span-full py-16 text-center font-mono text-slate-500 tracking-widest animate-pulse">INITIALIZING DATABASE_SYNC...</div>`;
+        try {
+            if (quizData === null) {
+                const snap = await db.doc(EDUCATOR_PATH).collection('quizzes').get();
+                quizData = [];
+                snap.forEach(doc => quizData.push({ id: doc.id, ...doc.data() }));
+            }
+            buildFilters(quizData, document.getElementById('detail-filters'), renderQuizzes);
+            renderQuizzes(quizData);
+        } catch (err) {
+            console.error(err);
+            grid.innerHTML = `<div class="col-span-full text-red-400 text-center">Connection Failed.</div>`;
+        }
+    }
+
+    function renderQuizzes(dataArray) {
+        const grid = document.getElementById('detail-grid');
+        let html = dataArray.map(data => `
+            <div class="glass-panel tech-card rounded-2xl p-6 border-l-4 border-l-yellow-500/50" style="--tc-accent:#eab308; --tc-glow:rgba(234,179,8,0.5);">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-ping"></span>
+                        <span class="text-[10px] font-black text-green-500 uppercase tracking-widest">Live Engine</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 font-bold border border-white/10 px-2 py-1 rounded uppercase">
+                        ${data.subject || 'General'}
+                    </span>
+                </div>
+                <h3 class="text-xl font-black mb-4 uppercase tracking-tight text-white">${data.title}</h3>
+                <div class="flex gap-4 mb-8">
+                    <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
+                        <i class="far fa-clock mr-1 text-yellow-500"></i> ${data.duration}m
+                    </div>
+                    <div class="bg-white/5 px-3 py-1 rounded text-[10px] font-bold text-slate-400">
+                        <i class="far fa-question-circle mr-1 text-blue-500"></i> ${data.questions} Qs
+                    </div>
+                </div>
+                <a href="/quiz/quizzes.html?uid=${data.targetQuizId || data.id}" class="block w-full text-center py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black text-xs tracking-[0.2em] uppercase transition-all shadow-lg shadow-blue-900/40">
+                    START PROTOCOL
+                </a>
+            </div>`).join('');
+        grid.innerHTML = html || `<div class="col-span-full text-center text-slate-500">No active engines.</div>`;
+    }
+
+    // --- AITS 2027 helpers ---
+    function aitsFormatDate(iso) {
+        const d = new Date(iso + 'T00:00:00');
+        return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function aitsStatus(iso) {
+        const now = new Date();
+        const testDay = new Date(iso + 'T00:00:00');
+        const dayAfter = new Date(testDay.getTime() + 24 * 60 * 60 * 1000);
+        if (now < testDay) {
+            const diffDays = Math.ceil((testDay - now) / (1000 * 60 * 60 * 24));
+            return { state: 'locked', label: `Unlocks in ${diffDays} day${diffDays === 1 ? '' : 's'}` };
+        }
+        if (now < dayAfter) return { state: 'live', label: 'Live Today' };
+        return { state: 'closed', label: 'Window Closed' };
+    }
+
+    window.openAitsTest = function (index) {
+        const item = AITS_DATA[index];
+        if (item.targetQuizId) {
+            window.location.href = `/quiz/quizzes.html?uid=${item.targetQuizId}`;
+        } else {
+            showToast(`${item.testName} is live, but the link isn't published yet. Check back shortly.`);
+        }
+    };
+
+    function renderBatchTimeline() {
+        const body = document.getElementById('batch-body');
+        body.innerHTML = `<div id="batch-timeline" class="timeline"></div>`;
+        const container = document.getElementById('batch-timeline');
+        container.innerHTML = AITS_DATA.map((item, index) => {
+            const status = aitsStatus(item.date);
+            const isUnlocked = status.state !== 'locked';
+            const stateClass = status.state === 'live' ? 'is-live' : (isUnlocked ? 'is-unlocked' : '');
+            const ribbonClass = status.state === 'live' ? 'live' : 'locked';
+            const ribbonIcon = status.state === 'live' ? 'fa-broadcast-tower' : 'fa-lock';
+            return `
+            <div class="timeline-item ${stateClass}">
+                <div class="timeline-dot">${String(item.testNumber).padStart(2, '0')}</div>
+                <div class="timeline-card">
+                    <div class="flex items-start justify-between gap-3 mb-3">
+                        <div>
+                            <h3 class="text-lg font-black text-white tracking-tight">${item.testName}</h3>
+                            <div class="flex flex-wrap items-center gap-3 mt-1 text-[11px] text-slate-400 font-semibold">
+                                <span><i class="far fa-calendar mr-1" style="color:#d4af37;"></i>${aitsFormatDate(item.date)}</span>
+                                <span><i class="far fa-clock mr-1" style="color:#d4af37;"></i>${item.testTime}</span>
+                                <span class="border border-white/10 rounded px-2 py-0.5 uppercase tracking-widest text-[9px]">${item.pattern}</span>
+                            </div>
+                        </div>
+                        <span class="status-ribbon ${ribbonClass} shrink-0"><i class="fas ${ribbonIcon} mr-1"></i>${status.label}</span>
+                    </div>
+                    <div class="subject-row">
+                        <p class="subject-label text-blue-400 mb-1">Physics</p>
+                        <p class="text-slate-300 text-xs leading-relaxed">${item.physics}</p>
+                    </div>
+                    <div class="subject-row">
+                        <p class="subject-label text-emerald-400 mb-1">Chemistry</p>
+                        <p class="text-slate-300 text-xs leading-relaxed">${item.chemistry}</p>
+                    </div>
+                    <div class="subject-row">
+                        <p class="subject-label text-pink-400 mb-1">Biology</p>
+                        <p class="text-slate-300 text-xs leading-relaxed">${item.biology}</p>
+                    </div>
+                    <button
+                        onclick="${isUnlocked ? `openAitsTest(${index})` : ''}"
+                        ${isUnlocked ? '' : 'disabled'}
+                        class="w-full text-center py-3 mt-5 rounded-xl font-black text-[11px] uppercase aits-cta ${isUnlocked ? 'unlocked-btn' : 'locked-btn'}">
+                        ${isUnlocked ? '<i class="fas fa-unlock mr-2"></i>Start Test' : '<i class="fas fa-lock mr-2"></i>Locked'}
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // --- SHARE (per-batch, works from the card OR from inside the detail view) ---
+    window.shareBatch = function (id) {
+        const targetId = id || currentBatchId;
+        const meta = BATCH_META.find(b => b.id === targetId) || BATCH_META[0];
+        const url = window.location.origin + window.location.pathname + `?batch=${meta.id}#batch`;
+        const shareData = {
+            title: `${meta.title} — Neelaxmi`,
+            text: `Join the ${meta.title} batch on Neelaxmi — ${meta.subtitle}. Free to join!`,
+            url
+        };
+        if (navigator.share) {
+            navigator.share(shareData).catch(() => {});
+        } else if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(() => showToast(`${meta.title} link copied to clipboard!`));
+        } else {
+            showToast(url);
+        }
+    };
+
+    // --- BATCH CARD GRID ---
+    function renderBatchCards() {
+        const grid = document.getElementById('batch-grid');
+        grid.innerHTML = BATCH_META.map(batch => `
+            <div class="batch-card" onclick="openBatchDetail('${batch.id}')">
+                <button class="card-share-btn" onclick="event.stopPropagation(); shareBatch('${batch.id}')" title="Share ${batch.title}">
+                    <i class="fas fa-share-nodes"></i>
+                </button>
+                <div class="batch-card-art">
+                    <div class="art-blob" style="background:${batch.accent}22;"></div>
+                    <i class="fas ${batch.iconMain} art-icon-main" style="color:${batch.accent};"></i>
+                    ${batch.chips.map(c => `<span class="art-chip" style="background:${c.bg}; ${c.pos}"><i class="fas ${c.icon}"></i></span>`).join('')}
+                </div>
+                <div class="relative z-10">
+                    <p class="batch-card-title">${batch.title}</p>
+                    <p class="batch-card-sub">${batch.subtitle}</p>
+                </div>
+                <span class="batch-card-view relative z-10">View <i class="fas fa-chevron-right"></i></span>
+            </div>`).join('');
+    }
+
+    // --- OPEN / CLOSE BATCH DETAIL ---
+    window.openBatchDetail = function (id) {
+        const batch = BATCH_META.find(b => b.id === id);
+        if (!batch) return;
+        currentBatchId = id;
+
+        const heroEl = document.getElementById('batch-hero-content');
+        heroEl.className = `batch-hero rounded-3xl p-6 md:p-10 mb-10 ${batch.type === 'aits' ? 'is-aits' : ''}`;
+        heroEl.innerHTML = `
+            <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                <div>
+                    <p class="text-[10px] tracking-[0.3em] uppercase font-bold" style="color:${batch.accent};">${batch.code}</p>
+                    <h3 class="text-2xl md:text-3xl font-extrabold text-white mt-1">${batch.title}</h3>
+                    <p class="text-slate-400 text-sm mt-2 max-w-md">${batch.description}</p>
+                    <div class="flex flex-wrap gap-3 mt-4 text-[11px] text-slate-300 font-semibold">
+                        ${batch.stats.map(s => `<span class="bg-white/5 border border-white/10 rounded-full px-3 py-1"><i class="fas ${s.icon} mr-1" style="color:${batch.accent};"></i> ${s.label}</span>`).join('')}
+                    </div>
+                </div>
+                <button onclick="shareBatch()" class="share-btn shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl font-black text-xs uppercase" style="--sb-c1:${batch.accent}; --sb-c2:${batch.accent2}; --sb-glow:${batch.accentGlow};">
+                    <i class="fas fa-share-nodes"></i> Share Batch
+                </button>
+            </div>
+            <div class="batch-divider"></div>
+            <p class="relative text-[11px] text-slate-500 font-mono tracking-widest uppercase">${batch.subtitle}</p>`;
+
+        if (batch.type === 'aits') {
+            renderBatchTimeline();
+        } else {
+            document.getElementById('batch-body').innerHTML = `
+                <div id="detail-filters" class="mb-6 flex flex-wrap gap-3 opacity-0 transition-opacity duration-500"></div>
+                <div id="detail-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>`;
+            if (batch.type === 'tests') loadFreeTests();
+            if (batch.type === 'quiz') loadJeePyq();
+        }
+
+        document.getElementById('batch-detail').classList.remove('hidden');
+        document.getElementById('batch-grid').classList.add('hidden');
+        document.getElementById('batch').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    window.closeBatchDetail = function () {
+        document.getElementById('batch-detail').classList.add('hidden');
+        document.getElementById('batch-grid').classList.remove('hidden');
+        currentBatchId = null;
+        document.getElementById('batch').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
+    // --- SCROLL REVEAL ---
+    function initReveal() {
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in-view'); });
+        }, { threshold: 0.12 });
+        document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    }
+
+    // --- DEEP LINK: ?batch=<id> opens that single card directly ---
+    function handleDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const batchId = params.get('batch');
+        if (batchId && BATCH_META.some(b => b.id === batchId)) {
+            setTimeout(() => openBatchDetail(batchId), 400);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchStats();
+        renderBatchCards();
+        initReveal();
+        handleDeepLink();
+    });
+</script>
+</body>
+<script src="/js/head-loader.js"></script>
+</html>
