@@ -1,0 +1,14 @@
+        const educatorList = [
+            { id: 'ajay_mishra', name: 'Ajay Mishra (AKM)' },
+            { id: 'ramesh_sharda', name: 'Ramesh Sharda' },
+            { id: 'prateek_jain', name: 'Prateek Jain' } ,
+            { id: 'seep_mam', name: 'SEEP PAHUJA'  } ,
+            { id: 'PRANAV_SIR', name: 'PRANAV SIR '  } ,
+            { id: 'AMIT_GUPTA', name: 'AMIT GUPTA'  } ,
+            { id: 'TEST_SERIES', name: 'TEST SERIES '  } ,
+            { id: 'RAKSHITA_MAM', name: 'RAKSHITA SINGH'  } 
+
+
+
+
+        ];
