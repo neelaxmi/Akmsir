@@ -1,0 +1,256 @@
+/* Enhanced, Theme-Aware Back Button CSS */
+.back-button {
+    /* Positioning: Fixed position for persistent visibility */
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 50; /* Ensures it stays on top of content */
+    
+    /* Styling based on CSS variables from the theme */
+    padding: 8px 16px; /* Refined padding for a pill shape */
+    font-size: 14px;
+    font-weight: 600; /* Bolder text for clarity */
+    cursor: pointer;
+    
+    /* Use theme-aware colors and borders */
+    border: 1px solid var(--color-border);
+    border-radius: 9999px; /* Full rounded corners (pill shape) */
+    background-color: var(--color-bg-card); /* Matches the general card background */
+    color: var(--color-text-primary); /* Primary text color */
+    
+    /* Animation and effect */
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05); /* Subtle initial shadow */
+    
+    /* Better alignment for the arrow and text */
+    display: flex;
+    align-items: center;
+    gap: 4px; 
+}
+
+.back-button:hover {
+    /* Accent hover effect for a clear action signal */
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-accent-text); /* White/accent text on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+    /* Dynamic shadow on hover, similar to .card:hover */
+    box-shadow: var(--color-shadow); 
+}
+
+/* Style for the disabled state, using theme variables for a muted look */
+.back-button:disabled {
+    cursor: not-allowed;
+    background-color: var(--color-border); /* Muted background */
+    border-color: var(--color-border);
+    opacity: 0.6;
+    color: var(--color-text-secondary); /* Secondary/muted text color */
+    transform: none;
+    box-shadow: none;
+}
+
+/* Ensure the button is properly positioned on smaller screens */
+@media (max-width: 768px) {
+    .back-button {
+        top: 10px;
+        left: 10px;
+    }
+}
+
+
+
+
+
+
+
+:root {
+    /* Auto-calculates sidebar: 280px on PC, 100% width on small phones */
+    --sidebar-width: min(280px, 80vw);
+    --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    
+    /* Auto-scaling font: Minimum 1.5rem, grows with screen, max 3rem */
+    --fluid-title: clamp(1.8rem, 5vw, 3rem);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    overflow-x: hidden; /* Prevents horizontal scrolling on mobile */
+}
+
+/* Sidebar: Using transforms for better mobile performance */
+.sidebar {
+    width: var(--sidebar-width);
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+/* Main Wrapper: Automatic padding adjustment */
+.main-wrapper {
+    width: 100%;
+    padding: clamp(1rem, 5vw, 3rem);
+    padding-top: 80px;
+    transition: margin 0.3s ease;
+}
+
+/* Automatic Title Resizing */
+.title {
+    font-size: var(--fluid-title);
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+/* THE "AUTO" GRID: No media queries needed here! 
+   It automatically fits as many 300px cards as it can. */
+.notifications-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 1.5rem;
+}
+
+/* Header: Auto-stacks on small screens */
+.header-content {
+    display: flex;
+    flex-wrap: wrap; /* Allows items to wrap to next line if no space */
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 2rem;
+}
+
+.header-logo {
+    width: clamp(100px, 15vw, 180px);
+    height: clamp(100px, 15vw, 180px);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Buttons and Cards */
+.teacher-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    width: 45px;
+    height: 45px;
+    border-radius: 10px;
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+
+:root {
+    --sidebar-width: min(280px, 85vw);
+    --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --text-dim: #94a3b8;
+    --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Navigation Toggle Button */
+.menu-toggle {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: var(--sidebar-width);
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-right: 1px solid var(--glass-border);
+    height: 100vh;
+    position: fixed;
+    left: calc(-1.1 * var(--sidebar-width)); /* Hidden by default */
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 1.2rem 2rem;
+    transition: var(--transition);
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.sidebar.active {
+    left: 0; /* Shown when active */
+}
+
+/* Sidebar Links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 18px;
+    color: var(--text-dim);
+    text-decoration: none;
+    border-radius: 14px;
+    margin-bottom: 8px;
+    transition: 0.3s;
+    font-size: 0.95rem;
+}
+
+.nav-link:hover, .nav-link.active {
+    background: var(--glass-bg);
+    color: #00d2ff;
+    box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.1);
+}
+
+/* Main Content Shifting Logic */
+.main-wrapper {
+    transition: var(--transition);
+}
+
+@media (min-width: 1024px) {
+    .main-wrapper.shifted {
+        margin-left: var(--sidebar-width);
+    }
+}
+
+@media (max-width: 768px) {
+    .main-wrapper.shifted { 
+        margin-left: 0; 
+        filter: blur(5px); /* Adds a blur effect on mobile when sidebar is open */
+    }
+}

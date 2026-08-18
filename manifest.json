@@ -1,0 +1,29 @@
+{
+  "name": "NEELAXMI: THE HELPER",
+  "short_name": "Neelaxmi",
+  "start_url": "Index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00d2ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/pictures/neelaxmi.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/pictures/neelaxmi.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "/pictures/neelaxmi.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "maskable"
+    }
+  ]
+}

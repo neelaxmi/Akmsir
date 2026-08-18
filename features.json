@@ -1,0 +1,65 @@
+I need help with a upgradtion of my  project using HTML, CSS, and Vanilla JavaScript. I have two main objectives: building a new interactive UI feature (a Smart Robot Assistant) and fixing existing bugs related to a website tour and Adsterra ad integrations in my html file . 
+
+Please review the strict requirements below and update my html file according this new upgraded things 
+
+---
+
+### PART 1: Build an Interactive Floating Robot Assistant (Navigator & Q&A Bot)
+I want to build an animated floating Robot Assistant that acts as both a page navigator and a knowledge base answering questions about "Neelaxmi" and "About Us".
+
+**1. UI & Visual Requirements**
+* **The Robot:** A small, floating animated robot fixed to the bottom-right corner of the screen (use a placeholder image/GIF or CSS shape).
+* **The Chat Box (Popup):** When the user clicks the robot, a chat popup opens asking, "What are you looking for today?". It must include a text input field and a submit button.
+* **The Thinking Cloud (Speech Bubble):** A separate speech bubble attached to the robot that dynamically displays text (e.g., answering a question or announcing a section) and auto-hides after 5-7 seconds.
+* **Mobile Restriction:** Using CSS media queries and JS, this entire robot feature must be **completely hidden and disabled on mobile devices** (screens smaller than 768px) to save screen space.
+
+**2. The Logic Flow (Two Modes of Operation)**
+When the user submits text, the JS logic must determine if it is a **Navigation Command** or a **Knowledge Question**.
+* **Mode A: Navigation (Scrolling)** 
+  * If the user types a section name (e.g., "Take me to the quiz"), the Chat popup hides, the page smoothly scrolls to that section (e.g., `<section id="quiz">`), and the Thinking Cloud appears saying "Here is the Quiz Section!".
+* **Mode B: Knowledge Base Q&A (Reading from information.txt)**
+  * If the user asks a question (e.g., "What is Neelaxmi?" or "Who are you?"), the page *does not scroll*. Instead, the Chat popup hides, and the robot analyzes a text source, extracts a short, relevant sentence, and displays the answer inside the Thinking Cloud.
+
+**3. Implementing the Knowledge Base (information.txt)**
+* I have an `information.txt` file containing details about "Neelaxmi" and my "About Us".
+* Please write the JavaScript logic to load or read this information. You can implement this by using the `fetch('information.txt')` API to load the text into a variable on page load, OR by storing the text data in a structured JavaScript constant/object for easy searching.
+* Write a function that takes the user's question, searches this knowledge base text for relevant keywords, and extracts a short, concise answer to display.
+
+**4. Advanced Feature: Typo Tolerance (Fuzzy Matching)**
+* Implement a lightweight JavaScript fuzzy matching function or robust Regex mapping to handle user typos for both Navigation and Q&A.
+* **Example:** If a user types "qiz" or "hw to play quz", it routes them to `#quiz`. If they type "Nelaxmi" or "abowt us", it correctly triggers the Q&A logic.
+* Create a clean configuration object/array in the JS where I can easily map keywords/typos to either a Section ID or a specific Q&A topic.
+
+---
+
+### PART 2: Fix Website Tour & Adsterra Display Issues
+I am experiencing two critical bugs in my existing UI logic and ad integrations that need complete code review and fixes.
+
+**1. Website Tour & Consent Modal Issues**
+* **Problem A:** The tour starts automatically on every page load without remembering the user's choice.
+* **Problem B:** When clicking the "No thanks" button in the tour consent modal, nothing happens because the function bound to it (`declineTour()`) is missing from my JS, causing a silent console error.
+
+**2. Adsterra Ad Display Failures**
+* **Context:** I use two types of ad codes:
+  * **Footer (Native Banner):** 
+    `<script async="async" data-cfasync="false" src="https://pl30460940.effectivecpmnetwork.com/1becbdc2e57da18d221ba45b10ae5b04/invoke.js"></script>`
+    `<div id="container-1becbdc2e57da18d221ba45b10ae5b04"></div>`
+  * **Rest of the page (5 Iframe/Banner slots):** 
+    `<script> atOptions = { 'key' : 'e2f229ffd40fec237fa43c01a0cb0804', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} }; </script>`
+    `<script src="https://www.highperformanceformat.com/e2f229ffd40fec237fa43c01a0cb0804/invoke.js"></script>`
+* **Problem:** While the starting ad containers load correctly, the **last 5 ad boxes stay completely blank**. 
+* **Why this happens:** Global variable overwriting (`atOptions` gets overwritten across multiple loops before `invoke.js` runs) and potential ad-network request/impression limits for identical zone keys.
+
+---
+
+### What I Need From You to upgrade in my html file :
+
+**For Part 1 (The Robot):**
+1. The **HTML** structure for the robot , popup, and speech bubble .
+2. The **CSS** for fixed positioning, float animations, and mobile-hiding.
+3. The **JavaScript** logic handling click events, fuzzy matching, smooth scrolling, speech bubble timing, and the `information.txt` fetching/searching logic.
+
+**For Part 2 (The Fixes):**
+4. **Tour Logic:** Provide the exact JS functions (`declineTour()`, `acceptTour()`, and `localStorage` checks) to dismiss the modal, stop auto-starting if declined, and fix click errors.
+5. **Adsterra Fix:** Explain and provide the code for properly isolating `atOptions` for multiple dynamic ad slots to prevent global variable collisions, and advise on handling multiple identical zone keys.
+6. **General Audit:** Review the provided ad snippets for DOM errors or performance bottlenecks and provide the fully corrected implementation.

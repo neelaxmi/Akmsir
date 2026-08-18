@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeleChat | v3 Ultimate</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Neelaxmi">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png"> 
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        glass: 'rgba(30, 41, 59, 0.7)',
+                        accent: '#229ED9',
+                        bgDark: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; }
+        .glass-panel { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        
+        /* Message Styles */
+        .chat-bubble-sent { background: linear-gradient(135deg, #229ED9 0%, #1b7eb0 100%); color: white; border-radius: 18px 18px 0 18px; }
+        .chat-bubble-received { background: #334155; color: #f1f5f9; border-radius: 18px 18px 18px 0; }
+        
+        /* Select Mode for Forwarding */
+        .msg-checkbox { display: none; }
+        .select-mode .msg-checkbox { display: block; }
+        
+        /* Message Actions */
+        .msg-actions { display: none; position: absolute; top: 0; right: 0; transform: translateY(-100%); background: #1e293b; border-radius: 8px; padding: 4px; border: 1px solid #475569; z-index: 10; }
+        .group:hover .msg-actions { display: flex; }
+    </style>
+</head>
+<body class="h-screen w-screen overflow-hidden flex flex-col items-center justify-center relative bg-bgDark">
+
+    <div id="login-screen" class="absolute inset-0 z-50 flex flex-col justify-center items-center p-4 bg-bgDark"> 
+        <div class="glass-panel p-10 rounded-3xl shadow-2xl w-full max-w-md"> 
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-accent rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-paper-plane text-2xl text-white"></i></div>
+                <h1 class="text-3xl font-bold text-white">TeleChat</h1>
+                <p class="text-gray-400 text-sm">Secure. Private. Groups.</p>
+            </div>
+            <div id="auth-forms">
+                <div id="login-form-container">
+                    <input type="email" id="login-email" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl mb-4 outline-none focus:border-accent" placeholder="Email">
+                    <input type="password" id="login-password" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl mb-6 outline-none focus:border-accent" placeholder="Password">
+                    <button id="login-button" class="w-full py-3 bg-accent hover:bg-accentDark text-white font-bold rounded-xl transition">Log In</button>
+                    <p class="text-center text-sm text-gray-400 mt-4 cursor-pointer hover:text-white" id="toggle-signup">Create Account</p>
+                </div>
+                <div id="signup-form-container" class="hidden">
+                    <input type="text" id="signup-username" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl mb-4 outline-none focus:border-accent" placeholder="Username (Unique)">
+                    <input type="email" id="signup-email" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl mb-4 outline-none focus:border-accent" placeholder="Email">
+                    <input type="password" id="signup-password" class="w-full bg-slate-800 border border-slate-700 text-white px-4 py-3 rounded-xl mb-6 outline-none focus:border-accent" placeholder="Password">
+                    <button id="signup-button" class="w-full py-3 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition">Sign Up</button>
+                    <p class="text-center text-sm text-gray-400 mt-4 cursor-pointer hover:text-white" id="toggle-login">Back to Login</p>
+                </div>
+            </div>
+            <p id="auth-error-message" class="text-red-400 text-center mt-4 text-sm"></p>
+        </div>
+    </div>
+
+    <div id="app-wrapper" class="hidden w-full h-full max-w-7xl mx-auto md:p-6">
+        <div class="flex w-full h-full md:rounded-3xl overflow-hidden shadow-2xl glass-panel relative">
+            
+            <aside class="w-full md:w-80 bg-slate-900 flex flex-col border-r border-slate-700 absolute z-20 md:relative h-full transition-transform duration-300 -translate-x-full md:translate-x-0" id="sidebar">
+                
+                <div class="p-4 border-b border-slate-700 bg-slate-800/50">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-3 cursor-pointer" id="edit-profile-btn">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-accent to-purple-600 flex items-center justify-center text-white font-bold" id="my-avatar">Me</div>
+                            <div>
+                                <h3 id="my-username" class="font-bold text-white text-sm">Me</h3>
+                                <p class="text-xs text-green-400">Online</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                             <button id="create-group-btn" class="text-gray-400 hover:text-white" title="New Group"><i class="fas fa-users"></i></button>
+                             <button id="logout-button" class="text-red-400 hover:text-red-300"><i class="fas fa-power-off"></i></button>
+                        </div>
+                    </div>
+<div class="relative z-50"> <input type="text" id="search-username" class="w-full bg-slate-800 border border-slate-700 text-white text-xs pl-8 pr-16 py-2 rounded-lg outline-none focus:border-accent" placeholder="Search user..." autocomplete="off">
+    <i class="fas fa-search absolute left-2.5 top-2.5 text-gray-500 text-xs"></i>
+    <div id="search-results" class="absolute top-full left-0 right-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl mt-1 hidden max-h-48 overflow-y-auto"></div>
+</div>  
+</div>
+
+<div class="flex border-b border-slate-700">
+    <button class="flex-1 py-2 text-sm text-accent font-medium border-b-2 border-accent" id="tab-chats">Chats</button>
+    <button class="flex-1 py-2 text-sm text-gray-500 hover:text-white" id="tab-friends">Friends</button>
+    <button class="flex-1 py-2 text-sm text-gray-500 hover:text-white" id="tab-requests">
+        Requests <span id="req-count" class="hidden bg-red-500 text-white text-[9px] px-1 rounded-full">0</span>
+    </button>
+</div>
+
+                <div class="flex-grow overflow-y-auto" id="contact-list">
+                    </div>
+            </aside>
+
+            <main class="flex-grow flex flex-col bg-slate-800 relative w-full">
+                
+                <header class="h-16 px-6 flex items-center justify-between bg-slate-900 border-b border-slate-700 z-10">
+                    <div class="flex items-center gap-3">
+                        <button id="mobile-menu-btn" class="md:hidden text-gray-400"><i class="fas fa-bars"></i></button>
+                        <div id="chat-header-info" class="hidden flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold" id="header-avatar">?</div>
+                            <div>
+                                <h3 id="friend-name" class="font-bold text-white leading-tight"></h3>
+                                <p id="last-seen-status" class="text-xs text-gray-400"></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden flex gap-4 items-center" id="chat-actions">
+                         <button id="toggle-select-mode" class="text-gray-400 hover:text-accent" title="Select & Forward"><i class="fas fa-check-square"></i></button>
+                         
+                         <button id="forward-btn" class="hidden bg-accent text-white px-3 py-1 rounded text-xs font-bold">Forward (<span id="selected-count">0</span>)</button>
+
+                        <div class="relative group">
+                            <button class="text-gray-400 hover:text-white"><i class="fas fa-ellipsis-v"></i></button>
+                            <div class="absolute right-0 top-full mt-2 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl hidden group-hover:block">
+                                <button id="block-user-btn" class="w-full text-left px-4 py-2 text-red-400 hover:bg-slate-700 text-sm">Block User</button>
+                                <button id="unblock-user-btn" class="hidden w-full text-left px-4 py-2 text-green-400 hover:bg-slate-700 text-sm">Unblock User</button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div id="chat-messages" class="flex-grow overflow-y-auto p-4 space-y-3 scroll-smooth bg-slate-800/50">
+                    <div class="h-full flex items-center justify-center text-gray-500"><p>Select a chat</p></div>
+                </div>
+
+                <div id="input-area" class="p-3 bg-slate-900 border-t border-slate-700 hidden">
+                    
+                    <div id="blocked-msg-bar" class="hidden w-full text-center text-red-400 text-sm py-2 bg-slate-800 rounded">
+                        You cannot message this user.
+                    </div>
+
+                    <div id="active-input-container">
+                        <div id="context-bar" class="hidden mb-2 p-2 bg-slate-800 rounded-lg border-l-4 border-accent flex justify-between items-center">
+                            <div class="text-sm overflow-hidden">
+                                <span id="context-title" class="text-accent font-bold block text-xs">Replying to...</span>
+                                <span id="context-text" class="text-gray-300 truncate block"></span>
+                            </div>
+                            <button id="cancel-context" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+                        </div>
+                        
+                        <form id="message-form" class="flex items-end gap-2">
+                            <textarea id="message-input" rows="1" class="flex-grow bg-slate-800 text-white px-4 py-3 rounded-2xl border border-slate-700 outline-none focus:border-accent resize-none" placeholder="Message..."></textarea>
+                            <button type="submit" class="p-3 bg-accent hover:bg-accentDark text-white rounded-full shadow-lg transition"><i class="fas fa-paper-plane"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="profile-modal" class="fixed inset-0 z-[60] bg-black/80 hidden flex items-center justify-center">
+        <div class="bg-slate-900 p-6 rounded-xl w-96 border border-slate-700">
+            <h2 class="text-white text-xl font-bold mb-4">Edit Profile</h2>
+            <input type="text" id="edit-username" class="w-full bg-slate-800 border border-slate-700 text-white px-3 py-2 rounded mb-4" placeholder="New Display Name">
+            <button id="save-profile" class="w-full bg-accent hover:bg-accentDark text-white py-2 rounded">Save</button>
+            <button onclick="el('profile-modal').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-sm">Cancel</button>
+        </div>
+    </div>
+
+    <div id="group-modal" class="fixed inset-0 z-[60] bg-black/80 hidden flex items-center justify-center">
+        <div class="bg-slate-900 p-6 rounded-xl w-96 border border-slate-700">
+            <h2 class="text-white text-xl font-bold mb-4">Create Group</h2>
+            <input type="text" id="group-name" class="w-full bg-slate-800 border border-slate-700 text-white px-3 py-2 rounded mb-4" placeholder="Group Name">
+            <p class="text-gray-400 text-xs mb-2">Select Members:</p>
+            <div id="group-contact-list" class="max-h-40 overflow-y-auto mb-4 border border-slate-700 rounded p-2">
+                </div>
+            <button id="confirm-create-group" class="w-full bg-accent hover:bg-accentDark text-white py-2 rounded">Create</button>
+            <button onclick="el('group-modal').classList.add('hidden')" class="w-full mt-2 text-gray-400 text-sm">Cancel</button>
+        </div>
+    </div>
+    
+    <div id="forward-modal" class="fixed inset-0 z-[60] bg-black/80 hidden flex items-center justify-center">
+        <div class="bg-slate-900 p-6 rounded-xl w-96 border border-slate-700">
+            <h2 class="text-white text-lg font-bold mb-4">Forward to...</h2>
+            <div id="forward-list" class="max-h-60 overflow-y-auto space-y-2"></div>
+            <button onclick="el('forward-modal').classList.add('hidden')" class="w-full mt-4 text-gray-400 text-sm">Cancel</button>
+        </div>
+    </div>
+
+    <div id="request-modal" class="fixed inset-0 z-[60] bg-black/80 hidden flex items-center justify-center">
+         <div class="bg-slate-900 p-6 rounded-xl w-80 text-center border border-slate-700">
+             <div class="w-16 h-16 bg-gray-700 rounded-full mx-auto flex items-center justify-center mb-3 text-xl font-bold" id="req-avatar">?</div>
+             <h3 class="text-white font-bold" id="req-name">User</h3>
+             <p class="text-gray-400 text-sm mb-4">Wants to chat with you.</p>
+             <div class="flex gap-2">
+                 <button id="accept-req" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded">Accept</button>
+                 <button id="block-req" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded">Block</button>
+             </div>
+             <button onclick="el('request-modal').classList.add('hidden')" class="mt-3 text-xs text-gray-500">Close</button>
+         </div>
+    </div>
+    
+    
+    
+    <div id="msg-options-modal" class="fixed inset-0 z-[70] bg-black/60 hidden flex items-end md:items-center justify-center fade-in">
+    <div class="bg-slate-900 w-full md:w-96 md:rounded-2xl rounded-t-2xl border border-slate-700 p-5 transform transition-transform duration-300">
+        
+        <div class="flex justify-between mb-4 bg-slate-800 p-3 rounded-xl overflow-x-auto gap-2">
+            <button onclick="handleReaction('❤️')" class="text-2xl hover:scale-125 transition">❤️</button>
+            <button onclick="handleReaction('😂')" class="text-2xl hover:scale-125 transition">😂</button>
+            <button onclick="handleReaction('😮')" class="text-2xl hover:scale-125 transition">😮</button>
+            <button onclick="handleReaction('😢')" class="text-2xl hover:scale-125 transition">😢</button>
+            <button onclick="handleReaction('🔥')" class="text-2xl hover:scale-125 transition">🔥</button>
+            <button onclick="handleReaction('👍')" class="text-2xl hover:scale-125 transition">👍</button>
+        </div>
+
+        <div id="msg-info-panel" class="mb-4 text-xs text-gray-400 text-center border-b border-slate-700 pb-2">
+            Sent: <span id="msg-opt-time"></span> <br>
+            Seen by: <span id="msg-opt-seen" class="text-accent"></span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-3 text-center">
+            
+            <button onclick="handleMsgAction('reply')" class="flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-reply"></i></div>
+                <span class="text-[10px]">Reply</span>
+            </button>
+
+            <button onclick="handleMsgAction('copy')" class="flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-copy"></i></div>
+                <span class="text-[10px]">Copy</span>
+            </button>
+
+            <button onclick="handleMsgAction('forward')" class="flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-share"></i></div>
+                <span class="text-[10px]">Forward</span>
+            </button>
+
+            <button onclick="handleMsgAction('pinLocal')" class="flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-thumbtack"></i></div>
+                <span class="text-[10px]">Pin (Me)</span>
+            </button>
+            
+            <button onclick="handleMsgAction('pinGlobal')" class="flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-bullhorn"></i></div>
+                <span class="text-[10px]">Pin (All)</span>
+            </button>
+
+            <button id="btn-edit-msg" onclick="handleMsgAction('edit')" class="hidden flex flex-col items-center gap-1 text-gray-300 hover:text-white">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-pen"></i></div>
+                <span class="text-[10px]">Edit</span>
+            </button>
+
+            <button id="btn-delete-msg" onclick="handleMsgAction('delete')" class="flex flex-col items-center gap-1 text-red-400 hover:text-red-300">
+                <div class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center"><i class="fas fa-trash"></i></div>
+                <span class="text-[10px]">Delete</span>
+            </button>
+        </div>
+
+        <button onclick="closeMsgOptions()" class="w-full mt-6 bg-slate-800 py-3 rounded-xl text-white font-bold">Cancel</button>
+    </div>
+</div>
+
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-auth.js";
+        import { getFirestore, addDoc, onSnapshot, collection, query, where, orderBy, serverTimestamp, getDocs, updateDoc, deleteDoc, doc, setDoc, getDoc, arrayUnion, arrayRemove, writeBatch } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore.js";
+        import { getDatabase, ref, onValue, set, onDisconnect, serverTimestamp as rtdbServerTimestamp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-database.js";
+
+        // CONFIG (Replace with your actual keys)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYj1pZ-Ot9GGSDHy0_6VaqrMdO0m_eAbc",
+            authDomain: "chat-e5487.firebaseapp.com",
+            projectId: "chat-e5487",
+            appId: "1:683903932090:web:d164849027916056085483"
+        };
+        const appId = 'telechat-v1'; 
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const rtdb = getDatabase(app);
+
+        // --- STATE ---
+        let currentUser = null;
+        let activeChat = null; // { uid, type: 'user' | 'group', roomId, name }
+        let unsubscribeMsg = null;
+        let selectedMessages = new Set();
+        let isSelectMode = false;
+        let contactsCache = [];
+
+        const el = (id) => document.getElementById(id);
+
+        // --- AUTH ---
+        el('toggle-signup').onclick = () => { el('login-form-container').classList.add('hidden'); el('signup-form-container').classList.remove('hidden'); };
+        el('toggle-login').onclick = () => { el('signup-form-container').classList.add('hidden'); el('login-form-container').classList.remove('hidden'); };
+
+el('signup-button').onclick = async () => {
+    const user = el('signup-username').value.trim();
+    const email = el('signup-email').value.trim();
+    const pass = el('signup-password').value;
+
+    if(!user || !email || !pass) {
+        el('auth-error-message').textContent = "All fields are required";
+        return;
+    }
+
+    try {
+        // 1. Check Username Uniqueness
+        const usersRef = collection(db, 'artifacts', appId, 'users');
+        const q = query(usersRef, where("username", "==", user));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+            throw new Error("Username already taken. Please choose another.");
+        }
+        
+        // 2. Create Auth User
+        const cred = await createUserWithEmailAndPassword(auth, email, pass);
+        
+        // 3. Create User Document
+        await setDoc(doc(db, 'artifacts', appId, 'users', cred.user.uid), {
+            username: user,
+            email: email,
+            uid: cred.user.uid, 
+            createdAt: serverTimestamp(),
+            blockedUsers: [] 
+        });
+
+        console.log("Signup successful!");
+    } catch(e) { 
+        console.error(e);
+        el('auth-error-message').textContent = e.message; 
+    }
+};
+
+        el('login-button').onclick = () => signInWithEmailAndPassword(auth, el('login-email').value, el('login-password').value).catch(e=>el('auth-error-message').textContent=e.message);
+        el('logout-button').onclick = () => signOut(auth).then(() => window.location.reload());
+
+        onAuthStateChanged(auth, async (user) => {
+            if(user) {
+                currentUser = user;
+                // Fetch extra data
+                const snap = await getDoc(doc(db, 'artifacts', appId, 'users', user.uid));
+                if(snap.exists()) {
+                    currentUser.data = snap.data();
+                    el('my-username').textContent = currentUser.data.username;
+                    el('my-avatar').textContent = currentUser.data.username[0].toUpperCase();
+                }
+
+                el('login-screen').classList.add('hidden');
+                el('app-wrapper').classList.remove('hidden');
+                
+                setupPresence();
+                loadContacts('chats'); // Default tab
+            } else {
+                el('login-screen').classList.remove('hidden');
+                el('app-wrapper').classList.add('hidden');
+            }
+        });
+
+        // --- TABS: Chats vs Requests ---
+el('tab-chats').onclick = () => { loadContacts('chats'); setActiveTab('tab-chats'); };
+el('tab-friends').onclick = () => { loadContacts('friends'); setActiveTab('tab-friends'); }; // <--- NEW LINE
+el('tab-requests').onclick = () => { loadContacts('requests'); setActiveTab('tab-requests'); };
+
+
+function setActiveTab(id) {
+    const tabs = ['tab-chats', 'tab-friends', 'tab-requests'];
+    
+    tabs.forEach(tabId => {
+        const isActive = tabId === id;
+        const className = `flex-1 py-2 text-sm transition ${
+            isActive 
+            ? 'text-accent font-medium border-b-2 border-accent' 
+            : 'text-gray-500 hover:text-white border-b-2 border-transparent'
+        }`;
+        el(tabId).className = className;
+    });
+}
+
+        // --- CONTACTS & GROUPS LOAD ---
+function loadContacts(type) {
+    const collectionRef = collection(db, 'artifacts', appId, 'users', currentUser.uid, 'contacts');
+    let q;
+
+    if (type === 'chats') {
+        // Existing: Active chats (Users & Groups) sorted by time
+        q = query(collectionRef, where('status', 'in', ['accepted', 'group', 'sent_request']), orderBy('lastMsgTime', 'desc'));
+    } 
+    else if (type === 'friends') {
+        // NEW: Strictly accepted USERS, sorted alphabetically
+        // Note: This effectively creates your "Phonebook"
+        q = query(
+            collectionRef, 
+            where('status', '==', 'accepted'), 
+            where('type', '==', 'user'),
+            orderBy('username', 'asc') // Sort A-Z
+        );
+    } 
+    else {
+        // Requests tab
+        q = query(collectionRef, where('status', '==', 'pending'), orderBy('addedAt', 'desc'));
+    }
+
+    onSnapshot(q, (snap) => {
+        el('contact-list').innerHTML = '';
+        contactsCache = [];
+        
+        if (snap.empty) {
+            const msg = type === 'chats' ? "No active chats." : (type === 'friends' ? "No friends added yet." : "No new requests.");
+            el('contact-list').innerHTML = `<div class="p-4 text-center text-gray-500 text-xs">${msg}</div>`;
+            return;
+        }
+
+        snap.forEach(d => {
+            const data = d.data();
+            contactsCache.push(data);
+            
+            const div = document.createElement('div');
+            const isPending = data.status === 'sent_request';
+            
+            // Visuals
+            div.className = `p-4 border-b border-slate-700/50 cursor-pointer flex items-center gap-3 transition hover:bg-slate-700/30 ${isPending ? 'opacity-70' : ''}`;
+            
+            const isGroup = data.type === 'group';
+            const label = isGroup ? data.name : data.username;
+            
+            // Subtext Logic
+            let subText = data.lastMsg || 'Tap to chat'; // Default for friends tab
+            let timeText = data.lastMsgTime ? new Date(data.lastMsgTime.seconds*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '';
+            
+            if(isPending) {
+                subText = `<span class="text-accent italic">Request Pending...</span>`;
+                timeText = '';
+            }
+
+            div.innerHTML = `
+                <div class="relative">
+                    <div class="w-10 h-10 rounded-full ${isGroup?'bg-purple-600':'bg-slate-700'} flex items-center justify-center font-bold text-white">
+                        ${isGroup ? '<i class="fas fa-users text-sm"></i>' : label[0].toUpperCase()}
+                    </div>
+                    ${!isPending && !isGroup ? '<div class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border border-slate-900"></div>' : ''}
+                </div>
+                <div class="flex-grow">
+                    <h4 class="text-white font-medium text-sm flex justify-between">
+                        ${label}
+                        <span class="text-[10px] text-gray-500">${timeText}</span>
+                    </h4>
+                    <p class="text-xs text-gray-400 truncate w-48">${subText}</p>
+                </div>
+            `;
+
+            // Click Actions
+            if(type === 'chats' || type === 'friends') {
+                if(isPending) {
+                    div.onclick = () => alert("Waiting for user to accept your request.");
+                } else {
+                    div.onclick = () => openChat(data);
+                }
+            } else {
+                // Request Tab Logic (Accept/Block)
+                div.onclick = () => {
+                    // ... (Keep your existing Request Modal logic here) ...
+                    el('req-name').textContent = data.username;
+                    el('req-avatar').textContent = data.username[0];
+                    el('request-modal').classList.remove('hidden');
+                    
+                    el('accept-req').onclick = async () => {
+                        const batch = writeBatch(db);
+                        const myRef = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'contacts', data.uid);
+                        batch.update(myRef, { status: 'accepted' });
+                        const theirRef = doc(db, 'artifacts', appId, 'users', data.uid, 'contacts', currentUser.uid);
+                        batch.update(theirRef, { status: 'accepted' });
+                        await batch.commit();
+                        el('request-modal').classList.add('hidden');
+                        loadContacts('chats'); 
+                    };
+                            el('block-req').onclick = async () => {
+                                await toggleBlock(data.uid, true); // Block user
+                                el('request-modal').classList.add('hidden');
+                            };
+                };
+            }
+            el('contact-list').appendChild(div);
+        });
+    });
+}
+
+// --- MESSAGE OPTIONS LOGIC ---
+let selectedMsgId = null;
+let selectedMsgData = null;
+
+window.openMsgOptions = (id, data, isMe) => {
+    selectedMsgId = id;
+    selectedMsgData = data;
+    
+    const modal = el('msg-options-modal');
+    modal.classList.remove('hidden');
+
+    // 4. Info (Seen Time / Sent Time)
+    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000) : new Date();
+    el('msg-opt-time').textContent = date.toLocaleString();
+    
+    // Show who read it (if Group or User)
+    const readCount = data.readBy ? data.readBy.length : 0;
+    el('msg-opt-seen').textContent = readCount > 0 ? `${readCount} user(s)` : 'Not seen yet';
+
+    // 7. Edit Button (Only show if I sent it)
+    if(isMe) {
+        el('btn-edit-msg').classList.remove('hidden');
+        el('btn-delete-msg').classList.remove('hidden');
+    } else {
+        el('btn-edit-msg').classList.add('hidden');
+        // Optional: Hide delete for others' msgs, or allow local delete only (implementation below is global delete)
+        el('btn-delete-msg').classList.add('hidden'); 
+    }
+};
+
+window.closeMsgOptions = () => {
+    el('msg-options-modal').classList.add('hidden');
+    selectedMsgId = null;
+    selectedMsgData = null;
+};
+
+// 1. REACTIONS
+window.handleReaction = async (emoji) => {
+    if (!selectedMsgId) return;
+    const msgRef = doc(db, 'artifacts', appId, 'chats', activeChat.roomId, 'messages', selectedMsgId);
+    
+    // Use a map: reactions.UID = emoji
+    // Note: dot notation update for maps requires the field to exist or set with merge
+    const key = `reactions.${currentUser.uid}`;
+    await updateDoc(msgRef, { [key]: emoji });
+    
+    closeMsgOptions();
+};
+
+window.handleMsgAction = async (action) => {
+    if (!selectedMsgId) return;
+    const msgRef = doc(db, 'artifacts', appId, 'chats', activeChat.roomId, 'messages', selectedMsgId);
+
+    switch(action) {
+        // 2. REPLY
+        case 'reply':
+            // Logic: Populate a UI context bar above input
+            el('context-bar').classList.remove('hidden');
+            el('context-title').textContent = `Replying to ${selectedMsgData.senderName}`;
+            el('context-text').textContent = selectedMsgData.text;
+            // Store context ID in a global var to send with next msg
+            window.replyContext = { id: selectedMsgId, text: selectedMsgData.text, user: selectedMsgData.senderName };
+            el('message-input').focus();
+            break;
+
+        // 3. FORWARD
+        case 'forward':
+            selectedMessages.clear();
+            selectedMessages.add(selectedMsgData.text);
+            el('forward-modal').classList.remove('hidden');
+            // Populate forward list (reuse existing code logic)
+            // ... (Your existing forward list population logic here) ...
+            break;
+
+        // 5. DELETE
+        case 'delete':
+            if(confirm('Delete this message for everyone?')) {
+                await deleteDoc(msgRef);
+            }
+            break;
+
+        // 6. COPY
+        case 'copy':
+            navigator.clipboard.writeText(selectedMsgData.text);
+            alert('Copied to clipboard');
+            break;
+
+        // 7. EDIT
+        case 'edit':
+            const newText = prompt("Edit your message:", selectedMsgData.text);
+            if(newText && newText !== selectedMsgData.text) {
+                await updateDoc(msgRef, {
+                    text: newText,
+                    isEdited: true
+                });
+            }
+            break;
+
+        // 8. PIN (Local/Personal)
+        case 'pinLocal':
+            // Add/Remove UID from pinnedBy array
+            if(selectedMsgData.pinnedBy?.includes(currentUser.uid)) {
+                await updateDoc(msgRef, { pinnedBy: arrayRemove(currentUser.uid) });
+            } else {
+                await updateDoc(msgRef, { pinnedBy: arrayUnion(currentUser.uid) });
+            }
+            break;
+
+        // 9. PIN (Global/Both)
+        case 'pinGlobal':
+            // Toggle boolean
+            await updateDoc(msgRef, { isGlobalPinned: !selectedMsgData.isGlobalPinned });
+            break;
+    }
+    closeMsgOptions();
+};
+
+// Helper to cancel reply context
+el('cancel-context').onclick = () => {
+    el('context-bar').classList.add('hidden');
+    window.replyContext = null;
+};
+
+        
+        // --- LIVE SEARCH FEATURE ---
+let searchTimeout = null; // For debouncing (waiting until user stops typing)
+
+el('search-username').addEventListener('input', (e) => {
+    const term = e.target.value.trim();
+    const resultsDiv = el('search-results');
+    
+    // Clear previous timeout
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    if (!term) {
+        resultsDiv.classList.add('hidden');
+        resultsDiv.innerHTML = '';
+        return;
+    }
+    
+    // Wait 300ms after typing stops to save DB reads
+    searchTimeout = setTimeout(async () => {
+        // Firestore "Starts With" Query: term <= username <= term + \uf8ff
+        const usersRef = collection(db, 'artifacts', appId, 'users');
+        const q = query(
+            usersRef,
+            where('username', '>=', term),
+            where('username', '<=', term + '\uf8ff')
+        );
+        
+        const snap = await getDocs(q);
+        resultsDiv.innerHTML = '';
+        resultsDiv.classList.remove('hidden');
+        
+        if (snap.empty) {
+            resultsDiv.innerHTML = '<div class="p-3 text-xs text-gray-500 text-center">No users found</div>';
+        } else {
+            snap.forEach(doc => {
+                const user = doc.data();
+                if (user.uid === currentUser.uid) return; // Don't show myself
+                
+                const div = document.createElement('div');
+                div.className = "p-3 border-b border-slate-700 hover:bg-slate-700 cursor-pointer flex items-center justify-between";
+                div.innerHTML = `
+                    <span class="text-sm text-white font-bold">${user.username}</span>
+                    <i class="fas fa-user-plus text-xs text-accent"></i>
+                `;
+                
+                // Click to Send Request
+                div.onclick = async () => {
+                    await sendFriendRequest(user);
+                    resultsDiv.classList.add('hidden');
+                    el('search-username').value = '';
+                };
+                resultsDiv.appendChild(div);
+            });
+        }
+    }, 300);
+});
+
+// Refactored Send Request Function
+async function sendFriendRequest(targetUser) {
+    // 1. Add "Pending" to Them
+    await setDoc(doc(db, 'artifacts', appId, 'users', targetUser.uid, 'contacts', currentUser.uid), {
+        uid: currentUser.uid,
+        username: currentUser.data.username,
+        status: 'pending',
+        addedAt: serverTimestamp(),
+        type: 'user'
+    });
+    
+    // 2. Add "Sent Request" to Me (So I can see it in my list)
+    await setDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'contacts', targetUser.uid), {
+        uid: targetUser.uid,
+        username: targetUser.username,
+        status: 'sent_request', // Special status for sender
+        addedAt: serverTimestamp(),
+        type: 'user'
+    });
+    
+    alert(`Request sent to ${targetUser.username}!`);
+}
+        
+
+
+        // --- CHAT LOGIC ---
+        async function openChat(contact) {
+            activeChat = contact; 
+            // Room ID: For Users -> sort UIDs. For Groups -> contact.uid (which is group ID)
+            const roomId = contact.type === 'group' 
+                ? contact.uid 
+                : [currentUser.uid, contact.uid].sort().join('_');
+            
+            activeChat.roomId = roomId;
+
+            el('chat-header-info').classList.remove('hidden');
+            el('chat-header-info').classList.add('flex');
+            el('chat-actions').classList.remove('hidden');
+            el('input-area').classList.remove('hidden');
+            
+            const name = contact.type === 'group' ? contact.name : contact.username;
+            el('friend-name').textContent = name;
+            el('header-avatar').innerHTML = contact.type === 'group' ? '<i class="fas fa-users"></i>' : name[0].toUpperCase();
+
+            // 1. Check Block Status (Only for 1-on-1)
+            if(contact.type === 'user') {
+                checkBlockStatus(contact.uid);
+                listenToPresence(contact.uid);
+            } else {
+                el('blocked-msg-bar').classList.add('hidden');
+                el('active-input-container').classList.remove('hidden');
+                el('block-user-btn').classList.add('hidden'); // No blocking groups yet
+                el('last-seen-status').textContent = "Group Chat";
+            }
+
+            // 2. Load Messages
+            if(unsubscribeMsg) unsubscribeMsg();
+            const q = query(collection(db, 'artifacts', appId, 'chats', roomId, 'messages'), orderBy('timestamp', 'asc'));
+            
+            unsubscribeMsg = onSnapshot(q, snap => {
+                el('chat-messages').innerHTML = '';
+                snap.forEach(doc => renderMessage(doc.id, doc.data()));
+                el('chat-messages').scrollTop = el('chat-messages').scrollHeight;
+                
+                
+                // Mark Unseen as Seen (Last Seen Feature)
+                snap.docs.forEach(d => {
+                    const m = d.data();
+                    // If I am receiver and not seen yet
+                    if(m.senderId !== currentUser.uid && !m.readBy?.includes(currentUser.uid)) {
+                         updateDoc(d.ref, { readBy: arrayUnion(currentUser.uid) });
+                    }
+                });
+            });
+        }
+
+        // --- RENDER MSG & LAST SEEN ---
+// --- RENDER MSG & LAST SEEN ---
+function renderMessage(id, data) {
+    const isMe = data.senderId === currentUser.uid;
+    
+    // Checkbox for Forwarding (Select Mode)
+    const checkbox = `<input type="checkbox" class="msg-checkbox absolute -left-6 top-1/2" value="${id}" onchange="window.toggleSelect('${id}', '${data.text}')">`;
+
+    // Visuals for Pins and Edited
+    const isGlobalPinned = data.isGlobalPinned ? '<i class="fas fa-bullhorn text-accent text-[10px] mr-1"></i>' : '';
+    const isLocalPinned = data.pinnedBy?.includes(currentUser.uid) ? '<i class="fas fa-thumbtack text-yellow-500 text-[10px] mr-1"></i>' : '';
+    const isEdited = data.isEdited ? '<span class="text-[9px] text-gray-400 ml-1">(edited)</span>' : '';
+
+    // Render Reactions
+    let reactionsHtml = '';
+    if (data.reactions) {
+        reactionsHtml = '<div class="flex flex-wrap gap-1 mt-1 -mb-1">';
+        // Group reactions by emoji
+        const counts = {};
+        Object.values(data.reactions).forEach(emoji => counts[emoji] = (counts[emoji] || 0) + 1);
+        for (const [emoji, count] of Object.entries(counts)) {
+            reactionsHtml += `<span class="bg-slate-700/50 text-[10px] px-1.5 py-0.5 rounded-full border border-slate-600">${emoji} ${count > 1 ? count : ''}</span>`;
+        }
+        reactionsHtml += '</div>';
+    }
+
+    const container = document.createElement('div');
+    // Add "group" class for hover effects
+    container.className = `flex mb-4 w-full relative group ${isMe ? 'justify-end' : 'justify-start'} ${isSelectMode ? 'pl-8 select-mode' : ''}`;
+    
+    const time = data.timestamp ? new Date(data.timestamp.seconds*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}) : '...';
+    
+    // Read Status
+    let ticks = '';
+    if(isMe) {
+        const isRead = data.readBy && data.readBy.length > 0;
+        ticks = `<i class="fas fa-check-double ml-1 text-[10px] ${isRead ? 'text-blue-400' : 'text-gray-400'}"></i>`;
+    }
+
+    // MSG BUBBLE
+    container.innerHTML = `
+        ${checkbox}
+        <div class="max-w-[70%] cursor-pointer transition transform hover:scale-[1.01]"> 
+            ${isGlobalPinned || isLocalPinned ? `<div class="mb-1 flex justify-end">${isGlobalPinned}${isLocalPinned}</div>` : ''}
+            
+            <div class="p-3 shadow-md text-sm relative ${isMe ? 'chat-bubble-sent' : 'chat-bubble-received'}">
+                ${data.replyTo ? `
+                    <div class="mb-2 border-l-2 border-white/40 pl-2 text-xs bg-black/10 p-1 rounded">
+                        <span class="font-bold opacity-75 block">${data.replyTo.user || 'User'}</span>
+                        <span class="opacity-75 italic truncate block">${data.replyTo.text}</span>
+                    </div>
+                ` : ''}
+                
+                <div class="font-bold text-[10px] mb-0.5 text-white/50">${isMe ? 'You' : (data.senderName || 'User')}</div>
+                <p class="whitespace-pre-wrap leading-relaxed">${data.text} ${isEdited}</p>
+                
+                ${reactionsHtml}
+
+                <div class="flex justify-end items-center mt-1 gap-1">
+                    <span class="text-[9px] opacity-70">${time}</span>
+                    ${ticks}
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // CLICK LISTENER: If not selecting, Open Options
+    container.onclick = (e) => {
+        // Prevent opening if clicking checkbox or if in select mode
+        if (e.target.type === 'checkbox') return;
+        
+        if (isSelectMode) {
+            // If in select mode, tapping should toggle selection
+            const cb = container.querySelector('input[type="checkbox"]');
+            cb.checked = !cb.checked;
+            window.toggleSelect(id, data.text);
+        } else {
+            openMsgOptions(id, data, isMe);
+        }
+    };
+
+    el('chat-messages').appendChild(container);
+}
+
+        // --- BLOCKING LOGIC ---
+        async function checkBlockStatus(otherUid) {
+            // Check if I blocked them
+            const myData = (await getDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid))).data();
+            const iBlocked = myData.blockedUsers?.includes(otherUid);
+            
+            // Check if they blocked me
+            const theirData = (await getDoc(doc(db, 'artifacts', appId, 'users', otherUid))).data();
+            const theyBlocked = theirData.blockedUsers?.includes(currentUser.uid);
+
+            if (iBlocked) {
+                el('block-user-btn').classList.add('hidden');
+                el('unblock-user-btn').classList.remove('hidden');
+            } else {
+                el('block-user-btn').classList.remove('hidden');
+                el('unblock-user-btn').classList.add('hidden');
+            }
+
+            if(iBlocked || theyBlocked) {
+                el('active-input-container').classList.add('hidden');
+                el('blocked-msg-bar').classList.remove('hidden');
+                el('blocked-msg-bar').textContent = iBlocked ? "You blocked this user." : "You have been blocked.";
+            } else {
+                el('active-input-container').classList.remove('hidden');
+                el('blocked-msg-bar').classList.add('hidden');
+            }
+        }
+
+        async function toggleBlock(targetUid, block) {
+            const userRef = doc(db, 'artifacts', appId, 'users', currentUser.uid);
+            if(block) {
+                await updateDoc(userRef, { blockedUsers: arrayUnion(targetUid) });
+            } else {
+                const d = (await getDoc(userRef)).data();
+                const newList = d.blockedUsers.filter(id => id !== targetUid);
+                await updateDoc(userRef, { blockedUsers: newList });
+            }
+            if(activeChat && activeChat.uid === targetUid) checkBlockStatus(targetUid);
+        }
+
+        el('block-user-btn').onclick = () => toggleBlock(activeChat.uid, true);
+        el('unblock-user-btn').onclick = () => toggleBlock(activeChat.uid, false);
+
+        // --- PROFILE EDITING ---
+        el('edit-profile-btn').onclick = () => {
+            el('edit-username').value = currentUser.data.username;
+            el('profile-modal').classList.remove('hidden');
+        };
+        el('save-profile').onclick = async () => {
+            const newName = el('edit-username').value.trim();
+            if(!newName) return;
+            await updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid), { username: newName });
+            currentUser.data.username = newName;
+            el('my-username').textContent = newName;
+            el('profile-modal').classList.add('hidden');
+            // Note: In a real app, you'd need to update denormalized names in contacts too, or read names dynamically
+        };
+
+        // --- CREATE GROUP ---
+        el('create-group-btn').onclick = () => {
+            el('group-modal').classList.remove('hidden');
+            const list = el('group-contact-list');
+            list.innerHTML = '';
+            // Only show accepted user contacts
+            contactsCache.filter(c => c.type === 'user' && c.status === 'accepted').forEach(c => {
+                const row = document.createElement('div');
+                row.className = "flex items-center gap-2 p-1";
+                row.innerHTML = `<input type="checkbox" class="group-select" value="${c.uid}"> <span class="text-white text-sm">${c.username}</span>`;
+                list.appendChild(row);
+            });
+        };
+
+        el('confirm-create-group').onclick = async () => {
+            const name = el('group-name').value;
+            const checks = document.querySelectorAll('.group-select:checked');
+            const members = Array.from(checks).map(c => c.value);
+            members.push(currentUser.uid); // Add Admin
+
+            if(!name || members.length < 2) return alert('Name and at least 1 member required');
+
+            // 1. Create Group Entry (Acts as User)
+            const groupRef = await addDoc(collection(db, 'artifacts', appId, 'groups'), {
+                name, createdBy: currentUser.uid, members, createdAt: serverTimestamp()
+            });
+
+            // 2. Add Group to Contacts for ALL members
+            const batch = writeBatch(db);
+            members.forEach(uid => {
+                const ref = doc(db, 'artifacts', appId, 'users', uid, 'contacts', groupRef.id);
+                batch.set(ref, {
+                    uid: groupRef.id, name, type: 'group', status: 'group', lastMsgTime: serverTimestamp()
+                });
+            });
+            await batch.commit();
+            
+            el('group-modal').classList.add('hidden');
+            loadContacts('chats');
+        };
+
+        // --- FORWARDING ---
+        el('toggle-select-mode').onclick = toggleSelectMode;
+
+        function toggleSelectMode() {
+            isSelectMode = !isSelectMode;
+            el('chat-messages').querySelectorAll('div.relative').forEach(d => {
+                isSelectMode ? d.classList.add('select-mode') : d.classList.remove('select-mode');
+            });
+            el('forward-btn').classList.toggle('hidden', !isSelectMode);
+            selectedMessages.clear();
+            updateSelectCount();
+        }
+
+        window.toggleSelect = (id, text) => {
+            if(selectedMessages.has(id)) selectedMessages.delete(id);
+            else selectedMessages.add(text); // Store text for simplicity
+            updateSelectCount();
+        };
+
+        function updateSelectCount() {
+            el('selected-count').textContent = selectedMessages.size;
+        }
+
+        el('forward-btn').onclick = () => {
+            if(selectedMessages.size === 0) return;
+            el('forward-modal').classList.remove('hidden');
+            const list = el('forward-list');
+            list.innerHTML = '';
+            // List chats to forward to
+            contactsCache.forEach(c => {
+                const div = document.createElement('div');
+                div.className = "p-2 bg-slate-800 hover:bg-slate-700 cursor-pointer text-white text-sm rounded";
+                div.textContent = c.type==='group' ? c.name : c.username;
+                div.onclick = async () => {
+                    // Send messages to this chat
+                    const roomId = c.type==='group' ? c.uid : [currentUser.uid, c.uid].sort().join('_');
+                    const batch = writeBatch(db);
+                    selectedMessages.forEach(text => {
+                         const ref = doc(collection(db, 'artifacts', appId, 'chats', roomId, 'messages'));
+                         batch.set(ref, {
+                             text: text,
+                             senderId: currentUser.uid,
+                             senderName: currentUser.data.username,
+                             timestamp: serverTimestamp(),
+                             readBy: []
+                         });
+                    });
+                    
+                    // Update last msg
+                    const lastTxt = "Forwarded messages";
+                    updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'contacts', c.uid), { lastMsg: lastTxt, lastMsgTime: serverTimestamp() });
+                    if(c.type === 'user') {
+                        updateDoc(doc(db, 'artifacts', appId, 'users', c.uid, 'contacts', currentUser.uid), { lastMsg: lastTxt, lastMsgTime: serverTimestamp() });
+                    }
+
+                    await batch.commit();
+                    
+                    el('forward-modal').classList.add('hidden');
+                    toggleSelectMode(); // Exit mode
+                    alert('Forwarded!');
+                };
+                list.appendChild(div);
+            });
+        };
+
+// --- SEND MESSAGE ---
+el('message-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const text = el('message-input').value.trim();
+    if(!text) return;
+
+    const payload = {
+        text,
+        senderId: currentUser.uid,
+        senderName: currentUser.data.username,
+        timestamp: serverTimestamp(),
+        readBy: [],
+        pinnedBy: [] // Init empty array for pins
+    };
+
+    // ATTACH REPLY DATA IF EXISTS
+    if (window.replyContext) {
+        payload.replyTo = window.replyContext;
+        // Clear context after sending
+        window.replyContext = null;
+        el('context-bar').classList.add('hidden');
+    }
+
+    await addDoc(collection(db, 'artifacts', appId, 'chats', activeChat.roomId, 'messages'), payload);
+
+            // Update Last Msg for list view sorting
+            const updatePayload = { lastMsg: text, lastMsgTime: serverTimestamp() };
+            updateDoc(doc(db, 'artifacts', appId, 'users', currentUser.uid, 'contacts', activeChat.uid), updatePayload);
+            
+            if(activeChat.type === 'user') {
+                 // Update Friend's view too
+                 updateDoc(doc(db, 'artifacts', appId, 'users', activeChat.uid, 'contacts', currentUser.uid), updatePayload);
+            } else {
+                 // For Groups, theoretically update all members contacts (simplified here: just updating the group doc usually)
+            }
+
+            el('message-input').value = '';
+        };
+
+        // --- PRESENCE (LAST SEEN) ---
+        function setupPresence() {
+            // RTDB for Online Status
+            const userStatusRef = ref(rtdb, 'status/' + currentUser.uid);
+            onDisconnect(userStatusRef).set({ state: 'offline', lastChanged: rtdbServerTimestamp() });
+            set(userStatusRef, { state: 'online', lastChanged: rtdbServerTimestamp() });
+        }
+
+        function listenToPresence(uid) {
+            onValue(ref(rtdb, 'status/' + uid), snap => {
+                const val = snap.val();
+                const statusEl = el('last-seen-status');
+                if(val?.state === 'online') {
+                    statusEl.textContent = 'Online';
+                    statusEl.className = "text-xs text-accent font-bold";
+                } else {
+                    const date = val?.lastChanged ? new Date(val.lastChanged) : new Date();
+                    statusEl.textContent = `Last seen: ${date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+                    statusEl.className = "text-xs text-gray-400";
+                }
+            });
+        }
+
+    </script>
+    <script src="/js/head-loader.js"></script>
+</body>
+</html>

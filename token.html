@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Get Access Token | NEELAXMI QUIZ CENTER</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                fontFamily: { sans: ['Inter', 'sans-serif'] },
+                colors: { primary: '#6366f1', primaryHover: '#4f46e5' },
+            }
+        }
+    };
+</script>
+<style>
+    body { font-family: 'Inter', sans-serif; }
+    .token-digit-box { letter-spacing: 0.5em; }
+</style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+
+        <div class="flex items-center gap-3 mb-2 relative z-10">
+            <div class="w-11 h-11 rounded-xl bg-indigo-100 text-primary flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-key text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold text-slate-800">Get Access Token</h1>
+                <p id="quiz-title-line" class="text-xs text-slate-400"></p>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="state-loading" class="relative z-10 py-10 text-center text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+            <p class="text-sm">Loading…</p>
+        </div>
+
+        <!-- Missing/invalid quizId -->
+        <div id="state-invalid" class="hidden relative z-10 py-6 text-center">
+            <i class="fa-solid fa-circle-exclamation text-3xl text-red-400 mb-3"></i>
+            <p class="text-sm text-slate-600">This link is missing or invalid. Open this page from the quiz's "Get Access Token" button instead of directly.</p>
+        </div>
+
+        <!-- Quiz isn't paid -->
+        <div id="state-not-paid" class="hidden relative z-10 py-6 text-center">
+            <i class="fa-solid fa-circle-info text-3xl text-slate-400 mb-3"></i>
+            <p class="text-sm text-slate-600">This quiz doesn't require a token — you can start it directly from the quiz page.</p>
+        </div>
+
+        <!-- Ready to claim -->
+        <div id="state-ready" class="hidden relative z-10">
+            <p class="text-slate-500 text-sm mb-5">Tap below for a one-time 6-digit token. Enter it on the quiz page to unlock and start.</p>
+            <button id="claim-btn" class="w-full px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition transform active:scale-95">
+                Generate Access Token
+            </button>
+        </div>
+
+        <!-- Claiming -->
+        <div id="state-claiming" class="hidden relative z-10 py-10 text-center text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+            <p class="text-sm">Getting your token…</p>
+        </div>
+
+        <!-- Token issued -->
+        <div id="state-issued" class="hidden relative z-10">
+            <p class="text-slate-500 text-sm mb-3">Your token:</p>
+            <div class="token-digit-box w-full text-center text-3xl md:text-4xl font-mono font-bold text-primary bg-indigo-50 border-2 border-dashed border-primary/40 rounded-xl py-4 mb-4" id="token-display">000000</div>
+            <button id="copy-btn" class="w-full px-4 py-3 border border-slate-300 text-slate-600 font-bold rounded-xl hover:bg-slate-50 transition mb-3">
+                <i class="fa-solid fa-copy"></i> Copy Token
+            </button>
+            <p class="text-xs text-slate-400 text-center leading-relaxed">
+                Go back to the quiz page, open <span class="font-semibold text-slate-500">Unlock Paid Quiz</span>, and enter this token to start.
+                It can only be used once, so don't share it.
+            </p>
+        </div>
+
+        <!-- Pool exhausted -->
+        <div id="state-empty" class="hidden relative z-10 py-6 text-center">
+            <i class="fa-solid fa-circle-exclamation text-3xl text-amber-400 mb-3"></i>
+            <p class="text-sm text-slate-600">No tokens are available for this quiz right now. Please contact your instructor.</p>
+        </div>
+
+        <!-- Error -->
+        <div id="state-error" class="hidden relative z-10 py-6 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-3xl text-red-400 mb-3"></i>
+            <p id="error-text" class="text-sm text-slate-600">Something went wrong. Please try again.</p>
+            <button id="retry-btn" class="mt-4 text-sm font-semibold text-primary hover:underline">Try again</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        // Same quiznew-30700 project auth.js/quiz.js use on the main quiz site —
+        // this is the project's public client config (safe to expose; access is
+        // controlled by Firestore Security Rules, not by hiding these values).
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
+            authDomain: "classupdates.netlify.app",
+            projectId: "quiznew-30700",
+            storageBucket: "quiznew-30700.firebasestorage.app",
+            messagingSenderId: "107821881642",
+            appId: "1:107821881642:web:7d708bda99196c85e42653",
+            measurementId: "G-0B6095T5X7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const els = {
+            quizTitleLine: document.getElementById('quiz-title-line'),
+            loading: document.getElementById('state-loading'),
+            invalid: document.getElementById('state-invalid'),
+            notPaid: document.getElementById('state-not-paid'),
+            ready: document.getElementById('state-ready'),
+            claiming: document.getElementById('state-claiming'),
+            issued: document.getElementById('state-issued'),
+            empty: document.getElementById('state-empty'),
+            error: document.getElementById('state-error'),
+            errorText: document.getElementById('error-text'),
+            claimBtn: document.getElementById('claim-btn'),
+            copyBtn: document.getElementById('copy-btn'),
+            retryBtn: document.getElementById('retry-btn'),
+            tokenDisplay: document.getElementById('token-display'),
+        };
+
+        function showState(name) {
+            ['loading', 'invalid', 'notPaid', 'ready', 'claiming', 'issued', 'empty', 'error']
+                .forEach(k => els[k].classList.toggle('hidden', k !== name));
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const quizId = (params.get('quizId') || '').trim();
+
+        // Anonymous session purely to satisfy Firestore rules that require
+        // request.auth != null (the same pattern the admin dashboard uses for
+        // its own zero-extra-deployment default — see initQuizBankAuth() in
+        // firebase-services.js). This is NOT an identity or payment check.
+        function ensureSignedIn() {
+            return new Promise((resolve, reject) => {
+                if (auth.currentUser) return resolve(auth.currentUser);
+                auth.signInAnonymously().then(cred => resolve(cred.user)).catch(reject);
+            });
+        }
+
+        // Picks a roughly-random still-available token instead of always the
+        // same lowest-ID one, so concurrent visitors aren't all handed the
+        // identical code (only the first of them to redeem it would succeed).
+        // Tokens are stamped with a random `rand` field at generation time —
+        // see Services.quizTokens.generateBatch in the admin dashboard.
+        async function claimAvailableToken() {
+            const tokensCol = db.collection('quiz_tokens').doc(quizId).collection('tokens');
+            const seed = Math.random();
+
+            let snap = await tokensCol.where('rand', '>=', seed).orderBy('rand').limit(1).get();
+            if (snap.empty) {
+                // Wrap around: nothing at or above the random seed, try below it.
+                snap = await tokensCol.orderBy('rand').limit(1).get();
+            }
+            if (snap.empty) return null; // pool exhausted
+            return snap.docs[0].data().code;
+        }
+
+        async function init() {
+            if (!quizId) { showState('invalid'); return; }
+
+            try {
+                await ensureSignedIn();
+                const quizDoc = await db.collection('quizzes').doc(quizId).get();
+                if (!quizDoc.exists) { showState('invalid'); return; }
+
+                const quiz = quizDoc.data();
+                if (els.quizTitleLine) els.quizTitleLine.textContent = quiz.title || '';
+
+                if (quiz.isPaid !== true) { showState('notPaid'); return; }
+
+                showState('ready');
+            } catch (e) {
+                els.errorText.textContent = e.message || 'Could not load this quiz.';
+                showState('error');
+            }
+        }
+
+        els.claimBtn.addEventListener('click', async () => {
+            showState('claiming');
+            try {
+                const code = await claimAvailableToken();
+                if (!code) { showState('empty'); return; }
+                els.tokenDisplay.textContent = code;
+                showState('issued');
+            } catch (e) {
+                els.errorText.textContent = e.message || 'Could not get a token. Please try again.';
+                showState('error');
+            }
+        });
+
+        els.copyBtn.addEventListener('click', async () => {
+            const code = els.tokenDisplay.textContent.trim();
+            try {
+                await navigator.clipboard.writeText(code);
+                const original = els.copyBtn.innerHTML;
+                els.copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => { els.copyBtn.innerHTML = original; }, 1500);
+            } catch (e) {
+                // Clipboard API unavailable/blocked — the code is already
+                // visible on screen, so this is a soft failure, not fatal.
+            }
+        });
+
+        els.retryBtn.addEventListener('click', init);
+
+        init();
+    </script>
+</body>
+</html>

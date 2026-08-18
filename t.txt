@@ -1,0 +1,21 @@
+Act as a precise data extraction assistant. Your task is to extract all the multiple-choice questions from the attached PDF document and format them into a clean JSON array.
+Strictly adhere to the following rules:
+1. **Output Format**: Return ONLY a valid JSON array. Do not wrap the JSON in markdown code blocks (no ```json). Do not include any introductory or concluding conversational text.
+2. **Text Formatting**: Write everything in best  LaTeX, mathematical notations, or special symbols. Convert any equations or symbols into standard  equivalents because this data will be parsed directly into Firebase. i allready used the latex setting 
+
+
+3. **Image Flagging**: If a question relies on a diagram, graph, chart, or image from the PDF to be understood, append " (image needed)" to the end of the "question" string.
+4. **JSON Structure**: Use this exact schema for every object in the array:
+[
+{
+"question": "The text of the question goes here (image needed)",
+"options": {
+"A": "Option text",
+"B": "Option text",
+"C": "Option text",
+"D": "Option text"
+},
+"answer": "The correct key letter only (e.g., A, B, C, or D)"
+}
+]
+Extract the questions now: and give me directly .json file
