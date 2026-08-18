@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy Guide: Get Your Gemini API Key</title>
+    <meta name="description" content="NEELAXMI - THE HELPER: Physics and Physical Chemistry master classes. Free Quizzes ke liye 'Quizzes' section check karein aur daily updates ke liye 'Notification Corner' par Login karein!">
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
+<script src="/js/head-loader.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1a73e8; /* Google Blue */
+            --hover-blue: #1557b0;
+            --bg-page: #f8f9fa;
+            --bg-card: #ffffff;
+            --text-main: #202124;
+            --text-sub: #5f6368;
+            --border-color: #dadce0;
+            --success-green: #1e8e3e;
+        }
+
+        body {
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            font-weight: 500;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-top: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- Container --- */
+        .container {
+            max-width: 800px;
+            margin: -40px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* --- Step Card Styling --- */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid transparent;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+        }
+
+        /* Number Badge */
+        .step-badge {
+            background-color: var(--primary-blue);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--text-main);
+        }
+
+        p.instruction {
+            color: var(--text-sub);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        /* --- Mock Interfaces (The Visual "Fake" Buttons) --- */
+        .mock-interface {
+            background-color: #f1f3f4;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .mock-label {
+            display: block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-sub);
+            margin-bottom: 10px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        /* Button Replicas */
+        .btn-google-login {
+            background: white;
+            color: #3c4043;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: default; /* Not clickable */
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .btn-ai-studio {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 24px; /* Pill shape */
+            font-weight: 500;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: default;
+        }
+
+        .btn-create-key {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin: 5px;
+            opacity: 0.5; /* Dimmed to show not active */
+        }
+        
+        .btn-create-key.highlight {
+            opacity: 1;
+            box-shadow: 0 0 0 4px rgba(26, 115, 232, 0.3);
+            cursor: pointer;
+        }
+
+        /* The Key Display Box */
+        .key-display-box {
+            background: #202124;
+            color: #81c995; /* Matrix green-ish */
+            font-family: monospace;
+            padding: 15px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .blur-text {
+            filter: blur(4px);
+            user-select: none;
+        }
+
+        /* --- Real Action Buttons (The ones that work) --- */
+        .action-area {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+
+        .btn-real {
+            background-color: var(--primary-blue);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            display: inline-block;
+            transition: background 0.2s;
+        }
+
+        .btn-real:hover {
+            background-color: var(--hover-blue);
+        }
+
+        /* Checkbox interaction */
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        
+        .checkbox-wrapper input {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            accent-color: var(--success-green);
+        }
+
+        .done-message {
+            display: none;
+            color: var(--success-green);
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="hero">
+        <h1>How to Get a Gemini API Key</h1>
+        <p>A simple guide for users . Follow these 4 steps to unlock Google's AI. FULL TUTORIAL WITH <STRONG>SAKSEN </STRONG></p>
+    </div>
+
+    <div class="container">
+
+        <div class="card" id="step1">
+            <div class="card-header">
+                <div class="step-badge">1</div>
+                <h2>Go to Google AI Studio</h2>
+            </div>
+            <p class="instruction">
+                First, you need to visit the official Google website where the AI tools live. You will need to sign in with your normal Gmail account.
+            </p>
+            
+            <div class="mock-interface">
+                <span class="mock-label">You will see a screen like this:</span>
+                <div class="btn-google-login">
+                    <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.836.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.448 2.805 1.206 3.93l2.758-2.22z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.716 7.143c.708-2.13 2.692-3.715 5.036-3.715z"/></svg>
+                    Sign in to Google AI Studio
+                </div>
+            </div>
+
+            <div class="action-area">
+                <a href="https://aistudio.google.com/" target="_blank" class="btn-real">Click here to Open Website &rarr;</a>
+            </div>
+            
+            <label class="checkbox-wrapper">
+                <input type="checkbox" onchange="markComplete(this)">
+                <span>I have signed in</span>
+                <span class="done-message">Great! Next step.</span>
+            </label>
+        </div>
+
+        <div class="card" id="step2">
+            <div class="card-header">
+                <div class="step-badge">2</div>
+                <h2>Find the "Get API key" Button</h2>
+            </div>
+            <p class="instruction">
+                Once you are inside, look at the top-left corner of the screen. You are looking for a blue button that says "Get API key".
+            </p>
+
+            <div class="mock-interface">
+                <span class="mock-label">Look for this button on the screen:</span>
+                <br>
+                <div class="btn-ai-studio">
+                    <span style="font-size: 1.2em;">🔑</span> Get API key
+                </div>
+            </div>
+
+            <label class="checkbox-wrapper">
+                <input type="checkbox" onchange="markComplete(this)">
+                <span>I found and clicked the button</span>
+                <span class="done-message">Nice work!</span>
+            </label>
+        </div>
+
+        <div class="card" id="step3">
+            <div class="card-header">
+                <div class="step-badge">3</div>
+                <h2>Create the Key</h2>
+            </div>
+            <p class="instruction">
+                A menu will pop up. You want to click the first option: <strong>"Create API key in new project"</strong>. This is the easiest way.
+            </p>
+
+            <div class="mock-interface">
+                <span class="mock-label">Select the highlighted option:</span>
+                <div style="background: white; padding: 20px; border-radius: 8px; display: inline-block; text-align: left;">
+                    <div style="margin-bottom: 10px; color: #333; font-weight: bold;">Create API Key</div>
+                    <div class="btn-create-key highlight">
+                        + Create API key in new project
+                    </div>
+                    <br>
+                    <div class="btn-create-key">
+                        + Create API key in existing project
+                    </div>
+                </div>
+            </div>
+
+            <label class="checkbox-wrapper">
+                <input type="checkbox" onchange="markComplete(this)">
+                <span>I clicked "Create in new project"</span>
+                <span class="done-message">Almost there!</span>
+            </label>
+        </div>
+
+        <div class="card" id="step4">
+            <div class="card-header">
+                <div class="step-badge">4</div>
+                <h2>Copy Your Key</h2>
+            </div>
+            <p class="instruction">
+                After a few seconds, your key will appear. It is a long string of random letters. Click the <strong>Copy</strong> button next to it.
+            </p>
+
+            <div class="mock-interface">
+                <span class="mock-label">Your key looks like this:</span>
+                <div class="key-display-box">
+                    <span class="blur-text">AIzaSyD-823748237489sdhfksjdhf</span>
+                    <button style="background: none; border: 1px solid #555; color: white; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Copy</button>
+                </div>
+                <div style="color: #d93025; font-size: 0.85rem; margin-top: 10px;">
+                 Copy the key and paste to the solutions box !
+                </div>
+            </div>
+
+            <label class="checkbox-wrapper">
+                <input type="checkbox" onchange="markComplete(this)">
+                <span>I have copied my key!</span>
+                <span class="done-message">Congratulations! You are done. 🎉</span>
+            </label>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Made for Everyone. Created  with <strong>SAKSEN</strong>.</p>
+    </footer>
+
+    <script>
+        // Simple script to add interactivity to checkboxes
+        function markComplete(checkbox) {
+            const card = checkbox.closest('.card');
+            const message = checkbox.parentElement.querySelector('.done-message');
+            
+            if (checkbox.checked) {
+                // Add a subtle border highlight
+                card.style.border = "1px solid #1e8e3e";
+                card.style.background = "#f0fdf4"; // Very light green bg
+                message.style.display = "inline";
+            } else {
+                card.style.border = "1px solid transparent";
+                card.style.background = "#ffffff";
+                message.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="google-site-verification" content="iatylsdA3ilcUEyKshZLLZmpDIh6TMUdj7qjgoLTWxw" />
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> QUIZ CORNER | NEELAXMI QUIZ CENTER </title>
+    <script src="/js/head-loader.js"></script>
+    <!-- Preconnect early so the TF.js/Blazeface/COCO-SSD CDN download starts as soon as possible on slow networks -->
+    <!-- The library JS itself is now self-hosted (see /vendor/ scripts near the
+         end of <body>), but the AI model *weights* blazeface/coco-ssd load are
+         still fetched from Google's own model-hosting servers — preconnect to
+         those so that download starts a little sooner. -->
+    <link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://storage.googleapis.com">
+    <link rel="preconnect" href="https://tfhub.dev" crossorigin>
+    <link rel="dns-prefetch" href="https://tfhub.dev">
+    <meta name="description" content="NEELAXMI - THE HELPER: Physics and Physical Chemistry master classes. Free Quizzes ke liye 'Quizzes' section check karein aur daily updates ke liye 'Notification Corner' par Login karein!">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.css" integrity="sha384-nH0MfJ44wi1dd7w6jinlyBgljjS8EJAh2JBoRad8a3VDw2K69vfaaqm4WnR+gXtA" crossorigin="anonymous">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/katex.min.js" integrity="sha384-CwjPRVHTvLiMBFjEoij+QZViMV5rhTOIp7CJzl24JEqpRDA1sJFHVXXLURktbYYp" crossorigin="anonymous"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.47/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        primary: '#6366f1', // Indigo 500
+                        primaryHover: '#4f46e5',
+                        brand: { 500: '#6366f1', 600: '#4f46e5' },
+                        darkBg: '#0f172a', // Slate 900
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'twinkle': 'twinkle 4s ease-in-out infinite',
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        twinkle: {
+                            '0%, 100': { opacity: '0.2' },
+                            '50%': { opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { transition: background-color 0.3s, color 0.3s; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
+        }
+
+        .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #64748b; }
+        .dark .tab-inactive { color: #94a3b8; }
+
+        .loader {
+            border-top-color: #6366f1;
+            -webkit-animation: spinner 1.5s linear infinite;
+            animation: spinner 1.5s linear infinite;
+        }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .option-btn:active { transform: scale(0.98); }
+        
+        /* Custom Range Slider for Video Progress */
+.video-range {
+    -webkit-appearance: none;
+    background: rgba(255,255,255,0.2);
+    border-radius: 5px;
+    height: 5px;
+    cursor: pointer;
+}
+.video-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 15px;
+    width: 15px;
+    background: #ef4444; /* Red-500 */
+    border-radius: 50%;
+    margin-top: -5px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+/* Animations */
+.control-bar {
+    transition: opacity 0.3s ease;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+}
+.video-wrapper:hover .control-bar,
+.video-wrapper.paused .control-bar {
+    opacity: 1;
+}
+.video-wrapper:not(.paused):not(:hover) .control-bar {
+    opacity: 0; /* Hide controls when playing and not hovering */
+}
+
+/* YouTube-style Range Slider */
+input[type=range] {
+    -webkit-appearance: none; 
+    background: transparent; 
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #ff0000;
+    cursor: pointer;
+    margin-top: -4px; 
+    opacity: 0; 
+    transition: opacity 0.2s;
+}
+
+/* Show thumb on hover */
+.group\/timeline:hover input[type=range]::-webkit-slider-thumb {
+    opacity: 1;
+}
+
+input[type=range]::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border-radius: 50%;
+    background: #ff0000;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.group\/timeline:hover input[type=range]::-moz-range-thumb {
+    opacity: 1;
+}
+
+/* ===== NTA CBT Question Palette button states ===== */
+.qp-btn {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.qp-btn:hover { transform: scale(1.07); }
+.dark .qp-btn { background: #1e293b; border-color: #475569; color: #e2e8f0; }
+
+.qp-btn.qp-not-visited { background: #ffffff; color: #334155; border-color: #94a3b8; }
+.dark .qp-btn.qp-not-visited { background: #1e293b; color: #e2e8f0; border-color: #475569; }
+
+.qp-btn.qp-not-answered { background: #ef4444; color: #fff; border-color: #ef4444; }
+.qp-btn.qp-answered { background: #10b981; color: #fff; border-color: #10b981; }
+
+.qp-btn.qp-marked,
+.qp-btn.qp-answered-marked {
+    background: #9333ea;
+    color: #fff;
+    border-color: #9333ea;
+    border-radius: 9999px;
+}
+.qp-btn.qp-answered-marked::after {
+    content: '';
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 9px;
+    height: 9px;
+    background: #34d399;
+    border-radius: 9999px;
+    border: 1.5px solid #fff;
+}
+.qp-btn.qp-current {
+    outline: 3px solid #0d3b66;
+    outline-offset: 2px;
+}
+.dark .qp-btn.qp-current { outline-color: #60a5fa; }
+
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-darkBg text-slate-800 dark:text-slate-100 min-h-screen flex items-center justify-center p-4 selection:bg-primary selection:text-white relative overflow-hidden">
+
+    <div class="fixed inset-0 w-full h-full pointer-events-none z-0">
+        <div class="absolute top-0 left-0 w-72 h-72 bg-purple-300 dark:bg-purple-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-72 h-72 bg-indigo-300 dark:bg-indigo-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 dark:bg-pink-900/30 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div id="stars-container" class="absolute inset-0 opacity-0 dark:opacity-100 transition-opacity duration-1000"></div>
+    </div>
+
+<div id="auth-box" class="max-w-md mx-auto bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-xl">
+    <h2 id="auth-title" class="text-2xl font-bold mb-6 text-center text-slate-800 dark:text-white">Login to QuizMaster</h2>
+    
+    <div class="space-y-4">
+        <input id="auth-email" type="email" placeholder="Email Address" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        <input id="auth-password" type="password" placeholder="Password" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        
+        <div id="registration-fields" class="hidden space-y-4">
+            <input id="auth-name" type="text" placeholder="Full Name" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+            <select id="auth-class" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+                <option value="" disabled selected>Select Class</option>
+                <option value="9">Class 9</option>
+                <option value="10">Class 10</option>
+                <option value="11">Class 11</option>
+                <option value="12">Class 12</option>
+            </select>
+            <input id="auth-username" type="text" placeholder="Unique Username" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+        </div>
+        
+        <div id="auth-gemini-key-container" style="display: none;">
+            <input id="auth-gemini-key" type="password" placeholder="Gemini API Key (Optional)" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-700">
+            <button id="why-gemini-btn" class="text-xs text-primary mt-1 hover:underline">Why do I need this?</button>
+        </div>
+        
+        <button id="auth-primary-btn" class="w-full py-3 bg-primary text-white font-bold rounded-lg hover:bg-opacity-90 transition-all">Sign In</button>
+        <p id="auth-error" class="text-red-500 text-sm hidden text-center"></p>
+        <button id="auth-toggle-mode" class="w-full text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Don't have an account? Sign Up</button>
+        
+        <div class="relative my-6">
+            <div class="absolute inset-0 flex items-center">
+                <span class="w-full border-t border-slate-300 dark:border-slate-600"></span>
+            </div>
+            <div class="relative flex justify-center text-xs uppercase">
+                <span class="bg-white dark:bg-slate-800 px-2 text-slate-500 font-bold">Or continue with</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+            <button id="google-login-btn" class="flex items-center justify-center gap-2 py-3 px-4 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all shadow-sm">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
+                <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
+            </button>
+
+            <div class="telegram-login-wrapper" style="display: flex; justify-content: center; margin-top: 10px;">
+                <script async src="https://telegram.org/js/telegram-widget.js?22" 
+                        data-telegram-login="Testhubeducbot" 
+                        data-size="large" 
+                        data-userpic="false"
+                        data-onauth="onTelegramAuth(user)" 
+                        data-request-access="write"></script>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div id="loading-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white dark:bg-darkBg transition-colors duration-300">
+        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 dark:border-slate-700 h-16 w-16 mb-6"></div>
+        <h2 class="text-xl font-semibold text-slate-700 dark:text-slate-300 animate-pulse">Initializing Assessment...</h2>
+        <div id="error-message-area" class="hidden mt-4 text-center max-w-md px-4">
+            <p id="error-text" class="text-red-500 mb-4"></p>
+            <button onclick="history.back()" class="px-4 py-2 bg-slate-200 dark:bg-slate-700 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition">Go Back</button>
+        </div>
+    </div>
+
+    <div id="quiz-container" class="hidden fixed inset-0 z-40 w-full h-full flex flex-col bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 overflow-hidden">
+
+        <!-- ===== Proctoring Widget: local camera preview + live status. Video never leaves this element / device. ===== -->
+        <div id="proctor-widget" class="fixed bottom-4 right-4 z-[55] flex flex-col items-end gap-1.5 select-none">
+            <div class="relative w-24 h-[4.5rem] md:w-32 md:h-24 rounded-lg overflow-hidden border-2 border-white/80 dark:border-slate-600 shadow-xl bg-black">
+                <video id="proctor-video" class="w-full h-full object-cover -scale-x-100" autoplay muted playsinline></video>
+                <div class="absolute top-1 left-1 w-2 h-2 rounded-full bg-red-500 animate-pulse" title="Camera active"></div>
+            </div>
+            <div class="flex items-center gap-1.5 bg-white/95 dark:bg-slate-800/95 backdrop-blur px-2.5 py-1 rounded-full shadow-md text-[10px] md:text-xs font-bold text-slate-700 dark:text-slate-200 whitespace-nowrap">
+                <span id="proctor-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <span id="proctor-status-text">Proctoring Active</span>
+            </div>
+        </div>
+
+        <div class="w-full bg-slate-200 dark:bg-slate-800 h-1 shrink-0">
+            <div id="progress-bar" class="bg-emerald-500 h-1 transition-all duration-500" style="width: 0%"></div>
+        </div>
+
+        <header class="shrink-0 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-3 md:px-5 py-2 bg-[#0d3b66] dark:bg-[#082541] text-white shadow-md border-b-2 border-[#092a4d] z-20">
+            <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-md bg-white/10 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-sm md:text-base font-extrabold tracking-wide leading-tight truncate">NEELAXMI QUIZ CENTER</h1>
+                    <p id="quiz-title" class="text-[11px] md:text-xs text-blue-100/80 truncate">Loading...</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 md:gap-2 ml-auto">
+                <div class="relative">
+                    <select id="language-select" title="Change quiz language" class="appearance-none text-xs md:text-sm font-semibold bg-white/10 hover:bg-white/20 text-white rounded-md pl-2.5 pr-6 py-1.5 border border-white/10 outline-none cursor-pointer transition-colors">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="bn">বাংলা (Bengali)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="mr">मराठी (Marathi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="ur">اردو (Urdu)</option>
+                        <option value="gu">ગુજરાતી (Gujarati)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                        <option value="as">অসমীয়া (Assamese)</option>
+                        <option value="mai">मैथिली (Maithili)</option>
+                        <option value="sa">संस्कृतम् (Sanskrit)</option>
+                        <option value="ne">नेपाली (Nepali)</option>
+                        <option value="ks">کٲشُر (Kashmiri)</option>
+                        <option value="sd">سنڌي (Sindhi)</option>
+                        <option value="doi">डोगरी (Dogri)</option>
+                        <option value="gom">कोंकणी (Konkani)</option>
+                        <option value="mni-Mtei">মেইতেই (Manipuri)</option>
+                        <option value="brx">बड़ो (Bodo)</option>
+                        <option value="sat">ᱥᱟᱱᱛᱟᱲᱤ (Santali)</option>
+                    </select>
+                    <i class="fa-solid fa-language absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-[10px] text-white/70"></i>
+                </div>
+                <button id="theme-toggle" class="p-2 rounded-md hover:bg-white/10 transition-colors text-blue-100">
+                    <i class="fa-solid fa-sun hidden" id="sun-icon"></i>
+                    <i class="fa-solid fa-moon" id="moon-icon"></i>
+                </button>
+
+                <button id="pause-btn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-md transition-colors">
+                    <i class="fa-solid fa-pause"></i> <span class="hidden md:inline" data-i18n-default="Pause">Pause</span>
+                </button>
+                <button id="resume-btn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 rounded-md transition-colors">
+                    <i class="fa-solid fa-play"></i> <span class="hidden md:inline" data-i18n-default="Resume">Resume</span>
+                </button>
+                <button id="end-quiz-early-btn" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-red-500/90 hover:bg-red-600 rounded-md transition-colors">
+                    <i class="fa-solid fa-flag-checkered"></i> <span class="hidden md:inline" data-i18n-default="End Quiz">End Quiz</span>
+                </button>
+                <button id="save-btn" title="Save & Exit" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 rounded-md transition-colors">
+                    <i class="fa-regular fa-bookmark"></i> <span class="hidden md:inline" data-i18n-default="Save & Exit">Save & Exit</span>
+                </button>
+
+                <div id="timer-box" class="flex items-center gap-2 px-3 py-1.5 bg-white text-[#0d3b66] rounded-md font-mono font-extrabold text-sm md:text-base shadow-sm">
+                    <i class="fa-regular fa-clock"></i> <span id="time-display">00:00</span>
+                </div>
+
+              <button id="palette-toggle-btn" class="flex lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-purple-600 text-white rounded-md shadow-sm hover:bg-purple-700 transition-colors animate-pulse">
+                 <i class="fa-solid fa-list-check"></i> <span>Marked Question</span>
+              </button>
+                 </div>
+        </header>
+        
+        <div id="warning-banner" class="hidden shrink-0 bg-red-500/10 border-b-2 border-red-500/30 px-4 py-2 flex items-center justify-between z-20 transition-all duration-300">
+            <div class="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-sm">
+                <i class="fa-solid fa-triangle-exclamation animate-pulse"></i>
+                <span id="warning-text">Tab switching detected! Please stay on the quiz screen.</span>
+            </div>
+            <div class="flex items-center gap-2 bg-red-600 text-white px-3 py-1 rounded-md shadow-sm text-xs font-extrabold tracking-wide">
+                WARNINGS LEFT: <span id="warnings-left-count" class="text-lg leading-none">3</span>
+            </div>
+        </div>
+
+        <div class="flex flex-1 min-h-0 relative">
+
+            <div class="flex flex-col w-full lg:w-[70%] h-full min-h-0 bg-white dark:bg-slate-900 lg:border-r border-slate-300 dark:border-slate-700">
+
+                <div class="shrink-0 flex items-center justify-between px-4 md:px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+                    <p id="question-meta" class="text-sm md:text-base font-bold text-slate-700 dark:text-slate-200">Question 1</p>
+                    <span class="hidden sm:inline-flex items-center gap-3 text-xs font-semibold">
+                        <span class="text-emerald-600 dark:text-emerald-400">Marks: +4</span>
+                        <span class="text-red-500">Negative: -1</span>
+                    </span>
+                </div>
+
+                <main class="flex-1 min-h-0 overflow-y-auto p-5 md:p-8 relative scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                    <div id="paused-overlay" class="hidden absolute inset-0 z-20 backdrop-blur-md bg-white/40 dark:bg-black/40 flex flex-col items-center justify-center">
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl text-center max-w-sm border border-slate-200 dark:border-slate-700">
+                            <div class="w-16 h-16 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fa-solid fa-pause text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Quiz Paused</h3>
+                            <p class="text-slate-500 dark:text-slate-400 mb-6">Timer stopped.</p>
+                            <button onclick="togglePause(false)" class="w-full py-3 bg-[#0d3b66] hover:bg-[#0a2f53] text-white rounded-xl font-semibold shadow-lg transition-all">Resume Quiz</button>
+                        </div>
+                    </div>
+
+                    <h2 id="question-text" class="text-base md:text-xl font-medium text-slate-800 dark:text-slate-100 mb-6 leading-relaxed"></h2>
+
+                    <div id="options-area" class="flex flex-col gap-3 max-w-3xl"></div>
+
+                    <div id="violation-overlay" class="hidden absolute inset-0 z-30 backdrop-blur-xl bg-red-500/20 flex flex-col items-center justify-center">
+                        <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl text-center max-w-sm border-2 border-red-500">
+                            <h3 class="text-2xl font-bold text-red-600 mb-2">Security Warning</h3>
+                            <p id="violation-msg" class="text-slate-600 dark:text-slate-400 mb-6 font-medium"></p>
+                            <button id="close-violation" class="w-full py-3 bg-red-600 text-white rounded-xl font-semibold">I Understand</button>
+                        </div>
+                    </div>
+                </main>
+                
+                <footer class="shrink-0 flex flex-wrap items-center justify-between gap-2 px-3 md:px-4 py-3 bg-slate-100 dark:bg-slate-800 border-t-2 border-slate-300 dark:border-slate-700">
+                    <div class="flex flex-wrap gap-2">
+                        <button id="mark-review-btn" class="px-3 md:px-4 py-2.5 rounded-md text-xs md:text-sm font-bold text-white bg-purple-600 hover:bg-purple-700 shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid fa-bookmark mr-1"></i> <span data-i18n-default="Mark for Review & Next">Mark for Review &amp; Next</span>
+                        </button>
+                        <button id="clear-btn" class="px-3 md:px-4 py-2.5 rounded-md text-xs md:text-sm font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-300 dark:hover:bg-red-900/20 dark:hover:text-red-400 shadow-sm transition-all active:scale-95">
+                            <i class="fa-solid fa-eraser mr-1"></i> <span data-i18n-default="Clear Response">Clear Response</span>
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="prev-btn" class="px-4 md:px-6 py-2.5 rounded-md text-xs md:text-sm font-bold text-slate-700 dark:text-slate-200 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500 shadow-sm transition-all disabled:opacity-50">
+                            <i class="fa-solid fa-arrow-left mr-1"></i> <span data-i18n-default="Previous">Previous</span>
+                        </button>
+                        <button id="next-btn" class="px-4 md:px-6 py-2.5 rounded-md text-xs md:text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm transition-all active:scale-95">
+                            <span data-i18n-default="Save & Next">Save &amp; Next</span> <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                        <button id="final-submit-btn" class="hidden px-4 md:px-6 py-2.5 rounded-md text-xs md:text-sm font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transition-all active:scale-95">
+                            <span data-i18n-default="Submit Quiz">Submit Quiz</span> <i class="fa-solid fa-paper-plane ml-1"></i>
+                        </button>
+                    </div>
+                </footer>       
+            </div>
+
+            <div id="palette-drawer-overlay" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+
+            <aside id="question-palette" class="fixed lg:static inset-y-0 right-0 z-40 lg:z-auto w-[85%] max-w-sm lg:max-w-none sm:w-96 lg:w-[30%] h-full min-h-0 flex flex-col bg-white dark:bg-slate-900 border-l border-slate-300 dark:border-slate-700 shadow-2xl lg:shadow-none transform translate-x-full lg:translate-x-0 lg:transform-none transition-transform duration-300 ease-in-out">
+                
+                <div class="shrink-0 flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                    <h3 class="font-bold text-slate-800 dark:text-white"><i class="fa-solid fa-list-ol mr-2"></i>Question Palette</h3>
+                    <button id="palette-close-btn" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-md bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-colors">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="shrink-0 p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 grid grid-cols-2 gap-2 text-xs font-medium text-slate-700 dark:text-slate-300">
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-green-600"></span> Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-red-600"></span> Not Answered</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-gray-200 border border-gray-300 dark:border-slate-600"></span> Not Visited</div>
+                    <div class="flex items-center gap-2"><span class="w-3 h-3 rounded bg-purple-600"></span> Marked</div>
+                    <div class="flex items-center gap-2 col-span-2"><span class="w-3 h-3 rounded bg-indigo-600"></span> Answered & Marked</div>
+                </div>
+
+                <div class="flex-1 min-h-0 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
+                    <div id="palette-grid" class="grid grid-cols-5 gap-2">
+                        </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="result-box" class="hidden fixed inset-0 z-[80] bg-slate-50 dark:bg-darkBg overflow-y-auto p-4 transition-opacity duration-500 w-full h-full">
+        <div class="max-w-7xl mx-auto py-8">
+            <div class="mb-8 text-center sm:text-left sm:flex sm:items-end sm:justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-slate-900 dark:text-white" id="res-quiz-title">Quiz Title</h1>
+                    <p class="mt-1 text-slate-500 dark:text-slate-400">Result Analysis & Performance Review</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <span id="res-status-badge" class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">Completed</span>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-200 dark:border-slate-700 mb-6">
+                <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                    <button onclick="switchTab('summary')" id="tab-summary" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-chart-pie mr-2"></i> Summary
+                    </button>
+                    <button onclick="switchTab('detailed')" id="tab-detailed" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-list-check mr-2"></i> Detailed Review
+                    </button>
+                    <button onclick="switchTab('history')" id="tab-history" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-clock-rotate-left mr-2"></i> Attempt History
+                    </button>
+                    <button onclick="switchTab('video')" id="tab-video" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center">
+                        <i class="fa-solid fa-clapperboard mr-2"></i> Video Solution
+                    </button>
+                </nav>
+            </div>
+
+            <div id="view-summary" class="space-y-6 animate-fade-in">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Score</dt>
+                        <dd class="mt-1 text-3xl font-bold text-brand-600 dark:text-brand-500" id="res-score">0/0</dd>
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fa-solid fa-trophy text-6xl text-brand-600"></i></div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Accuracy</dt>
+                        <dd class="mt-1 text-3xl font-bold text-slate-900 dark:text-white" id="res-accuracy">0%</dd>
+                        <div class="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-1.5 mt-3">
+                            <div id="res-accuracy-bar" class="bg-emerald-500 h-1.5 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6">
+                        <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Time</dt>
+                        <dd class="mt-1 text-3xl font-bold text-slate-900 dark:text-white" id="res-time">--:--</dd>
+                        <p class="text-xs text-slate-400 mt-2">Avg. <span id="res-avg-time">0s</span> / question</p>
+                    </div>
+                    <div class="glass-panel rounded-xl p-6 bg-gradient-to-br from-slate-800 to-slate-900 text-white border-0">
+                        <dt class="text-sm font-medium text-slate-400 truncate">Percentile Rank</dt>
+                        <dd class="mt-1 text-3xl font-bold text-white flex items-center">
+                            <span id="res-rank">Top --%</span>
+                            <i class="fa-solid fa-arrow-trend-up text-green-400 ml-2 text-lg"></i>
+                        </dd>
+                        <p class="text-xs text-slate-400 mt-2">Based on performance</p>
+                    </div>
+                </div>
+                <div class="flex justify-center mt-10">
+                    <button onclick="window.location.replace('/quiz/dashboard.html')" class="inline-flex items-center justify-center px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                        Go to Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-detailed" class="hidden space-y-6 animate-fade-in">
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="filterResults('all')" id="filter-all" class="px-4 py-2 rounded-lg text-sm font-medium bg-slate-800 text-white shadow-sm transition">All</button>
+                    <button onclick="filterResults('correct')" id="filter-correct" class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Correct</button>
+                    <button onclick="filterResults('incorrect')" id="filter-incorrect" class="px-4 py-2 rounded-lg text-sm font-medium bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">Incorrect</button>
+                </div>
+                <div id="detailed-list" class="space-y-4"></div>
+            </div>
+
+            <div id="view-history" class="hidden space-y-4 animate-fade-in">
+                <h3 class="text-lg font-medium text-slate-800 dark:text-white mb-4">Past Attempts</h3>
+                <div id="history-list" class="space-y-4">
+                </div>
+            </div>
+            
+            <div id="view-video" class="hidden space-y-6 animate-fade-in">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-medium text-slate-800 dark:text-white mb-4">
+                            <i class="fa-solid fa-film text-primary mr-2"></i> Full Solution
+                        </h3>
+                        <div id="video-content-area"></div>
+                    </div>
+                    <div class="w-full md:w-80 space-y-4">
+                        <div class="glass-panel p-4 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <h4 class="font-bold text-sm text-slate-700 dark:text-slate-300 mb-3">Quick Notes</h4>
+                            <p class="text-xs text-slate-400 italic">Timestamp notes coming soon...</p>
+                            <div id="video-notes-area" class="min-h-[100px]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="exit-modal" class="hidden fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in border border-slate-100 dark:border-slate-700">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Unsaved Progress</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">If you leave now without saving, your progress will be lost.</p>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 px-4 py-2 border rounded-xl dark:border-slate-600 dark:text-slate-300">Stay</button>
+                <button id="modal-save" class="flex-1 px-4 py-2 bg-primary text-white rounded-xl shadow-lg">Save & Exit</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="resume-modal" class="hidden fixed inset-0 z-[70] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700">
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Resume Quiz?</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">We found a saved attempt.</p>
+            <div class="flex flex-col gap-3">
+                <button id="btn-resume-attempt" class="w-full px-4 py-3 bg-primary text-white rounded-xl font-bold">Resume</button>
+                <button id="btn-restart-attempt" class="w-full px-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl">Start Fresh</button>
+            </div>
+        </div>
+    </div>
+    
+<div id="end-quiz-modal" class="hidden fixed inset-0 z-[90] bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-sm w-full p-6 animate-fade-in border border-slate-200 dark:border-slate-700 text-center">
+        <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fa-solid fa-flag-checkered text-3xl"></i>
+        </div>
+        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Submit Quiz?</h3>
+        <p class="text-slate-600 dark:text-slate-400 mb-6 text-sm">Are you sure you want to submit? You won't be able to change your answers after this.</p>
+        <div class="flex gap-3">
+            <button id="modal-cancel-submit" class="flex-1 px-4 py-3 border border-slate-300 rounded-xl dark:border-slate-600 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 transition">Cancel</button>
+            <button id="modal-confirm-submit" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-lg font-bold transition">Yes, Submit</button>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== STEP 0: Paid Quiz Token Gate =====
+         For any quiz with isPaid: true, this MUST intercept before pre-quiz-init-modal,
+         setup-modal, or resume-modal are ever shown — see the gating check at the top of
+         loadQuiz() and showTokenUnlockModal() in quiz.js. Not shown at all for free quizzes,
+         and skipped on quizzes already unlocked earlier in this tab's session. -->
+    <div id="token-unlock-modal" class="fixed inset-0 z-[58] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+
+            <div class="flex items-center gap-3 mb-2 relative z-10">
+                <div class="w-11 h-11 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-primary flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-lock text-xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-800 dark:text-white">Unlock Paid Quiz</h3>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 mb-5 relative z-10 text-sm">
+                <span id="token-unlock-quiz-title" class="font-semibold text-slate-700 dark:text-slate-200"></span>
+                needs a one-time access token before it can be started.
+            </p>
+
+            <div class="relative z-10 mb-2">
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">6-digit token</label>
+                <input id="token-unlock-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="off"
+                       class="w-full p-3 text-center text-2xl tracking-[0.4em] font-mono rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all"
+                       placeholder="000000">
+            </div>
+
+            <p id="token-unlock-error" class="hidden text-xs text-red-500 mb-4 mt-2 font-semibold relative z-10"></p>
+
+            <button id="token-unlock-verify-btn" class="relative z-10 w-full px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition transform active:scale-95 mb-3 mt-3 disabled:opacity-60 disabled:cursor-not-allowed">
+                Verify Token
+            </button>
+
+            <a id="token-unlock-getlink-btn" href="/token.html" target="_blank" rel="noopener"
+               class="relative z-10 w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                <i class="fa-solid fa-key"></i> Get Access Token
+            </a>
+
+            <button onclick="window.location.replace('/index.html')" class="relative z-10 w-full mt-4 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline">
+                Back to Quizzes
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== STEP 1: Pre-Quiz Initialization — Instructions, Consent & Mode Selection =====
+         The quiz (and even the practice/timer setup modal) MUST NOT be reachable until this
+         is completed. Everything here is presentational; no proctoring starts yet. -->
+    <div id="pre-quiz-init-modal" class="fixed inset-0 z-[59] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden max-h-[92vh] overflow-y-auto">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+
+            <div class="flex items-center gap-3 mb-2 relative z-10">
+                <div class="w-11 h-11 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-primary flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-shield-halved text-xl"></i>
+                </div>
+                <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">Before You Begin</h3>
+            </div>
+            <p class="text-slate-500 dark:text-slate-400 mb-5 relative z-10 text-sm">Please read the instructions carefully and choose how you want to attempt this test.</p>
+
+            <!-- Instructions -->
+            <div class="relative z-10 bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-5">
+                <h4 class="text-sm font-bold text-slate-700 dark:text-slate-200 mb-2 uppercase tracking-wide">Instructions</h4>
+                <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>Keep your face clearly visible to the camera at all times (CBT Mode only).</span></li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>Do not switch tabs, minimize the window, or exit fullscreen once the test starts.</span></li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>Do not keep a second device (phone, tablet, smartwatch) or notes within camera view.</span></li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>Copying, pasting, and right-click are disabled throughout the test.</span></li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>You get a limited number of warnings — exceeding them auto-submits your test.</span></li>
+                    <li class="flex gap-2"><i class="fa-solid fa-circle-check text-emerald-500 mt-0.5"></i><span>All AI proctoring (face/eye/object checks) runs 100% locally in your browser — nothing is recorded or uploaded.</span></li>
+                </ul>
+            </div>
+
+            <!-- Mode selection -->
+            <div class="relative z-10 mb-5">
+                <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Choose Test Mode</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="proctor_selection_mode" value="cbt" class="peer sr-only" checked>
+                        <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-red-500 peer-checked:bg-red-50 dark:peer-checked:bg-red-500/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 h-full">
+                            <div class="flex items-center mb-1">
+                                <i class="fa-solid fa-camera text-xl text-slate-400 mr-3"></i>
+                                <span class="font-bold text-slate-700 dark:text-white">CBT Mode</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">AI-proctored. Camera required. Face, eye-focus and object detection enforced with strict warnings.</p>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="proctor_selection_mode" value="normal" class="peer sr-only">
+                        <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 dark:peer-checked:bg-emerald-500/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50 h-full">
+                            <div class="flex items-center mb-1">
+                                <i class="fa-solid fa-bolt text-xl text-slate-400 mr-3"></i>
+                                <span class="font-bold text-slate-700 dark:text-white">Normal Mode</span>
+                            </div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">Non-proctored. No camera needed. Fastest way to start practicing.</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Consent -->
+            <label class="relative z-10 flex items-start gap-3 mb-5 cursor-pointer select-none">
+                <input type="checkbox" id="pre-quiz-consent-checkbox" class="mt-1 w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary shrink-0">
+                <span class="text-sm text-slate-600 dark:text-slate-300">I have read the instructions above, I agree to follow the test rules for the mode I selected, and (if CBT Mode is selected) I consent to on-device camera proctoring for the duration of this test.</span>
+            </label>
+
+            <p id="pre-quiz-consent-error" class="hidden text-xs text-red-500 mb-3 font-semibold relative z-10">Please check the agreement box to continue.</p>
+
+            <button id="pre-quiz-continue-btn" class="relative z-10 w-full px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition transform active:scale-95">
+                Continue <i class="fa-solid fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="setup-modal" class="fixed inset-0 z-[60] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-lg w-full p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
+            
+            <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+            
+            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mb-2 relative z-10">Quiz Setup</h3>
+            <p class="text-slate-500 dark:text-slate-400 mb-6 relative z-10">Customize your practice session for <span id="setup-quiz-title" class="font-bold text-primary"></span>.</p>
+            
+            <div class="space-y-6 relative z-10">
+                <div id="test-mode-locked-banner" class="hidden items-center gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-600 text-amber-800 dark:text-amber-300 text-xs font-semibold">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>This is a proctored Test. Mode, timer, and question navigation are locked by the test administrator.</span>
+                </div>
+                <div id="mode-select-block">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">Select Mode</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="quiz_mode" value="test" class="peer sr-only" checked onchange="toggleModeDescription('test')">
+                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-primary peer-checked:bg-indigo-50 dark:peer-checked:bg-primary/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <div class="flex items-center mb-1">
+                                    <i class="fa-solid fa-stopwatch text-xl text-slate-400 peer-checked:text-primary mr-3"></i>
+                                    <span class="font-bold text-slate-700 dark:text-white">Test Mode</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">Submit at the end. Simulates real exam conditions.</p>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="quiz_mode" value="quiz" class="peer sr-only" onchange="toggleModeDescription('quiz')">
+                            <div class="p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 peer-checked:border-green-500 peer-checked:bg-green-50 dark:peer-checked:bg-green-500/10 transition-all hover:bg-slate-50 dark:hover:bg-slate-700/50">
+                                <div class="flex items-center mb-1">
+                                    <i class="fa-solid fa-graduation-cap text-xl text-slate-400 peer-checked:text-green-500 mr-3"></i>
+                                    <span class="font-bold text-slate-700 dark:text-white">Quiz Mode</span>
+                                </div>
+                                <p class="text-xs text-slate-500 dark:text-slate-400 leading-snug">Immediate feedback. Check answers as you go.</p>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Question Set</label>
+                    <select id="setup-question-set" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                    </select>
+                </div>
+                
+                <div id="timer-select-block">
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Time Limit</label>
+                    <select id="setup-timer" class="w-full p-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-primary outline-none transition-all">
+                    </select>
+                </div>
+                
+                <div class="flex gap-3 pt-2">
+                    <button onclick="window.location.replace('/index.html')" class="flex-1 px-4 py-3 border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition">Back</button>
+                    <button id="btn-start-custom" class="flex-[2] px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition transform active:scale-95">Start Practice</button>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <button id="btn-view-last-result" class="w-full py-3 px-4 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl hover:bg-slate-200 dark:hover:bg-slate-600 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left"></i> View Previous Result
+                </button>
+            </div>
+        </div>
+    </div>    
+
+    <!-- ===== Camera / Proctoring Consent Modal (shown before every attempt) ===== -->
+    <div id="proctor-consent-modal" class="hidden fixed inset-0 z-[65] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700 text-center">
+            <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-video text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Camera Proctoring Required</h3>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                This test uses on-device AI to confirm you stay visible and alone at your screen.
+                <strong class="text-slate-800 dark:text-white">Your camera feed is processed entirely inside your browser</strong> — it is never recorded, uploaded, or sent to any server.
+            </p>
+            <ul class="text-xs text-left text-slate-500 dark:text-slate-400 mb-4 space-y-1.5 bg-slate-50 dark:bg-slate-700/50 rounded-lg p-3">
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1.5 w-3"></i>Face detection runs 100% locally in-browser (TensorFlow.js)</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1.5 w-3"></i>Fullscreen mode will be enabled automatically</li>
+                <li><i class="fa-solid fa-check text-emerald-500 mr-1.5 w-3"></i>You get exactly 3 warnings before your test is auto-submitted</li>
+            </ul>
+            <p id="proctor-consent-error" class="hidden text-xs text-red-500 mb-3 font-semibold"></p>
+
+            <!-- Detailed network-diagnostics panel — only shown after a failed/timed-out setup attempt -->
+            <div id="proctor-network-diag" class="hidden text-left text-xs bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg p-3 mb-3 space-y-1">
+                <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Stage reached:</span><span id="diag-stage" class="font-semibold text-slate-700 dark:text-slate-200">—</span></div>
+                <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Your measured speed:</span><span id="diag-speed" class="font-semibold text-slate-700 dark:text-slate-200">—</span></div>
+                <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Time elapsed:</span><span id="diag-time" class="font-semibold text-slate-700 dark:text-slate-200">—</span></div>
+                <div class="flex justify-between"><span class="text-slate-500 dark:text-slate-400">Recommended speed:</span><span class="font-semibold text-slate-700 dark:text-slate-200">≥ 1.5 Mbps</span></div>
+            </div>
+
+            <div class="flex flex-col gap-3">
+                <button id="proctor-enable-btn" class="w-full px-4 py-3 bg-primary hover:bg-primaryHover text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition active:scale-95">
+                    <i class="fa-solid fa-camera mr-2"></i>Enable Camera &amp; Start Test
+                </button>
+                <button id="proctor-fallback-normal-btn" class="hidden w-full px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg shadow-amber-500/30 transition active:scale-95">
+                    <i class="fa-solid fa-bolt mr-2"></i>Continue in Normal Mode (No Camera)
+                </button>
+                <button id="proctor-cancel-btn" class="w-full px-4 py-2 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gemini-api-modal" class="fixed inset-0 z-[100] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200 dark:border-slate-700 transform transition-all scale-100">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-robot text-2xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Unlock AI Explanations</h2>
+                <p class="text-slate-600 dark:text-slate-400 text-sm">
+                    To get detailed explanations for your answers, please enter your personal <strong>Google Gemini API Key</strong>.
+                </p>
+            </div>
+
+            <div id="gemini-error-message" class="hidden p-3 mb-4 text-sm font-medium text-red-800 rounded-lg bg-red-50 dark:bg-red-900 dark:text-red-400" role="alert"></div>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="gemini-api-key-input" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">API Key</label>
+                    <input type="password" id="gemini-api-key-input" placeholder="Paste your API Key here (AIza...)"
+                           class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:text-white transition-all outline-none">
+                    <p class="text-xs text-slate-500 mt-1">Your key is saved locally to your profile.</p>
+                </div>
+
+                <button id="modal-save-gemini-key" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95">
+                    Save & Get Explanation
+                </button>
+                
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                        <i class="fa-solid fa-key mr-2"></i> Get Key
+                    </a>
+                     <a href="Gemini.html"  class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                        <i class="fa-solid fa-book mr-2"></i> Guide
+                    </a>
+                </div>
+
+                <button id="modal-cancel-gemini-key" class="w-full py-2 text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="why-gemini-modal" class="fixed inset-0 z-[101] hidden bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg p-6 border border-slate-200 dark:border-slate-700 transform transition-all scale-100">
+            <h2 class="text-2xl font-bold text-primary mb-4 flex items-center">
+                <i class="fa-solid fa-lightbulb mr-3"></i> Why Do I Need the Gemini API?
+            </h2>
+            
+            <p class="text-slate-600 dark:text-slate-400 mb-4">
+                This quiz application uses **Google Gemini's AI** to provide **personalized, in-depth explanations** for every question you attempt.
+            </p>
+
+            <ul class="list-disc list-inside text-slate-700 dark:text-slate-300 space-y-2 mb-6 ml-4">
+                <li>**Personalized Feedback:** Get an explanation tailored to whether your answer was correct or incorrect.</li>
+                <li>**Deeper Learning:** Go beyond the correct option with detailed concepts and supplementary information.</li>
+                <li>**Privacy:** By using your own key, the explanation generation is linked directly to your Google AI account, ensuring usage is attributed to you.</li>
+            </ul>
+
+            <h3 class="text-xl font-semibold text-slate-800 dark:text-white mb-3">How to Get Your Key:</h3>
+            
+            <ol class="space-y-3 mb-6">
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    1. Click the **'Get API Key'** button below.
+                </li>
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    2. Sign in with your Google account and click **"Create API Key."**
+                </li>
+                <li class="p-3 bg-slate-50 dark:bg-slate-700 rounded-lg text-sm text-slate-700 dark:text-slate-300">
+                    3. **Copy the key** and paste it into the optional field.
+                </li>
+            </ol>
+
+            <div class="flex justify-between space-x-3">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="flex-1 text-center py-3 bg-indigo-500 hover:bg-indigo-600 text-white font-bold rounded-xl transition-colors">
+                    <i class="fa-solid fa-key mr-2"></i> Get API Key
+                </a>
+                <button id="close-why-gemini-modal" class="flex-1 py-3 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl max-w-sm w-full text-center">
+        <h3 class="text-xl font-bold mb-4 dark:text-white">Rate your experience!</h3>
+        <p class="mb-6 text-slate-500">How was the quiz?</p>
+        <div id="star-rating" class="flex justify-center gap-2 mb-6">
+            <button onclick="submitFeedback(1)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(2)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(3)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(4)" class="text-3xl hover:scale-110">⭐</button>
+            <button onclick="submitFeedback(5)" class="text-3xl hover:scale-110">⭐</button>
+        </div>
+        <button onclick="skipFeedback()" class="text-sm text-slate-400 hover:text-slate-600 underline">Skip for now</button>
+    </div>
+    </div>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+    <!-- ===== Client-Side Face Proctoring (100% local — no video/image ever leaves the browser) ===== -->
+    <!-- Self-hosted on Netlify (same origin as the page) instead of jsdelivr CDN:
+         saves a DNS lookup + TLS handshake to a third-party host, and Netlify's
+         edge CDN + the Cache-Control headers in netlify.toml cache these
+         aggressively (1 year) since the versions are pinned and won't change.
+         Drop the matching files into a /vendor/ folder next to this page.
+         NOTE the exact filenames to download — verified against each package's
+         real dist/ folder listing (package.json's declared "jsdelivr" field is
+         NOT always accurate for older published versions, as we found out):
+           tf.min.js       ← https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js
+           blazeface.js    ← https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.1.0/dist/blazeface.min.umd.js  (save as blazeface.js)
+           coco-ssd.min.js ← https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js -->
+    <script defer src="/vendor/tf.min.js"></script>
+    <script defer src="/vendor/blazeface.js"></script>
+    <!-- coco-ssd: lightweight client-side object detector used to flag phones/other devices in frame (CBT Mode only) -->
+    <script defer src="/vendor/coco-ssd.min.js"></script>
+
+    <script>
+        // Caches the TF.js/Blazeface/COCO-SSD CDN files after first download so
+        // retries, resumed attempts, and future tests on this device don't
+        // re-download them — a big win on slow connections. Safe no-op if the
+        // browser doesn't support service workers or registration fails.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw-proctor-cache.js').catch(() => {});
+            });
+        }
+    </script>
+    <script src="auth.js"></script>
+    <script src="quiz.js"></script>
+    <script src="result.js"></script>
+    <script src="vedio.js"></script>
+    
+    <script>
+        // ===== NTA CBT UI: mobile question-palette drawer =====
+        (function () {
+            const palette = document.getElementById("question-palette");
+            const overlay = document.getElementById("palette-drawer-overlay");
+            const openBtn = document.getElementById("palette-toggle-btn");
+            const closeBtn1 = document.getElementById("palette-close-btn");
+
+            function openPalette() {
+                const palette = document.getElementById("question-palette");
+                const overlay = document.getElementById("palette-drawer-overlay");
+                
+                palette.classList.remove("hidden");
+                palette.classList.remove("translate-x-full");
+                palette.classList.add("translate-x-0");
+                
+                if (window.innerWidth < 1024) {
+                    overlay.classList.remove("hidden");
+                }
+            }
+            
+            function closePalette() {
+                const palette = document.getElementById("question-palette");
+                const overlay = document.getElementById("palette-drawer-overlay");
+                
+                if (window.innerWidth < 1024) {
+                    palette.classList.remove("translate-x-0");
+                    palette.classList.add("translate-x-full");
+                    overlay.classList.add("hidden");
+                }
+            }
+
+            openBtn?.addEventListener("click", openPalette);
+            closeBtn1?.addEventListener("click", closePalette);
+            overlay?.addEventListener("click", closePalette);
+            
+            // Close on Escape for keyboard users
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && window.innerWidth < 1024) closePalette();
+            });
+
+            // Auto-close the drawer if the viewport is resized up to desktop width
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 1024) closePalette();
+            });
+        })();
+    </script>
+    
+    <script>
+        // Advanced Zoom Modal with Scale functionality
+        const setupImageModal = () => {
+            if (document.getElementById('img-zoom-modal')) return;
+
+            const modalHtml = `
+            <div id="img-zoom-modal" class="fixed inset-0 z-[9999] hidden bg-black/95 backdrop-blur-md flex flex-col items-center justify-center transition-opacity duration-300">
+                
+                <div class="absolute top-4 right-4 flex gap-4 z-[210]">
+                    <button onclick="zoomImage(0.2)" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="zoomImage(-0.2)" class="p-3 bg-white/10 text-white rounded-full hover:bg-white/20 transition"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button onclick="closeZoomModal()" class="p-3 bg-red-500/80 text-white rounded-full hover:bg-red-600 transition"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="relative w-full h-full flex items-center justify-center overflow-hidden" onwheel="handleWheel(event)">
+                    <img id="img-zoom-target" src="" class="max-w-none transition-transform duration-200 cursor-grab active:cursor-grabbing" style="transform: scale(1);">
+                </div>
+                
+                <p class="absolute bottom-6 text-white/50 text-sm">Scroll to zoom • Drag to move</p>
+            </div>`;
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Drag Logic
+            const img = document.getElementById('img-zoom-target');
+            let isDragging = false, startX, startY, translateX = 0, translateY = 0, scale = 1;
+
+            img.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; });
+            window.addEventListener('mouseup', () => isDragging = false);
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                e.preventDefault();
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+            });
+
+            window.zoomImage = (delta) => {
+                scale += delta;
+                if (scale < 0.5) scale = 0.5;
+                if (scale > 5) scale = 5;
+                updateTransform();
+            };
+
+            window.handleWheel = (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? -0.1 : 0.1;
+                zoomImage(delta);
+            }
+
+            function updateTransform() {
+                img.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+            }
+            
+            window.closeZoomModal = () => {
+                 document.getElementById('img-zoom-modal').classList.add('hidden');
+                 // Reset
+                 scale = 1; translateX = 0; translateY = 0; updateTransform();
+            };
+        };
+
+        window.openImageZoom = (src) => {
+            setupImageModal();
+            const modal = document.getElementById('img-zoom-modal');
+            const target = document.getElementById('img-zoom-target');
+            target.src = src;
+            modal.classList.remove('hidden');
+        };
+    </script>
+    
+    <script>
+        window.renderQuestionPalette = function(items) {
+            const grid = document.getElementById("palette-grid");
+            if (!grid) return;
+            
+            grid.innerHTML = "";
+            
+            items.forEach(item => {
+                const btn = document.createElement("button");
+                btn.textContent = item.number;
+                
+                // Using your requested classes
+                btn.className = "w-10 h-10 rounded font-semibold border transition ";
+                
+                switch (item.status) {
+                    case "answered":
+                        btn.className += "bg-green-600 text-white";
+                        break;
+                    case "not-answered":
+                        btn.className += "bg-red-600 text-white";
+                        break;
+                    case "marked":
+                        btn.className += "bg-purple-600 text-white";
+                        break;
+                    case "answered-marked":
+                        btn.className += "bg-indigo-600 text-white";
+                        break;
+                    default:
+                        btn.className += "bg-gray-200 dark:bg-slate-700 dark:border-slate-600";
+                }
+                
+                if (item.current) {
+                    btn.className += " ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-slate-900";
+                }
+                
+                btn.onclick = () => {
+                    if (typeof window.goToQuestion === "function") {
+                        window.goToQuestion(item.number - 1);
+                    }
+                    if (window.innerWidth < 1024) {
+                        document.getElementById('palette-drawer-overlay')?.classList.add('hidden');
+                        document.getElementById('question-palette')?.classList.add('translate-x-full');
+                    }
+                };
+                
+                grid.appendChild(btn);
+            });
+        };
+    </script>
+</body>
+<script src="/js/head-loader.js"></script>
+</html>

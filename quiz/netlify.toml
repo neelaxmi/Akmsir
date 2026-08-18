@@ -1,0 +1,23 @@
+# Cache the self-hosted TF.js/Blazeface/COCO-SSD library files aggressively.
+# These are pinned versions (tf.min.js@4.20.0, blazeface@0.1.0, coco-ssd@2.2.3)
+# that will never change under these filenames — so it's safe to tell every
+# browser and Netlify's own edge CDN to cache them for a full year and never
+# re-check. This is what actually makes repeat visits (retry, resume, next
+# day's test) load instantly instead of re-downloading over the network.
+#
+# NOTE: if you already have a netlify.toml in this project, merge the
+# [[headers]] block below into it instead of using this file as-is —
+# Netlify only reads one netlify.toml per site.
+
+[[headers]]
+  for = "/vendor/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/sw-proctor-cache.js"
+  [headers.values]
+    # The service worker file itself should NOT be cached long-term — the
+    # browser needs to re-check it on every page load so updates to it are
+    # picked up quickly.
+    Cache-Control = "public, max-age=0, must-revalidate"

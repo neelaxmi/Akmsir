@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- SEO & Metadata -->
+    <title>Student Dashboard | Neelaxmi Quiz Center</title>
+    <meta name="description" content="Access your personalized Student Dashboard at Neelaxmi Quiz Center. Track your NEET UG & JEE Main progress, analyze performance, and master your subjects with detailed analytics.">
+    <link rel="canonical" href="https://classupdates.netlify.app/dashboard">
+    
+    <!-- Open Graph (Social Sharing) -->
+    <meta property="og:title" content="Student Dashboard | Neelaxmi Quiz Center">
+    <meta property="og:description" content="Your personal hub for NEET/JEE preparation. View analytics, track quizzes, and improve your score.">
+    <meta property="og:image" content="/pictures/neelaxmi.png">
+    <meta property="og:url" content="https://classupdates.netlify.app/dashboard">
+    <meta property="og:type" content="website">
+    
+    <!-- Icons & Manifest -->
+    <link rel="icon" type="image/jpeg" href="/pictures/neelaxmi.png">
+    <link rel="apple-touch-icon" href="/pictures/neelaxmi.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0b1120">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Scripts: Tailwind & Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif']
+                    },
+                    colors: {
+                        primary: '#6366f1',
+                        primaryHover: '#4f46e5',
+                        darkBg: '#0b1120',
+                        gold: '#fbbf24'
+                    },
+                    animation: { 'shimmer': 'shimmer 2s linear infinite' },
+                    keyframes: {
+                        shimmer: {
+                            from: { backgroundPosition: '200% 0' },
+                            to: { backgroundPosition: '-200% 0' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1485462286791974" crossorigin="anonymous"></script>
+</head>
+
+<body class="bg-slate-50 dark:bg-darkBg text-slate-800 dark:text-slate-100 min-h-screen relative pb-20 md:pb-0">
+
+    <div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white dark:bg-darkBg transition-opacity duration-300">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-primary mb-4"></div>
+        <h2 class="text-xl font-semibold animate-pulse">Loading Your Journey...</h2>
+    </div>
+
+    <div id="mandatory-profile-modal" class="fixed inset-0 z-[70] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-8 border border-red-500 relative">
+            <h3 class="text-2xl font-bold text-red-500 mb-2"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Action Required</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Please complete your profile to access the dashboard.</p>
+            <form id="mandatory-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-bold mb-1">Full Name</label>
+                    <input type="text" id="req-name" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">Username</label>
+                    <input type="text" id="req-username" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-1">Class / Standard</label>
+                    <select id="req-class" class="w-full p-3 rounded-lg bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600" required>
+                        <option value="" disabled selected>Select Class</option>
+                        <option value="9">Class 9</option>
+                        <option value="10">Class 10</option>
+                        <option value="11">Class 11</option>
+                        <option value="12">Class 12</option>
+                        <option value="12+">Class 12+ (Dropper)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-3 bg-primary text-white font-bold rounded-lg shadow-lg hover:bg-primaryHover transition">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="hidden md:flex fixed top-0 w-full z-50 glass-panel border-b border-slate-200 dark:border-slate-800 h-16 items-center justify-between px-8">
+        <div class="flex items-center gap-3">
+            <img src="/pictures/neelaxmi.png" alt="Logo" class="h-8 w-8 rounded-lg shadow-sm border border-slate-300 dark:border-slate-600">
+            <span class="font-bold text-xl tracking-tight text-primary">NEELAXMI DASHBOARD</span>
+        </div>
+        <div class="flex items-center gap-6">
+            <button onclick="window.location.href='/index.html'" class="text-sm font-medium hover:text-primary transition"><i class="fa-solid fa-house mr-1"></i> Home</button>
+            <button id="theme-toggle-desktop" class="text-slate-500 hover:text-primary transition">
+                <i class="fa-solid fa-moon dark:hidden text-lg"></i>
+                <i class="fa-solid fa-sun hidden dark:inline text-lg"></i>
+            </button>
+            <button id="logout-btn-desktop" class="text-sm font-bold text-red-500 hover:bg-red-500/10 px-4 py-2 rounded-lg transition"><i class="fa-solid fa-right-from-bracket mr-1"></i> Logout</button>
+        </div>
+    </nav>
+
+    <nav class="md:hidden fixed bottom-0 w-full z-50 glass-panel border-t border-slate-200 dark:border-slate-800 h-16">
+        <div class="grid grid-cols-5 h-full text-slate-500 dark:text-slate-400">
+            <button onclick="window.location.href='/index.html'" class="flex flex-col items-center justify-center hover:text-primary transition"><i class="fa-solid fa-house text-lg mb-1"></i><span class="text-[10px] font-bold">Home</span></button>
+            <button class="flex flex-col items-center justify-center text-primary"><i class="fa-solid fa-chart-pie text-lg mb-1"></i><span class="text-[10px] font-bold">Stats</span></button>
+            <button id="theme-toggle-mobile" class="flex flex-col items-center justify-center hover:text-primary transition">
+                <i class="fa-solid fa-moon dark:hidden text-lg mb-1"></i>
+                <i class="fa-solid fa-sun hidden dark:inline text-lg mb-1"></i>
+                <span class="text-[10px] font-bold">Theme</span>
+            </button>
+            <button onclick="toggleEditProfile()" class="flex flex-col items-center justify-center hover:text-primary transition"><i class="fa-solid fa-user text-lg mb-1"></i><span class="text-[10px] font-bold">Profile</span></button>
+            <button id="logout-btn-mobile" class="flex flex-col items-center justify-center hover:text-red-500 transition"><i class="fa-solid fa-power-off text-lg mb-1"></i><span class="text-[10px] font-bold">Exit</span></button>
+        </div>
+    </nav>
+
+    <main class="pt-8 md:pt-24 pb-12 px-4 max-w-7xl mx-auto space-y-8">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden flex flex-col justify-between">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
+                <div class="flex items-start justify-between relative z-10 mb-4">
+                    <div>
+                        <h1 class="text-2xl font-bold mb-1">Welcome, <span id="disp-name" class="text-primary skeleton">Student</span>!</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm" id="disp-email">loading...</p>
+                    </div>
+                    <button onclick="toggleEditProfile()" class="text-slate-400 hover:text-primary transition"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="flex gap-2 items-center">
+                        <span id="disp-badge" class="px-3 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-primary text-xs font-bold rounded-lg uppercase tracking-wider border border-indigo-200 dark:border-indigo-800">Class --</span>
+                        <span class="flex items-center gap-1.5 px-3 py-1 bg-orange-100 dark:bg-orange-900/40 text-orange-600 text-xs font-bold rounded-lg uppercase tracking-wider border border-orange-200 dark:border-orange-800">
+                            <img id="streak-badge-img" src="" alt="Streak Badge" class="w-4 h-4 rounded-full hidden">
+                            <i class="fa-solid fa-fire"></i>
+                            <span id="streak-label-text">0 Day Streak</span>
+                        </span>
+                    </div>
+                    
+                    <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700">
+                        <div class="flex justify-between text-sm items-center">
+                            <span class="text-slate-500 font-medium">Gemini AI Engine:</span>
+                            <span id="gemini-status" class="text-xs font-bold">Checking...</span>
+                        </div>
+                        <button onclick="document.getElementById('gemini-modal').classList.remove('hidden')" class="text-xs text-primary underline mt-1 block">Update API Key</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-2xl p-6 lg:col-span-2 flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/5 dark:to-purple-500/5"></div>
+                <div class="relative z-10">
+                    <h3 class="text-lg font-bold text-slate-700 dark:text-slate-300 mb-4 flex items-center justify-center lg:justify-start">
+                        <i class="fa-solid fa-bullseye mr-2 text-primary"></i> 
+                        <span id="countdown-label">Target Exam</span>
+                    </h3>
+                    <div class="grid grid-cols-4 gap-4 text-center">
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-black text-primary" id="cd-days">00</span>
+                            <span class="text-[10px] md:text-xs text-slate-500 uppercase font-bold tracking-wider">Days</span>
+                        </div>
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-black text-primary" id="cd-hours">00</span>
+                            <span class="text-[10px] md:text-xs text-slate-500 uppercase font-bold tracking-wider">Hours</span>
+                        </div>
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-black text-primary" id="cd-mins">00</span>
+                            <span class="text-[10px] md:text-xs text-slate-500 uppercase font-bold tracking-wider">Mins</span>
+                        </div>
+                        <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-3 md:p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+                            <span class="block text-2xl md:text-4xl font-black text-primary" id="cd-secs">00</span>
+                            <span class="text-[10px] md:text-xs text-slate-500 uppercase font-bold tracking-wider">Secs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-blue-500 hover:scale-[1.02] transition-transform">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Attempts</p>
+                <p class="text-3xl font-black mt-1" id="stat-total-tests">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-green-500 hover:scale-[1.02] transition-transform">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Overall Accuracy</p>
+                <p class="text-3xl font-black mt-1 text-green-500" id="stat-accuracy">0%</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-purple-500 hover:scale-[1.02] transition-transform">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Questions Solved</p>
+                <p class="text-3xl font-black mt-1" id="stat-questions">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-red-500 hover:scale-[1.02] transition-transform">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Incorrect</p>
+                <p class="text-3xl font-black mt-1 text-red-500" id="stat-incorrect">0</p>
+            </div>
+            <div class="glass-panel p-5 rounded-xl border-l-4 border-orange-500 hover:scale-[1.02] transition-transform">
+                <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Avg Time/Q</p>
+                <p class="text-3xl font-black mt-1" id="stat-time">0s</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                <h3 class="font-bold text-lg mb-4 flex items-center"><i class="fa-solid fa-chart-line mr-2 text-primary"></i> Score Trajectory</h3>
+                <div class="h-72 w-full">
+                    <canvas id="scoreChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="font-bold text-lg mb-4 flex items-center"><i class="fa-solid fa-spider mr-2 text-primary"></i> Weakness Radar</h3>
+                <p class="text-xs text-slate-500 mb-2">Mastery across recent sub-topics</p>
+                <div class="h-64 w-full flex items-center justify-center">
+                    <canvas id="weaknessRadar"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-900 to-slate-900 opacity-95 z-0"></div>
+                <div class="relative z-10 text-white flex flex-col h-full justify-between">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-lg"><i class="fa-solid fa-headphones mr-2 text-gold"></i> Zen Mode</h3>
+                            <span class="px-2 py-1 bg-white/10 rounded text-xs font-mono border border-white/20">25:00</span>
+                        </div>
+                        <p class="text-xs text-indigo-200 mb-6">Deep focus ambient tracks powered by Suno AI.</p>
+                    </div>
+                    
+                    <div class="bg-black/40 rounded-xl p-4 flex items-center gap-4 backdrop-blur-md border border-white/10">
+                        <button class="w-12 h-12 bg-primary rounded-full flex items-center justify-center hover:scale-105 transition shadow-[0_0_15px_rgba(99,102,241,0.5)] shrink-0">
+                            <i class="fa-solid fa-play ml-1"></i>
+                        </button>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-sm font-bold truncate">Midnight Coding / Study Session</p>
+                            <p class="text-xs text-indigo-300 truncate">Lo-Fi / Synthwave</p>
+                            <div class="w-full bg-white/20 h-1.5 rounded-full mt-2 overflow-hidden">
+                                <div class="bg-gold h-full rounded-full" style="width: 35%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                <div class="flex justify-between items-end mb-6">
+                    <div>
+                        <h3 class="font-bold text-lg"><i class="fa-brands fa-youtube mr-2 text-red-500"></i> NEELAXMI - MUSIC VIBES & LABS</h3>
+                        <p class="text-xs text-slate-500 mt-1">Latest masterclasses, simulators, and tracks.</p>
+                    </div>
+                    <button class="text-xs text-primary font-bold hover:underline hidden sm:block">View Channel</button>
+                </div>
+                
+                <div class="flex gap-4 overflow-x-auto custom-scroll pb-4 snap-x">
+                    <div class="min-w-[240px] bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm group cursor-pointer relative border border-slate-100 dark:border-slate-700 snap-start">
+                        <div class="h-32 bg-slate-800 relative flex items-center justify-center">
+                             <img src="/pictures/neelaxmi.png" class="h-16 w-16 opacity-50 grayscale" alt="Thumbnail">
+                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition backdrop-blur-sm">
+                                 <i class="fa-solid fa-play text-white text-3xl drop-shadow-lg"></i>
+                             </div>
+                             <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">12:45</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm font-bold truncate">Physics Espresso: Kinematics Simulator</p>
+                            <p class="text-xs text-slate-500 mt-1">Co-owner: Sam • 2 days ago</p>
+                        </div>
+                    </div>
+                    <div class="min-w-[240px] bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-sm group cursor-pointer relative border border-slate-100 dark:border-slate-700 snap-start">
+                        <div class="h-32 bg-slate-800 relative flex items-center justify-center">
+                            <i class="fa-solid fa-music text-slate-600 text-4xl"></i>
+                             <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition backdrop-blur-sm">
+                                 <i class="fa-solid fa-play text-white text-3xl drop-shadow-lg"></i>
+                             </div>
+                             <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">3:20</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm font-bold truncate">New Study Track - Chorus / Verse Focus</p>
+                            <p class="text-xs text-slate-500 mt-1">Suno AI Gen • 1 week ago</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel rounded-2xl overflow-hidden">
+            <div class="p-6 border-b border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-lg"><i class="fa-solid fa-list-check mr-2 text-primary"></i> Chapter-wise History</h3>
+                    <p class="text-xs text-slate-500 mt-1">Attempts grouped by chapter. Click to view detailed analysis.</p>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider">
+                        <tr>
+                            <th class="p-4">Chapter / Quiz Title</th>
+                            <th class="p-4">Attempts</th>
+                            <th class="p-4">Latest Score</th>
+                            <th class="p-4">Best Score</th>
+                            <th class="p-4 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-table-body" class="divide-y divide-slate-100 dark:divide-slate-700/50">
+                        </tbody>
+                </table>
+                <div id="no-history-msg" class="p-12 text-center text-slate-400 hidden flex-col items-center">
+                    <i class="fa-solid fa-ghost text-4xl mb-3 opacity-20"></i>
+                    <p>No test history found. Go take a quiz!</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel p-8 rounded-2xl bg-gradient-to-r from-slate-900 to-indigo-900 text-white relative overflow-hidden shadow-2xl">
+            <div class="absolute top-0 right-0 p-10 opacity-10 transform rotate-12 transition-transform hover:rotate-0 duration-500"><i class="fa-solid fa-award text-9xl"></i></div>
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold mb-2">Claim Your Progress Certificate</h2>
+                <p class="text-slate-300 mb-6 max-w-2xl text-sm">Generate an official certificate acknowledging your hard work, total questions attempted, and dedication to your prep.</p>
+                <button onclick="generateCertificate()" class="px-6 py-3 bg-gold hover:bg-yellow-400 text-slate-900 font-bold rounded-lg shadow-[0_0_20px_rgba(251,191,36,0.3)] transition transform hover:-translate-y-0.5 flex items-center">
+                    <i class="fa-solid fa-file-pdf mr-2 text-lg"></i> Generate Official PDF
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="chapter-history-modal" class="fixed inset-0 z-[85] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="bg-slate-50 dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <div>
+                    <h3 class="text-lg font-bold text-primary" id="ch-modal-title">Chapter Title</h3>
+                    <p class="text-xs text-slate-500">Detailed Analysis</p>
+                </div>
+                <button onclick="closeChapterModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition bg-slate-200 dark:bg-slate-700 rounded-full w-8 h-8 flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto custom-scroll flex-grow">
+                <div class="mb-6 h-64 w-full bg-slate-50 dark:bg-slate-900/50 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                    <canvas id="chapterChart"></canvas>
+                </div>
+                <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                    <table class="w-full text-sm text-left">
+                        <thead class="bg-slate-50 dark:bg-slate-700 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                            <tr>
+                                <th class="p-3">Date</th>
+                                <th class="p-3">Score</th>
+                                <th class="p-3">Accuracy</th>
+                                <th class="p-3 text-right">Details</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ch-modal-list" class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-modal" class="fixed inset-0 z-[90] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full p-0 overflow-hidden border border-slate-200 dark:border-slate-700">
+            <div class="bg-slate-50 dark:bg-slate-900 p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-primary" id="modal-quiz-title">Quiz Result</h3>
+                    <p class="text-xs text-slate-500" id="modal-date">Date</p>
+                </div>
+                <button onclick="closeResultModal()" class="text-slate-400 hover:text-slate-700 dark:hover:text-white transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-8 grid grid-cols-2 gap-6">
+                <div class="col-span-2 flex flex-col items-center justify-center mb-4">
+                    <div class="relative w-32 h-32 flex items-center justify-center rounded-full border-8 border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800">
+                        <div class="text-center">
+                            <span class="block text-3xl font-black text-primary" id="modal-score">0</span>
+                            <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Score</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-green-500/10 p-4 rounded-xl border border-green-500/20 text-center">
+                    <i class="fa-solid fa-check text-green-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-black text-green-500" id="modal-correct">0</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Correct</div>
+                </div>
+                <div class="bg-red-500/10 p-4 rounded-xl border border-red-500/20 text-center">
+                    <i class="fa-solid fa-xmark text-red-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-black text-red-500" id="modal-incorrect">0</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Incorrect</div>
+                </div>
+                <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-center">
+                    <i class="fa-solid fa-clock text-blue-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-black text-blue-500" id="modal-time">0s</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Time Taken</div>
+                </div>
+                <div class="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20 text-center">
+                    <i class="fa-solid fa-percent text-purple-500 text-xl mb-2"></i>
+                    <div class="text-2xl font-black text-purple-500" id="modal-accuracy">0%</div>
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1">Accuracy</div>
+                </div>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900 p-4 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700">
+                <button onclick="closeResultModal()" class="px-6 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-lg hover:bg-slate-300 dark:hover:bg-slate-600 transition">Close</button>
+                <button id="btn-practice-incorrect" onclick="practiceIncorrect()" class="px-6 py-2 bg-red-500/10 hover:bg-red-500 text-red-600 hover:text-white font-bold rounded-lg transition flex items-center">
+                    <i class="fa-solid fa-repeat mr-2"></i> Practice Incorrect
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-profile-modal" class="fixed inset-0 z-[80] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
+            <h3 class="text-xl font-bold mb-4">Edit Profile</h3>
+            <div class="space-y-3">
+                <input type="text" id="edit-name" placeholder="Full Name" class="w-full p-3 border rounded-lg dark:bg-slate-700 dark:border-slate-600 focus:ring-2 focus:ring-primary outline-none transition">
+                <select id="edit-class" class="w-full p-3 border rounded-lg dark:bg-slate-700 dark:border-slate-600 focus:ring-2 focus:ring-primary outline-none transition">
+                     <option value="11">Class 11</option>
+                     <option value="12">Class 12</option>
+                     <option value="12+">Class 12+ (Dropper)</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="toggleEditProfile()" class="px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg font-medium transition">Cancel</button>
+                <button onclick="saveProfileChanges()" class="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primaryHover transition shadow-lg">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gemini-modal" class="fixed inset-0 z-[80] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-sm w-full p-6 border border-slate-200 dark:border-slate-700">
+            <h3 class="text-xl font-bold mb-2">Gemini API Key</h3>
+            <p class="text-xs text-slate-500 mb-4">Required for AI-powered explanations.</p>
+            <input type="password" id="input-gemini-key" placeholder="Paste Key here" class="w-full p-3 border rounded-lg dark:bg-slate-700 dark:border-slate-600 focus:ring-2 focus:ring-primary outline-none transition mb-4">
+            <div class="flex justify-end gap-3">
+                <button onclick="document.getElementById('gemini-modal').classList.add('hidden')" class="px-4 py-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition font-medium">Cancel</button>
+                <button id="btn-update-gemini-key" onclick="updateGeminiKey()" class="px-5 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primaryHover shadow-lg transition min-w-[90px]">Update</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdf-viewer-modal" class="fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden border border-slate-700">
+            <div class="bg-slate-100 dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center shrink-0">
+                <h3 class="text-lg font-bold text-primary flex items-center">
+                    <i class="fa-solid fa-certificate mr-2"></i> Preview
+                </h3>
+                <div class="flex gap-3">
+                    <button id="btn-download-pdf" class="px-5 py-2 bg-primary hover:bg-primaryHover text-white text-sm font-bold rounded-lg transition shadow-lg flex items-center">
+                        <i class="fa-solid fa-download mr-2"></i> Save PDF
+                    </button>
+                    <button onclick="closePdfModal()" class="text-slate-400 hover:text-white transition bg-slate-200 dark:bg-slate-700 rounded-full w-9 h-9 flex items-center justify-center">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-grow bg-slate-200 dark:bg-slate-900/50 p-4 overflow-auto flex items-center justify-center">
+                <img id="cert-preview-image" class="max-w-full h-auto rounded shadow-lg bg-white" src="" alt="Certificate Preview">
+            </div>
+            <p class="text-center text-xs py-2 text-slate-500 bg-slate-100 dark:bg-slate-900">Long press image to save directly if download button fails</p>
+        </div>
+    </div>
+
+    <div id="certificate-container" style="display: none; position: absolute; left: -9999px; top: -9999px; width: 1123px; height: 794px; background: white;">
+        <div class="w-full h-full border-[20px] border-double border-indigo-900 p-12 relative flex flex-col items-center justify-center bg-slate-50" style="font-family: serif;">
+            <img src="/pictures/neelaxmi.png" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; opacity: 0.04; filter: grayscale(100%); pointer-events: none;">
+            
+            <div style="text-align: center; margin-bottom: 2rem; position: relative; z-index: 10;">
+                <img src="/pictures/neelaxmi.png" style="width: 100px; height: 100px; border-radius: 50%; border: 2px solid #312e81; margin: 0 auto 1rem auto; display: block;">
+                <h1 style="font-size: 3.5rem; color: #312e81; font-weight: bold; margin-bottom: 0.5rem; letter-spacing: 2px;">CERTIFICATE</h1>
+                <h2 style="font-family: sans-serif; font-size: 1.5rem; color: #d97706; font-weight: bold; letter-spacing: 5px; text-transform: uppercase;">Of Achievement</h2>
+            </div>
+            
+            <p style="font-size: 1.25rem; color: #475569; margin-bottom: 0.5rem; font-style: italic;">This is to certify that</p>
+            <h3 id="cert-name" style="font-size: 2.5rem; font-weight: bold; color: #1e293b; border-bottom: 2px solid #cbd5e1; padding: 0 40px 10px 40px; margin-bottom: 2rem; display: inline-block;">Student Name</h3>
+            
+            <p style="font-family: sans-serif; font-size: 1.1rem; line-height: 1.8; color: #334155; max-width: 800px; text-align: center; margin-bottom: 3rem;">
+                Has demonstrated exceptional dedication and consistency at <strong style="color: #312e81;">NEELAXMI & SAKSEN</strong>.
+                They have successfully attempted <strong id="cert-questions">0</strong> questions across <strong id="cert-tests">0</strong> assessment sessions,
+                achieving a cumulative accuracy of <strong id="cert-accuracy">0%</strong>.
+            </p>
+            
+            <div style="display: flex; justify-content: space-between; width: 100%; padding: 0 80px; margin-top: 2rem;">
+                <div style="text-align: center;">
+                    <p id="cert-date" style="font-family: sans-serif; font-weight: bold; color: #475569; border-top: 1px solid #94a3b8; padding-top: 10px; min-width: 150px;">Date</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-family: 'Playfair Display', serif; font-size: 1.8rem; color: #312e81; margin-bottom: 5px; font-weight: bold;">Saksen Owner</div>
+                    <p style="font-family: sans-serif; font-weight: bold; color: #475569; border-top: 1px solid #94a3b8; padding-top: 10px; min-width: 150px;">Signature</p>
+                </div>
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; font-size: 0.8rem; color: #94a3b8; font-family: sans-serif;">
+                Verified ID: <span id="cert-id">UNKNOWN</span> • Generated via Neelaxmi Quiz Center
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
+    <script>
+        // --- FIREBASE INIT ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
+            authDomain: "classupdates.netlify.app",
+            projectId: "quiznew-30700",
+            storageBucket: "quiznew-30700.firebasestorage.app",
+            messagingSenderId: "107821881642",
+            appId: "1:107821881642:web:7d708bda99196c85e42653",
+            measurementId: "G-0B6095T5X7"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let currentUser = null;
+        let userStats = { totalTests: 0, totalQuestions: 0, totalCorrect: 0, totalIncorrect: 0, totalTime: 0 };
+        
+        let groupedHistory = {}; 
+        let rawHistoryData = {}; 
+        let chapterChartInstance = null; 
+
+        // Theme Toggle Logic
+        const updateTheme = () => {
+            if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        };
+        const toggleTheme = () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+            
+            // Re-render charts for color contrast if needed
+            if (currentUser) {
+                // Minor delay to let theme class apply
+                setTimeout(() => renderGlobalChartsFromCache(), 100); 
+            }
+        };
+
+        document.getElementById('theme-toggle-desktop').addEventListener('click', toggleTheme);
+        document.getElementById('theme-toggle-mobile').addEventListener('click', toggleTheme);
+        updateTheme();
+
+        // Auth Logic
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserProfile(user.uid);
+                await loadUserHistory(user.uid);
+                attachUserStatsListener(user.uid); // safe no-op until you add a user_stats doc
+                
+                // Remove loading screen & skeleton classes
+                document.getElementById('loading-screen').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                    document.getElementById('disp-name').classList.remove('skeleton', 'text-primary');
+                    document.getElementById('disp-name').classList.add('text-primary'); // Re-apply color
+                }, 300);
+
+            } else {
+                window.location.href = '/quiz/auth.html';
+            }
+        });
+
+        const logoutHandler = () => auth.signOut();
+        document.getElementById('logout-btn-desktop').addEventListener('click', logoutHandler);
+        document.getElementById('logout-btn-mobile').addEventListener('click', logoutHandler);
+
+        // --- PROFILE LOGIC ---
+        async function loadUserProfile(uid) {
+            const doc = await db.collection('users').doc(uid).get();
+            if (!doc.exists) {
+                document.getElementById('mandatory-profile-modal').classList.remove('hidden');
+                return;
+            }
+            const data = doc.data();
+            
+            if (!data.name || !data.class || !data.username) {
+                document.getElementById('mandatory-profile-modal').classList.remove('hidden');
+                document.getElementById('req-name').value = data.name || '';
+                document.getElementById('req-username').value = data.username || '';
+            }
+
+            updateProfileUI(data);
+            initCountdown(data.class); 
+        }
+
+        function updateProfileUI(data) {
+            // Using logic to prioritize a personalized greeting if applicable, else fallback
+            let displayName = data.name || 'User';
+            document.getElementById('disp-name').textContent = displayName;
+            document.getElementById('disp-email').textContent = data.email;
+            document.getElementById('disp-badge').textContent = `Class ${data.class || 'N/A'}`;
+            
+            const gStatus = document.getElementById('gemini-status');
+            if (data.geminiApiKey) {
+                gStatus.innerHTML = '<i class="fa-solid fa-circle-check mr-1"></i> Active';
+                gStatus.className = 'flex items-center text-green-500 font-bold text-xs';
+            } else {
+                gStatus.innerHTML = '<i class="fa-solid fa-circle-xmark mr-1"></i> Inactive';
+                gStatus.className = 'flex items-center text-red-500 font-bold text-xs';
+            }
+        }
+
+        document.getElementById('mandatory-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('req-name').value;
+            const uClass = document.getElementById('req-class').value;
+            const username = document.getElementById('req-username').value;
+            try {
+                await db.collection('users').doc(currentUser.uid).set({
+                    name, class: uClass, username
+                }, { merge: true });
+                document.getElementById('mandatory-profile-modal').classList.add('hidden');
+                loadUserProfile(currentUser.uid); 
+            } catch (err) {
+                alert("Error updating profile: " + err.message);
+            }
+        };
+
+        function toggleEditProfile() {
+            document.getElementById('edit-profile-modal').classList.toggle('hidden');
+        }
+
+        async function saveProfileChanges() {
+            const name = document.getElementById('edit-name').value;
+            const uClass = document.getElementById('edit-class').value;
+            if(!name || !uClass) return alert("Please fill details");
+            try {
+                await db.collection('users').doc(currentUser.uid).update({ name, class: uClass });
+                toggleEditProfile();
+                loadUserProfile(currentUser.uid);
+            } catch(e) { alert("Update failed"); }
+        }
+
+        // --- MODULE 3: GEMINI KEY VALIDATION ---
+        const GEMINI_KEY_REGEX = /^AIza[0-9A-Za-z-_]{35}$/;
+
+        async function updateGeminiKey() {
+            const keyInput = document.getElementById('input-gemini-key');
+            const key = keyInput.value.trim();
+            const btn = document.getElementById('btn-update-gemini-key');
+            const originalBtnHTML = btn.innerHTML;
+
+            if (!key) return alert("Please enter a key.");
+
+            // 1. Regex validation (fast, no network call)
+            if (!GEMINI_KEY_REGEX.test(key)) {
+                alert("That doesn't look like a valid Gemini API key. Keys start with 'AIza' and are 39 characters long.");
+                return;
+            }
+
+            // 2. Loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            try {
+                // 3. Connectivity test — lightweight ListModels call, cheap/free and validates the key
+                const testUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(key)}`;
+                const res = await fetch(testUrl);
+
+                if (!res.ok) {
+                    let message = `Key rejected by Google (HTTP ${res.status})`;
+                    try {
+                        const errBody = await res.json();
+                        if (errBody?.error?.message) message = errBody.error.message;
+                    } catch (parseErr) { /* ignore, fall back to generic message */ }
+                    throw new Error(message);
+                }
+
+                // 4. Only save to Firestore once the key is confirmed to work
+                await db.collection('users').doc(currentUser.uid).update({ geminiApiKey: key });
+                document.getElementById('gemini-modal').classList.add('hidden');
+                keyInput.value = '';
+                loadUserProfile(currentUser.uid);
+
+            } catch (e) {
+                console.error("Gemini key validation failed:", e);
+                alert("Could not verify this key: " + e.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnHTML;
+            }
+        }
+
+        // --- DATA & STATS LOGIC ---
+        // Note: For large scale, shift the userStats calculation to a Cloud Function triggered on submission,
+        // and just read the pre-calculated stats from a `user_stats` document here. 
+        // Keeping client-side aggregation for now to ensure compatibility with your current DB structure.
+        
+        let cachedLabels = [], cachedScores = [];
+
+        // --- MODULE 4: ADVANCED STATISTICS ---
+        // Total Questions Attempted = sum of `total` across all attempts
+        // Total Incorrect          = sum of (total - score) across all attempts
+        // Accuracy %               = (Total Correct / Total Attempted) * 100
+        function renderStatCards(stats) {
+            document.getElementById('stat-total-tests').textContent = stats.totalTests;
+            document.getElementById('stat-questions').textContent = stats.totalQuestions;
+            document.getElementById('stat-incorrect').textContent = stats.totalIncorrect;
+
+            const accuracy = Math.round((stats.totalCorrect / stats.totalQuestions) * 100) || 0;
+            document.getElementById('stat-accuracy').textContent = accuracy + '%';
+
+            const avgTime = Math.round(stats.totalTime / stats.totalQuestions) || 0;
+            document.getElementById('stat-time').textContent = avgTime + 's';
+        }
+
+        // Optional: if/when you move aggregation to a Cloud Function that maintains a
+        // `user_stats/{uid}` document on each write to `user_results`, this listener will
+        // pick up live updates and override the client-computed numbers above.
+        // Expected doc shape: { totalTests, totalQuestions, totalCorrect, totalIncorrect, totalTime }
+        function attachUserStatsListener(uid) {
+            db.collection('user_stats').doc(uid).onSnapshot((doc) => {
+                if (!doc.exists) return; // fall back to client-side aggregation silently
+                const remoteStats = doc.data();
+                userStats = { ...userStats, ...remoteStats };
+                renderStatCards(userStats);
+            }, (err) => {
+                console.warn("user_stats listener failed, keeping client-side aggregation:", err);
+            });
+        }
+
+        async function loadUserHistory(uid) {
+            const snapshot = await db.collection('user_results').doc(uid).collection('attempts').orderBy('timestamp', 'desc').get();
+            
+            if (snapshot.empty) {
+                document.getElementById('no-history-msg').classList.remove('hidden');
+                return;
+            }
+
+            userStats = { totalTests: 0, totalQuestions: 0, totalCorrect: 0, totalIncorrect: 0, totalTime: 0 };
+            groupedHistory = {};
+            rawHistoryData = {};
+            let allScores = [];
+
+            snapshot.forEach((doc) => {
+                const d = doc.data();
+                const attemptId = doc.id;
+                rawHistoryData[attemptId] = { id: attemptId, ...d };
+
+                const title = d.quizTitle || 'Unknown Quiz';
+                if (!groupedHistory[title]) groupedHistory[title] = [];
+                groupedHistory[title].push({ id: attemptId, ...d });
+
+                userStats.totalTests++;
+                userStats.totalQuestions += (d.total || 0);
+                userStats.totalCorrect += (d.score || 0);
+                userStats.totalIncorrect += ((d.total - d.score) || 0);
+                userStats.totalTime += (d.totalTimeSeconds || 0);
+                allScores.push(d);
+            });
+
+            // Update DOM Stats
+            renderStatCards(userStats);
+
+            // Module 5: streak + badge, computed from the same attempts we just loaded
+            const streak = calculateStreak(Object.values(rawHistoryData));
+            updateStreakBadge(streak);
+
+            // Populate Table
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = '';
+            
+            Object.keys(groupedHistory).forEach(title => {
+                const attempts = groupedHistory[title];
+                const latest = attempts[0];
+                const bestScore = Math.max(...attempts.map(a => a.score));
+                
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/80 transition cursor-pointer";
+                tr.onclick = () => openChapterModal(title); // Make whole row clickable
+                tr.innerHTML = `
+                    <td class="p-4 font-bold text-slate-700 dark:text-slate-200">${title}</td>
+                    <td class="p-4"><span class="bg-slate-200 dark:bg-slate-700 px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">${attempts.length} Attempts</span></td>
+                    <td class="p-4 font-medium">${latest.score}/${latest.total}</td>
+                    <td class="p-4 text-primary font-black">${bestScore}/${latest.total}</td>
+                    <td class="p-4 text-right">
+                        <div class="flex justify-end gap-2">
+                            <button onclick="attemptAgain(event, '${latest.quizId || ''}', '${title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 bg-green-500/10 hover:bg-green-500 text-green-600 hover:text-white rounded-lg transition text-xs font-bold whitespace-nowrap">
+                                <i class="fa-solid fa-rotate-right mr-1"></i> Attempt Again
+                            </button>
+                            <button class="px-3 py-1.5 bg-primary/10 hover:bg-primary text-primary hover:text-white rounded-lg transition text-xs font-bold">
+                                View <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Prepare Global Chart Data
+            const chronological = [...allScores].reverse();
+            cachedLabels = chronological.map((_, i) => `T${i+1}`);
+            cachedScores = chronological.map(a => Math.round((a.score / a.total) * 100));
+            
+            renderGlobalChartsFromCache();
+            prepareRadarData();
+        }
+
+        // --- MODULE 5: STREAK & BADGE SYSTEM ---
+
+        // Counts consecutive calendar days with at least one attempt, walking backwards
+        // from today. If there's no attempt today yet, it starts counting from yesterday
+        // so an active streak isn't reset to 0 just because today hasn't happened yet.
+        function calculateStreak(attempts) {
+            if (!attempts || attempts.length === 0) return 0;
+
+            const dayKey = (date) => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+
+            const activeDays = new Set();
+            attempts.forEach((a) => {
+                if (a.timestamp && typeof a.timestamp.toDate === 'function') {
+                    activeDays.add(dayKey(a.timestamp.toDate()));
+                }
+            });
+
+            let cursor = new Date();
+            if (!activeDays.has(dayKey(cursor))) {
+                cursor.setDate(cursor.getDate() - 1);
+            }
+
+            let streak = 0;
+            while (activeDays.has(dayKey(cursor))) {
+                streak++;
+                cursor.setDate(cursor.getDate() - 1);
+            }
+            return streak;
+        }
+
+        function updateStreakBadge(streak) {
+            const label = document.getElementById('streak-label-text');
+            const img = document.getElementById('streak-badge-img');
+            if (label) label.textContent = `${streak} Day Streak`;
+            if (!img) return;
+
+            if (streak <= 0) {
+                img.classList.add('hidden');
+                return;
+            }
+
+            // Every 5-day block bumps the badge number: 1-5 -> badge1, 6-10 -> badge2, ...
+            // Capped at badge10 — once you cross the top range, it just stays badge10 forever.
+            const badgeNumber = Math.min(Math.ceil(streak / 5), 10);
+            img.src = `/pictures/badge${badgeNumber}.png`;
+            img.classList.remove('hidden');
+        }
+
+        // --- CHARTS LOGIC ---
+        let scoreChartInstance = null;
+        let radarChartInstance = null;
+
+        function renderGlobalChartsFromCache() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            if(scoreChartInstance) scoreChartInstance.destroy();
+
+            const ctxScore = document.getElementById('scoreChart').getContext('2d');
+            
+            // Create Gradient
+            const gradient = ctxScore.createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+            gradient.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+            scoreChartInstance = new Chart(ctxScore, {
+                type: 'line',
+                data: {
+                    labels: cachedLabels,
+                    datasets: [{
+                        label: 'Score %',
+                        data: cachedScores,
+                        borderColor: '#6366f1',
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false, 
+                    scales: { 
+                        y: { beginAtZero: true, max: 100, grid: { color: gridColor }, ticks: { color: textColor } },
+                        x: { grid: { display: false }, ticks: { color: textColor } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        function prepareRadarData() {
+            // Get top 6 most attempted chapters
+            const chapterNames = Object.keys(groupedHistory);
+            const topChapters = chapterNames.sort((a,b) => groupedHistory[b].length - groupedHistory[a].length).slice(0, 6);
+            
+            const radarLabels = [];
+            const radarData = [];
+
+            topChapters.forEach(ch => {
+                // Shorten name for radar chart
+                const shortName = ch.length > 15 ? ch.substring(0, 15) + '...' : ch;
+                radarLabels.push(shortName);
+                
+                // Calc avg score for this chapter
+                const attempts = groupedHistory[ch];
+                let totalScore = 0;
+                let totalQ = 0;
+                attempts.forEach(a => { totalScore += a.score; totalQ += a.total; });
+                radarData.push(Math.round((totalScore / totalQ) * 100));
+            });
+
+            if (radarChartInstance) radarChartInstance.destroy();
+            
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            radarChartInstance = new Chart(document.getElementById('weaknessRadar'), {
+                type: 'radar',
+                data: {
+                    labels: radarLabels.length ? radarLabels : ['Data 1', 'Data 2', 'Data 3'],
+                    datasets: [{
+                        label: 'Mastery Level (%)',
+                        data: radarData.length ? radarData : [0, 0, 0],
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)', 
+                        borderColor: '#6366f1',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#fbbf24', 
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#fbbf24'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: gridColor },
+                            grid: { color: gridColor },
+                            pointLabels: { font: { family: 'Inter', size: 10, weight: 'bold' }, color: textColor },
+                            ticks: { backdropColor: 'transparent', display: false, max: 100, min: 0 }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
+        // --- CHAPTER MODAL LOGIC ---
+        function openChapterModal(title) {
+            const attempts = groupedHistory[title];
+            if (!attempts) return;
+
+            document.getElementById('ch-modal-title').textContent = title;
+            const listBody = document.getElementById('ch-modal-list');
+            listBody.innerHTML = '';
+            
+            const chronoAttempts = [...attempts].sort((a, b) => a.timestamp.toDate() - b.timestamp.toDate());
+            
+            attempts.forEach(att => {
+                const acc = Math.round((att.score / att.total) * 100);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 text-xs text-slate-500">${new Date(att.timestamp.toDate()).toLocaleString()}</td>
+                    <td class="p-3 font-bold text-primary">${att.score}/${att.total}</td>
+                    <td class="p-3 text-xs font-medium">${acc}%</td>
+                    <td class="p-3 text-right">
+                         <button onclick="openResultModal('${att.id}')" class="text-xs bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-600 transition font-bold text-slate-700 dark:text-slate-200">Result</button>
+                    </td>
+                `;
+                listBody.appendChild(tr);
+            });
+
+            const ctx = document.getElementById('chapterChart').getContext('2d');
+            if (chapterChartInstance) chapterChartInstance.destroy();
+
+            const labels = chronoAttempts.map((_, i) => `Attempt ${i+1}`);
+            const scores = chronoAttempts.map(a => Math.round((a.score / a.total) * 100));
+
+            const isDark = document.documentElement.classList.contains('dark');
+
+            chapterChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Performance Trend (%)',
+                        data: scores,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.3,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#6366f1',
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)' } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            document.getElementById('chapter-history-modal').classList.remove('hidden');
+        }
+
+        function closeChapterModal() {
+            document.getElementById('chapter-history-modal').classList.add('hidden');
+        }
+
+        // --- MODULE 1: ATTEMPT AGAIN ---
+        function attemptAgain(evt, quizId, chapterName) {
+            if (evt) evt.stopPropagation(); // don't trigger the row's openChapterModal()
+            const params = new URLSearchParams();
+            if (quizId) {
+                params.set('uid', quizId); // quiz.js's loadQuiz(uid) expects ?uid=<quizzes doc id>
+            } else {
+                // Fallback for older attempts that may not have a stored quizId
+                params.set('chapter', chapterName);
+            }
+            window.location.href = `/quiz/quizzes.html?${params.toString()}`;
+        }
+
+        let currentModalAttemptId = null;
+
+        function openResultModal(attemptId) {
+            const data = rawHistoryData[attemptId];
+            if(!data) return;
+            currentModalAttemptId = attemptId;
+
+            // Toggle Practice Incorrect availability based on whether we have per-question data
+            const wrongCount = getWrongQuestionIds(data).length;
+            const practiceBtn = document.getElementById('btn-practice-incorrect');
+            if (practiceBtn) {
+                practiceBtn.disabled = wrongCount === 0;
+                practiceBtn.classList.toggle('opacity-50', wrongCount === 0);
+                practiceBtn.classList.toggle('cursor-not-allowed', wrongCount === 0);
+                practiceBtn.innerHTML = wrongCount > 0
+                    ? `<i class="fa-solid fa-repeat mr-2"></i> Practice ${wrongCount} Incorrect`
+                    : `<i class="fa-solid fa-check mr-2"></i> No Mistakes`;
+            }
+
+            document.getElementById('modal-quiz-title').textContent = data.quizTitle;
+            document.getElementById('modal-date').textContent = new Date(data.timestamp.toDate()).toLocaleString();
+            document.getElementById('modal-score').textContent = `${data.score}/${data.total}`;
+            
+            document.getElementById('modal-correct').textContent = data.score;
+            document.getElementById('modal-incorrect').textContent = data.total - data.score; 
+            
+            const m = Math.floor((data.totalTimeSeconds || 0) / 60);
+            const s = (data.totalTimeSeconds || 0) % 60;
+            document.getElementById('modal-time').textContent = `${m}m ${s}s`;
+            
+            const acc = Math.round((data.score / data.total) * 100) || 0;
+            document.getElementById('modal-accuracy').textContent = acc + '%';
+
+            document.getElementById('result-modal').classList.remove('hidden');
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+            currentModalAttemptId = null;
+        }
+
+        // --- MODULE 2: PRACTICE INCORRECT ---
+
+        // Derives wrong question IDs from the per-question `answers` array saved by result.js
+        // (there is no separate `wrongAnswers` field in the current schema, so we compute it here).
+        function getWrongQuestionIds(attemptData) {
+            if (!attemptData || !Array.isArray(attemptData.answers)) return [];
+            return attemptData.answers.filter(a => !a.isCorrect).map(a => a.qId);
+        }
+
+        function practiceIncorrect() {
+            const data = rawHistoryData[currentModalAttemptId];
+            if (!data) return;
+
+            const wrongQuestionIds = getWrongQuestionIds(data);
+            if (wrongQuestionIds.length === 0) {
+                alert("No incorrect answers in this attempt — nothing to practice!");
+                return;
+            }
+
+            // Session state consumed by quizzes.html/quiz.js to filter questions on load
+            sessionStorage.setItem('retryQuizConfig', JSON.stringify({
+                mode: 'retry-incorrect',
+                quizId: data.quizId || null,
+                quizTitle: data.quizTitle || '',
+                questionIds: wrongQuestionIds
+            }));
+
+            const params = new URLSearchParams({ mode: 'retry-incorrect' });
+            if (data.quizId) params.set('uid', data.quizId);
+            window.location.href = `/quiz/quizzes.html?${params.toString()}`;
+        }
+
+        // --- COUNTDOWN LOGIC ---
+        function initCountdown(userClass) {
+            // Target set to 2027 by default to handle post-2026 scenarios
+            let targetDateStr = "May 3, 2027 00:00:00"; 
+            let label = "NEET 2027 Target";
+            
+            if (userClass === "12" || userClass === "12+") {
+                // If they are a dropper, maybe they meant 2026, but since that has passed, default to next year
+                targetDateStr = "May 3, 2027 00:00:00"; 
+                label = "NEET Target"; 
+            }
+            document.getElementById('countdown-label').innerText = label;
+            const targetDate = new Date(targetDateStr).getTime();
+
+            setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate - now;
+                if (distance < 0) {
+                    document.getElementById('cd-days').innerText = "0";
+                    return;
+                }
+                document.getElementById('cd-days').innerText = Math.floor(distance / (1000 * 60 * 60 * 24));
+                document.getElementById('cd-hours').innerText = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById('cd-mins').innerText = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById('cd-secs').innerText = Math.floor((distance % (1000 * 60)) / 1000);
+            }, 1000);
+        }
+
+        // --- PDF GENERATION ---
+        let currentPdfBase64 = null;
+
+        async function generateCertificate() {
+            const loader = document.getElementById('loading-screen');
+            loader.querySelector('h2').textContent = "Generating Document...";
+            loader.classList.remove('hidden', 'opacity-0');
+
+            document.getElementById('cert-name').textContent = document.getElementById('disp-name').textContent;
+            document.getElementById('cert-questions').textContent = userStats.totalQuestions;
+            document.getElementById('cert-tests').textContent = userStats.totalTests;
+            const acc = Math.round((userStats.totalCorrect / userStats.totalQuestions) * 100) || 0;
+            document.getElementById('cert-accuracy').textContent = acc + '%';
+            document.getElementById('cert-date').textContent = new Date().toLocaleDateString();
+            document.getElementById('cert-id').textContent = currentUser.uid.substring(0, 8).toUpperCase();
+  
+            const container = document.getElementById('certificate-container');
+            container.style.display = "flex";
+
+            await new Promise(r => setTimeout(r, 800)); // Allow fonts/images to render
+
+            try {
+                const canvas = await html2canvas(container, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true
+                });
+
+                const imgData = canvas.toDataURL('image/png');
+                document.getElementById('cert-preview-image').src = imgData;
+                
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                currentPdfBase64 = pdf.output('datauristring');
+
+                document.getElementById('pdf-viewer-modal').classList.remove('hidden');
+
+            } catch (e) {
+                console.error("Gen Error:", e);
+                alert("Preview failed. Please try again.");
+            } finally {
+                container.style.display = "none";
+                loader.classList.add('opacity-0');
+                setTimeout(() => loader.classList.add('hidden'), 300);
+            }
+        }
+
+        document.getElementById('btn-download-pdf').onclick = function() {
+            if (!currentPdfBase64) return alert("Please wait for preview to load");
+
+            const filename = `Certificate_${currentUser.uid.substring(0,6)}.pdf`;
+            const link = document.createElement('a');
+            link.href = currentPdfBase64;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        function closePdfModal() {
+            document.getElementById('pdf-viewer-modal').classList.add('hidden');
+            document.getElementById('cert-preview-image').src = "";
+        }
+    </script>
+    <script src="/js/head-loader.js"></script>
+</body>
+</html>
