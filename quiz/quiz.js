@@ -68,10 +68,6 @@ const proctorEls = {
     cancelBtn: document.getElementById('proctor-cancel-btn'),
     fallbackNormalBtn: document.getElementById('proctor-fallback-normal-btn'),
     consentError: document.getElementById('proctor-consent-error'),
-    networkDiag: document.getElementById('proctor-network-diag'),
-    diagStage: document.getElementById('diag-stage'),
-    diagSpeed: document.getElementById('diag-speed'),
-    diagTime: document.getElementById('diag-time'),
     video: document.getElementById('proctor-video'),
     statusDot: document.getElementById('proctor-status-dot'),
     statusText: document.getElementById('proctor-status-text'),
@@ -102,10 +98,32 @@ let modelWarmupStarted = false;
 function warmUpProctoringAssets() {
     if (modelWarmupStarted) return;
     modelWarmupStarted = true;
-    // Generous 60s budget here — this is opportunistic background loading,
-    // not something the user is actively waiting on.
-    loadFaceModel(60000).catch(() => {});
-    loadObjectModel(60000).catch(() => {});
+    // Retry a few times with backoff instead of giving up after one timeout —
+    // nothing in the UI is waiting on this anymore, so it's fine for this to
+    // take a while (even several minutes) on a genuinely bad connection. Each
+    // success is cached by loadFaceModel()/loadObjectModel()'s own guards, so
+    // once it lands it stays landed for the rest of the session.
+    loadWithRetry(() => loadFaceModel(30000), 4, 'face-detection model');
+    loadWithRetry(() => loadObjectModel(30000), 3, 'object-detection model');
+}
+
+async function loadWithRetry(loaderFn, maxAttempts, label) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+            const result = await loaderFn();
+            if (result) {
+                console.log(`${label} ready (attempt ${attempt}).`);
+                return result;
+            }
+        } catch (err) {
+            console.warn(`${label} load attempt ${attempt}/${maxAttempts} failed:`, err.message);
+        }
+        if (attempt < maxAttempts) {
+            await new Promise((r) => setTimeout(r, 4000 * attempt)); // 4s, 8s, 12s...
+        }
+    }
+    console.warn(`${label} could not be loaded after ${maxAttempts} attempts — continuing without it.`);
+    return null;
 }
 
 // Kick it off the instant "CBT Mode" is selected, wherever that radio lives.
@@ -833,8 +851,15 @@ const loadQuiz = async (uid) => {
     }
 
     quizEls.startBtn.onclick = () => {
+        // Capture the chosen setup options, then hand off to the proctoring
+        // consent step before any quiz content is actually shown — but only
+        // if the person picked "CBT Mode" back in Pre-Quiz Init. Normal Mode
+        // skips the camera entirely for a faster start.
         const modeInput = document.querySelector('input[name="quiz_mode"]:checked');
         pendingStartConfig = {
+            // Defense-in-depth: for a test_quiz, ignore whatever the DOM says and
+            // force Test Mode + the fixed duration server-side, so re-enabling a
+            // disabled control via devtools can't actually change the outcome.
             mode: currentQuizIsTest ? 'test' : (modeInput ? modeInput.value : 'test'),
             selectedTime: currentQuizIsTest
                 ? (lockedTestDurationMinutes || DEFAULT_TEST_MODE_MINUTES_FALLBACK)
@@ -847,11 +872,14 @@ const loadQuiz = async (uid) => {
             proctorEls.consentModal.classList.remove('hidden');
             if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
         } else {
+            // Normal Mode (or proctoring UI missing from the page): start immediately, no camera.
             beginSelectedQuiz();
         }
     };
 };
 
+// Applies the captured setup choices and actually starts the quiz session.
+// Called only after camera + face-model + fullscreen setup succeeds.
 const beginSelectedQuiz = () => {
     const cfg = pendingStartConfig;
     if (!cfg) return;
@@ -880,88 +908,19 @@ const beginSelectedQuiz = () => {
 };
 
 // ============================================================
-// NETWORK-SPEED-AWARE PROCTOR SETUP
-// We adapt how long we wait for the camera + AI models based on how fast
-// the connection actually looks: good connections get a short timeout,
-// medium/slow ones get more patience (still trying to work), and very
-// poor connections fail fast with a clear, honest reason instead of
-// leaving the person stuck on a spinner for half a minute.
 // ============================================================
-
-// Minimum sustained speed we recommend for CBT/proctored mode to load
-// smoothly (tf.js runtime + BlazeFace + COCO-SSD weights ≈ 6–8 MB total).
-const RECOMMENDED_SPEED_LABEL = '1.5 Mbps+';
-
-const NET_TIER_TIMEOUTS_MS = {
-    FAST: 42000,        // good connection — models should load quickly anyway
-    MEDIUM: 52000,       // 3G-ish — give it a real chance, most attempts still succeed
-    SLOW: 90000,         // 2G-ish — last resort, near the practical ceiling
-    VERY_SLOW: 180000       // basically unworkable — fail fast rather than waste 30s
-};
-
-function getConnectionInfo() {
-    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (!conn) return null;
-    return {
-        downlinkMbps: typeof conn.downlink === 'number' ? conn.downlink : null,
-        effectiveType: conn.effectiveType || null,
-        saveData: !!conn.saveData
-    };
-}
-
-function classifyConnectionTier() {
-    const info = getConnectionInfo();
-    if (!info) return { tier: 'MEDIUM', info: null };
-
-    if (info.effectiveType === 'slow-2g' || (info.downlinkMbps !== null && info.downlinkMbps < 0.15)) {
-        return { tier: 'VERY_SLOW', info };
-    }
-    if (info.effectiveType === '2g' || (info.downlinkMbps !== null && info.downlinkMbps < 0.4)) {
-        return { tier: 'SLOW', info };
-    }
-    if (info.effectiveType === '3g' || (info.downlinkMbps !== null && info.downlinkMbps < 1.5)) {
-        return { tier: 'MEDIUM', info };
-    }
-    return { tier: 'FAST', info };
-}
-
-// Reads real browser resource-timing data for the CDN files we depend on to
-// compute the actual throughput the user experienced — this works even on
-// Safari, which doesn't expose navigator.connection at all.
-function measureActualThroughputKbps() {
-    try {
-        const entries = performance.getEntriesByType('resource').filter(e =>
-            /tfjs|blazeface|coco-ssd/i.test(e.name)
-        );
-        let totalBytes = 0, totalDurationMs = 0;
-        entries.forEach(e => {
-            if (e.transferSize && e.duration) {
-                totalBytes += e.transferSize;
-                totalDurationMs += e.duration;
-            }
-        });
-        if (totalBytes === 0 || totalDurationMs === 0) return null;
-        return Math.round((totalBytes * 8) / totalDurationMs); // kbps
-    } catch (err) {
-        return null;
-    }
-}
-
-function formatSpeedLabel(tier, info) {
-    const measuredKbps = measureActualThroughputKbps();
-    if (measuredKbps) {
-        return measuredKbps >= 1000
-            ? `~${(measuredKbps / 1000).toFixed(1)} Mbps (measured)`
-            : `~${measuredKbps} kbps (measured)`;
-    }
-    if (info && info.downlinkMbps !== null) {
-        return `~${info.downlinkMbps} Mbps${info.effectiveType ? ' (' + info.effectiveType + ')' : ''}`;
-    }
-    if (info && info.effectiveType) {
-        return info.effectiveType.toUpperCase();
-    }
-    return 'Unknown — your browser doesn\'t report connection speed';
-}
+// PROCTOR SETUP: camera-only gate, AI models load in the background
+// Starting the test only requires local camera permission — never a big
+// network download. Face/object-detection models load in the background
+// (see warmUpProctoringAssets, kicked off as soon as CBT Mode is picked —
+// and retried with backoff) and switch on automatically whenever they're
+// ready, however long that takes. This is the fix for slow/filtered
+// college & hostel networks where the AI model *weights* (fetched by the
+// libraries from Google's own servers — storage.googleapis.com, tfhub.dev —
+// regardless of where the small JS wrapper files are hosted) could
+// previously block the whole test waiting on ~6-8MB that some routers
+// throttle or block outright.
+// ============================================================
 
 if (proctorEls.cancelBtn) {
     proctorEls.cancelBtn.onclick = () => {
@@ -984,7 +943,6 @@ function resetEnableBtn() {
 
 function hideProctorFailureUI() {
     if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
-    if (proctorEls.networkDiag) proctorEls.networkDiag.classList.add('hidden');
     if (proctorEls.fallbackNormalBtn) proctorEls.fallbackNormalBtn.classList.add('hidden');
 }
 
@@ -1010,65 +968,27 @@ if (proctorEls.enableBtn) {
     proctorEls.enableBtn.onclick = async () => {
         proctorEls.enableBtn.disabled = true;
         hideProctorFailureUI();
-
-        const { tier, info } = classifyConnectionTier();
-        const timeoutMs = NET_TIER_TIMEOUTS_MS[tier];
-        const startedAt = Date.now();
-        const deadline = startedAt + timeoutMs;
-        const timeLeftMs = () => Math.max(0, deadline - Date.now());
-
-        // If we already know upfront (via Network Information API) that this
-        // is a very poor connection, say so immediately rather than waiting
-        // for it to time out before explaining anything.
-        if (tier === 'VERY_SLOW' && proctorEls.consentError) {
-            proctorEls.consentError.textContent =
-                `Your connection looks very slow (${formatSpeedLabel(tier, info)}). We'll try for ${Math.ceil(timeoutMs / 1000)}s, but proctored mode needs roughly ${RECOMMENDED_SPEED_LABEL} to load reliably.`;
-            proctorEls.consentError.classList.remove('hidden');
-        }
-
-        // Guard flag so that if the timeout fires first, any in-flight
-        // camera/model requests that resolve *later* (they keep loading
-        // quietly in the background) don't hijack the UI at that point —
-        // they just get cached for the next attempt via the faceModel/
-        // objectModel reuse-guards in loadFaceModel()/loadObjectModel().
-        let timedOut = false;
-        let currentStage = 'Requesting camera access';
-        proctorEls.enableBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>${currentStage}... (${Math.ceil(timeoutMs / 1000)}s)`;
-
-        const countdownTimer = setInterval(() => {
-            if (timedOut) return;
-            const secs = Math.ceil(timeLeftMs() / 1000);
-            proctorEls.enableBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i>${currentStage}... (${secs}s)`;
-        }, 250);
-
-        const setupSequence = (async () => {
-            currentStage = 'Requesting camera access';
-            if (!proctorStream) await setupProctorCamera();
-            if (timedOut) return;
-
-            currentStage = 'Loading face-detection model';
-            await loadFaceModel(timeLeftMs());
-            // Face detection (small, ~1-2MB with tf.js) is the only model the
-            // test actually needs to *start*. Object/device detection (coco-ssd,
-            // the heaviest piece at ~5-6MB) is nice-to-have, so on a slow
-            // connection we let it keep downloading quietly in the background
-            // instead of making the person wait for it — the detection loop
-            // already checks `if (objectModel)` before using it, so it just
-            // switches on automatically whenever it finishes.
-            loadObjectModel(45000).catch(() => {});
-        })();
-
-        const timeoutPromise = new Promise((_, reject) => {
-            setTimeout(() => reject(new Error('LOW_INTERNET_TIMEOUT')), timeoutMs);
-        });
+        proctorEls.enableBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Requesting camera access...';
 
         try {
-            await Promise.race([setupSequence, timeoutPromise]);
-            clearInterval(countdownTimer);
+            // Camera permission is a *local* browser dialog — it doesn't
+            // depend on internet speed at all, so this is the only thing
+            // that gates starting the test.
+            if (!proctorStream) await setupProctorCamera();
 
-            // Fullscreen must be requested inside a user gesture — this click qualifies.
+            // AI models (face/object detection) are NOT required to start.
+            // They keep downloading in the background — via warmUpProctoringAssets(),
+            // which retries several times with backoff — and switch on
+            // automatically the moment they're ready (see setProctorStatus
+            // below and the `if (faceModel)` guard in the detection loop).
+            // This is the actual fix for slow/filtered college & hostel
+            // networks: previously the whole test was held hostage waiting
+            // for ~6-8MB of Google-hosted model weights that some routers
+            // throttle or block outright — now the student is never blocked
+            // by that, only by the camera permission itself.
+            warmUpProctoringAssets();
+
             requestFullscreenMode();
-
             proctorEls.consentModal.classList.add('hidden');
             hideProctorFailureUI();
             resetEnableBtn();
@@ -1080,42 +1000,17 @@ if (proctorEls.enableBtn) {
                 beginSelectedQuiz();
             }
         } catch (err) {
-            timedOut = true;
-            clearInterval(countdownTimer);
-            console.error('Proctoring setup failed:', err);
+            console.error('Camera setup failed:', err);
 
-            // Don't leave the camera light on / a half-initialized stream behind.
             if (proctorStream) {
                 proctorStream.getTracks().forEach(t => t.stop());
                 proctorStream = null;
             }
 
-            const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1);
-            const speedLabel = formatSpeedLabel(tier, info);
-            const isCameraPermissionIssue = err.name === 'NotAllowedError' || err.name === 'NotFoundError' ||
-                (err.message && /not supported/i.test(err.message));
-
             if (proctorEls.consentError) {
-                let msg;
-                if (isCameraPermissionIssue) {
-                    msg = 'Camera access is required to start this proctored test. Please allow camera permission in your browser and try again — or continue below without the camera.';
-                } else if (err.message === 'LOW_INTERNET_TIMEOUT' || (err.message && /not-loaded/.test(err.message))) {
-                    msg = (tier === 'VERY_SLOW' || tier === 'SLOW')
-                        ? `Failed: your internet is too slow for camera proctoring right now (${speedLabel}). We waited ${elapsedSec}s while stuck at "${currentStage}" and stopped so you're not left waiting.`
-                        : `Failed: setup took longer than expected (${elapsedSec}s, stuck at "${currentStage}"). Detected speed: ${speedLabel}.`;
-                } else {
-                    msg = `Setup failed at "${currentStage}": ${err.message || 'unknown error'}.`;
-                }
-                proctorEls.consentError.textContent = msg;
+                proctorEls.consentError.textContent =
+                    'Camera access is required to start this proctored test. Please allow camera permission in your browser and try again — or continue below without the camera.';
                 proctorEls.consentError.classList.remove('hidden');
-            }
-
-            // Full technical breakdown — this is the "why exactly did this fail" panel.
-            if (proctorEls.networkDiag) {
-                if (proctorEls.diagStage) proctorEls.diagStage.textContent = currentStage;
-                if (proctorEls.diagSpeed) proctorEls.diagSpeed.textContent = speedLabel;
-                if (proctorEls.diagTime) proctorEls.diagTime.textContent = `${elapsedSec}s elapsed (limit was ${Math.round(timeoutMs / 1000)}s for tier: ${tier})`;
-                proctorEls.networkDiag.classList.remove('hidden');
             }
 
             // Always offer the escape hatch — proctored mode isn't worth blocking
@@ -1160,7 +1055,16 @@ const startQuizSession = () => {
     if (proctoringEnabled) {
         if (proctorEls.widget) proctorEls.widget.classList.remove('hidden');
         startFaceDetectionLoop();
-        setProctorStatus('ok', 'Proctoring Active');
+        // The AI model may not have finished downloading yet (see
+        // warmUpProctoringAssets — it no longer blocks test start). Reflect
+        // that honestly instead of claiming "Active" before it actually is;
+        // watchForFaceModelReady() flips this the moment it lands.
+        if (faceModel) {
+            setProctorStatus('ok', 'Proctoring Active');
+        } else {
+            setProctorStatus('warn', 'Camera Recording (AI loading…)');
+            watchForFaceModelReady();
+        }
     } else if (proctorEls.widget) {
         proctorEls.widget.classList.add('hidden');
     }
@@ -1449,6 +1353,28 @@ function setProctorStatus(state, text) {
         proctorEls.statusDot.className = 'w-2 h-2 rounded-full shrink-0 animate-pulse ' +
             (state === 'ok' ? 'bg-emerald-400' : 'bg-red-500');
     }
+}
+
+// Polls for the face-detection model finishing its background download
+// (warmUpProctoringAssets + loadWithRetry) and flips the widget from
+// "AI loading…" to "Proctoring Active" the moment it's ready — without ever
+// having blocked the student from starting the test in the first place.
+let faceModelWatcherInterval = null;
+function watchForFaceModelReady() {
+    if (faceModelWatcherInterval) return;
+    faceModelWatcherInterval = setInterval(() => {
+        if (faceModel) {
+            clearInterval(faceModelWatcherInterval);
+            faceModelWatcherInterval = null;
+            if (proctoringEnabled && quizActive()) {
+                // startFaceDetectionLoop() no-ops if faceModel isn't set yet, so
+                // the very first call (at quiz start) did nothing — this is the
+                // real, delayed start of proctoring now that the model is ready.
+                startFaceDetectionLoop();
+                setProctorStatus('ok', 'Proctoring Active');
+            }
+        }
+    }, 1500);
 }
 
 function startFaceDetectionLoop() {
