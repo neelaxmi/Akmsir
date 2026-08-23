@@ -7,15 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> QUIZ CORNER | NEELAXMI QUIZ CENTER </title>
     <script src="/js/head-loader.js"></script>
-    <!-- Preconnect early so the TF.js/Blazeface/COCO-SSD CDN download starts as soon as possible on slow networks -->
-    <!-- The library JS itself is now self-hosted (see /vendor/ scripts near the
-         end of <body>), but the AI model *weights* blazeface/coco-ssd load are
-         still fetched from Google's own model-hosting servers — preconnect to
-         those so that download starts a little sooner. -->
-    <link rel="preconnect" href="https://storage.googleapis.com" crossorigin>
-    <link rel="dns-prefetch" href="https://storage.googleapis.com">
-    <link rel="preconnect" href="https://tfhub.dev" crossorigin>
-    <link rel="dns-prefetch" href="https://tfhub.dev">
+    <!-- Face-api.js's model weights are now plain static files self-hosted in
+         /vendor/models/ (see face-api.min.js near the end of <body>) — no
+         Google-proxied domains (tfhub.dev / storage.googleapis.com) involved
+         at all anymore, so no preconnect hints are needed for those. -->
     <meta name="description" content="NEELAXMI - THE HELPER: Physics and Physical Chemistry master classes. Free Quizzes ke liye 'Quizzes' section check karein aur daily updates ke liye 'Notification Corner' par Login karein!">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -915,21 +910,38 @@ input[type=range]::-moz-range-thumb {
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
     <!-- ===== Client-Side Face Proctoring (100% local — no video/image ever leaves the browser) ===== -->
-    <!-- Self-hosted on Netlify (same origin as the page) instead of jsdelivr CDN:
-         saves a DNS lookup + TLS handshake to a third-party host, and Netlify's
-         edge CDN + the Cache-Control headers in netlify.toml cache these
-         aggressively (1 year) since the versions are pinned and won't change.
-         Drop the matching files into a /vendor/ folder next to this page.
-         NOTE the exact filenames to download — verified against each package's
-         real dist/ folder listing (package.json's declared "jsdelivr" field is
-         NOT always accurate for older published versions, as we found out):
-           tf.min.js       ← https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js
-           blazeface.js    ← https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface@0.1.0/dist/blazeface.min.umd.js  (save as blazeface.js)
-           coco-ssd.min.js ← https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js -->
-    <script defer src="/vendor/tf.min.js"></script>
-    <script defer src="/vendor/blazeface.js"></script>
-    <!-- coco-ssd: lightweight client-side object detector used to flag phones/other devices in frame (CBT Mode only) -->
-    <script defer src="/vendor/coco-ssd.min.js"></script>
+    <!-- Switched from blazeface+coco-ssd (TensorFlow.js) to face-api.js's
+         tiny_face_detector: its model weights are plain static files (no
+         tfhub.dev/storage.googleapis.com redirects the way blazeface/coco-ssd
+         work), ~190KB total, and self-hostable with zero risk of a
+         shard-hash mismatch. This is what actually fixed the timeouts on
+         slow/filtered networks — object/phone detection (coco-ssd) has been
+         dropped; only face-presence detection remains.
+
+         Files to download and place in /vendor/ (and /vendor/models/ for the
+         two weight files) — verified against the actual GitHub repo content,
+         NOT the npm package (the npm-published tarball doesn't include the
+         weights/ folder at all — that's why "/weights/..." on the npm CDN
+         path 404s; you have to pull from the GitHub-mode jsDelivr URL below):
+
+           face-api.min.js
+             ← https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js
+
+           models/tiny_face_detector_model-weights_manifest.json
+             ← https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights/tiny_face_detector_model-weights_manifest.json
+
+           models/tiny_face_detector_model-shard1   (NOTE: no file extension!)
+             ← https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights/tiny_face_detector_model-shard1
+
+         IMPORTANT: save that last file with EXACTLY the name
+         "tiny_face_detector_model-shard1" — no .bin, no .txt, no extension
+         at all. Some browsers try to guess an extension when you "Save As";
+         double check the saved filename before uploading. The manifest.json
+         references it by that exact name internally. Both weight files must
+         sit together in /vendor/models/. -->
+    <script defer src="/vendor/face-api.min.js"></script>
+
+
 
     <script>
         // Caches the TF.js/Blazeface/COCO-SSD CDN files after first download so

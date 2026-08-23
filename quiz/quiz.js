@@ -95,16 +95,27 @@ const preQuizEls = {
 // handler will just retry it with its own timeout/diagnostics.
 // ============================================================
 let modelWarmupStarted = false;
+
+let faceModel = null;              // true once face-api.js's tiny_face_detector net is loaded
+let proctorStream = null;          // MediaStream from getUserMedia (never transmitted anywhere)
+let proctorDetectionTimer = null;  // setInterval handle for the detection loop
+let noFaceSince = null;            // timestamp when face last went missing
+let pendingStartConfig = null;     // quiz-setup choices captured before proctoring consent
+let proctoringEnabled = false;     // true only when the user picked "CBT Mode" in the pre-quiz step
+let pendingResume = false;         // true when the camera-consent step was triggered by resuming a saved CBT attempt
+
 function warmUpProctoringAssets() {
     if (modelWarmupStarted) return;
     modelWarmupStarted = true;
     // Retry a few times with backoff instead of giving up after one timeout —
     // nothing in the UI is waiting on this anymore, so it's fine for this to
-    // take a while (even several minutes) on a genuinely bad connection. Each
-    // success is cached by loadFaceModel()/loadObjectModel()'s own guards, so
-    // once it lands it stays landed for the rest of the session.
+    // take a while on a genuinely bad connection. Success is cached by
+    // loadFaceModel()'s own guard, so once it lands it stays landed for the
+    // rest of the session. The model is tiny (~190KB, face-api.js's
+    // tiny_face_detector, self-hosted as plain static files — no more Google-
+    // proxied downloads), so this should normally land within a few seconds
+    // even on a poor connection.
     loadWithRetry(() => loadFaceModel(30000), 4, 'face-detection model');
-    loadWithRetry(() => loadObjectModel(30000), 3, 'object-detection model');
 }
 
 async function loadWithRetry(loaderFn, maxAttempts, label) {
@@ -127,6 +138,13 @@ async function loadWithRetry(loaderFn, maxAttempts, label) {
 }
 
 // Kick it off the instant "CBT Mode" is selected, wherever that radio lives.
+// IMPORTANT: this must run AFTER `let faceModel` etc. above are declared —
+// warmUpProctoringAssets() -> loadFaceModel() reads `faceModel` synchronously,
+// and calling it while those `let`s are still in their temporal dead zone
+// throws "Cannot access 'faceModel' before initialization" (this was a real
+// bug that silently broke every single attempt, regardless of network speed —
+// found via the browser console, not something a timeout/retry could ever
+// fix since it wasn't a network problem at all).
 document.addEventListener('change', (e) => {
     if (e.target && e.target.name === 'proctor_selection_mode' && e.target.value === 'cbt') {
         warmUpProctoringAssets();
@@ -138,23 +156,6 @@ document.addEventListener('change', (e) => {
 // no need to wait for DOMContentLoaded, which may have already fired.
 const initiallyChecked = document.querySelector('input[name="proctor_selection_mode"]:checked');
 if (initiallyChecked && initiallyChecked.value === 'cbt') warmUpProctoringAssets();
-
-let faceModel = null;              // loaded TensorFlow.js blazeface model (in-memory only)
-let objectModel = null;            // loaded TensorFlow.js coco-ssd model (in-memory only)
-let proctorStream = null;          // MediaStream from getUserMedia (never transmitted anywhere)
-let proctorDetectionTimer = null;  // setInterval handle for the detection loop
-let noFaceSince = null;            // timestamp when face last went missing
-let multiFaceStreak = 0;           // consecutive detections with >1 face
-let objectDetectStreak = 0;        // consecutive frames with a suspicious external device in view
-let detectionFrameCounter = 0;     // used to run object detection at a lower cadence than face detection
-let pendingStartConfig = null;     // quiz-setup choices captured before proctoring consent
-let proctoringEnabled = false;     // true only when the user picked "CBT Mode" in the pre-quiz step
-let pendingResume = false;         // true when the camera-consent step was triggered by resuming a saved CBT attempt
-
-// Classes from the COCO dataset that reasonably indicate an unauthorized secondary device
-// or reference material within camera view.
-const SUSPICIOUS_OBJECT_CLASSES = ['cell phone', 'laptop', 'book', 'remote', 'tablet'];
-const OBJECT_DETECTION_CONFIDENCE = 0.6;
 
 // Unified violation / warning system (covers tab-switch, no-face, multi-face, fullscreen-exit)
 let violationCount = 0;
@@ -901,8 +902,6 @@ const beginSelectedQuiz = () => {
 
     // Fresh proctoring-detection state for this attempt
     noFaceSince = null;
-    multiFaceStreak = 0;
-    objectDetectStreak = 0;
 
     startQuizSession();
 };
@@ -1186,11 +1185,10 @@ function showAntiCheatAlert(message, isCritical = false) {
 
 // ============================================================
 // UNIFIED VIOLATION / "3-WARNING RULE" ENGINE
-// Every anti-cheat signal (tab switch, no-face, multiple-faces,
-// fullscreen exit) funnels through this single counter so the
-// 3-warning limit is bulletproof and cannot be bypassed by mixing
-// violation types. State is persisted to sessionStorage only —
-// never sent to any server.
+// Every anti-cheat signal (tab switch, no-face, fullscreen exit) funnels
+// through this single counter so the 3-warning limit is bulletproof and
+// cannot be bypassed by mixing violation types. State is persisted to
+// sessionStorage only — never sent to any server.
 // ============================================================
 
 function quizActive() {
@@ -1220,7 +1218,7 @@ function restoreViolationState() {
     } catch (e) { /* ignore */ }
 }
 
-// type: 'tab-switch' | 'no-face' | 'multiple-faces' | 'object-detected' | 'fullscreen-exit'
+// type: 'tab-switch' | 'no-face' | 'fullscreen-exit'
 window.registerViolation = function (type, message) {
     if (!quizActive() || violationModalOpen) return;
 
@@ -1259,8 +1257,6 @@ window.registerViolation = function (type, message) {
             violationModalOpen = false;
             togglePause(false);
             noFaceSince = null;
-            multiFaceStreak = 0;
-            objectDetectStreak = 0;
             startFaceDetectionLoop();
             if (type === 'fullscreen-exit') requestFullscreenMode();
         };
@@ -1295,10 +1291,10 @@ async function setupProctorCamera() {
 }
 
 
-// Waits for a global (e.g. `tf`, `blazeface`, `cocoSsd`) to become available.
-// Needed because these come from `defer`red CDN <script> tags — on a slow
-// connection the user can reach the consent modal and click "Enable" before
-// the scripts have actually finished downloading/parsing.
+// Waits for a global (`faceapi`) to become available. Needed because it comes
+// from a `defer`red <script> tag — on a slow connection the user can reach
+// the consent modal and click "Enable" before the script has actually
+// finished downloading/parsing.
 function waitForGlobal(name, timeoutMs) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
@@ -1312,39 +1308,24 @@ function waitForGlobal(name, timeoutMs) {
     });
 }
 
+// face-api.js's tiny_face_detector: ~190KB total (a small manifest.json +
+// one .bin shard), self-hosted as plain static files in /vendor/models/ —
+// no tfhub.dev/storage.googleapis.com redirects involved at all, which is
+// what was actually causing the timeouts with blazeface/coco-ssd (their
+// model weights are proxied through Google's infrastructure regardless of
+// where the small JS wrapper library itself is hosted).
 async function loadFaceModel(remainingMs = 12000) {
     // Already loaded (e.g. it finished loading in the background after a
     // previous attempt timed out) — reuse it instantly, no re-download.
     if (faceModel) return faceModel;
 
-    console.log("Loading face model...");
-    await waitForGlobal('tf', remainingMs);
-    await waitForGlobal('blazeface', remainingMs);
+    console.log("Loading face-api tiny face detector...");
+    await waitForGlobal('faceapi', remainingMs);
+    await faceapi.nets.tinyFaceDetector.loadFromUri('/vendor/models');
 
-    faceModel = await blazeface.load();
+    faceModel = true; // face-api.js keeps the loaded net internally on faceapi.nets.tinyFaceDetector
     console.log("Face model loaded successfully.");
     return faceModel;
-}
-
-async function loadObjectModel(remainingMs = 12000) {
-    if (objectModel) return objectModel;
-
-    try {
-        await waitForGlobal('cocoSsd', remainingMs);
-    } catch (err) {
-        console.warn('coco-ssd script not loaded in time — object/device detection will be skipped.');
-        objectModel = null;
-        return null;
-    }
-
-    try {
-        objectModel = await cocoSsd.load({ base: 'lite_mobilenet_v2' }); // lightweight, fast on-device
-        return objectModel;
-    } catch (err) {
-        console.warn('Object-detection model failed to load — continuing without device detection:', err);
-        objectModel = null;
-        return null;
-    }
 }
 
 function setProctorStatus(state, text) {
@@ -1382,28 +1363,21 @@ function startFaceDetectionLoop() {
     // CBT Mode only — Normal Mode never touches the camera.
     if (!proctoringEnabled || !faceModel || !proctorEls.video) return;
 
-    detectionFrameCounter = 0;
     proctorDetectionTimer = setInterval(async () => {
         if (violationModalOpen || isPaused || !quizActive()) return;
         if (proctorEls.video.readyState < 2) return;
 
         try {
-            const predictions = await faceModel.estimateFaces(proctorEls.video, false);
-            handleFaceDetectionResult(predictions);
+            // detectSingleFace stops as soon as it finds one face instead of
+            // scanning for all of them — exactly the "just face present or
+            // not" check we need, and a bit lighter on CPU per frame too.
+            const detection = await faceapi.detectSingleFace(
+                proctorEls.video,
+                new faceapi.TinyFaceDetectorOptions()
+            );
+            handleFaceDetectionResult(!!detection);
         } catch (err) {
             console.warn('Face detection frame skipped:', err);
-        }
-
-        // Object/device detection runs at half the cadence (every ~1.6s) to keep CPU/GPU
-        // load low and avoid lag during the quiz, per the performance requirement.
-        detectionFrameCounter++;
-        if (objectModel && detectionFrameCounter % 2 === 0 && !violationModalOpen) {
-            try {
-                const objects = await objectModel.detect(proctorEls.video);
-                handleObjectDetectionResult(objects);
-            } catch (err) {
-                console.warn('Object detection frame skipped:', err);
-            }
         }
     }, 800);
 }
@@ -1417,12 +1391,13 @@ function stopFaceDetectionLoop() {
 // Anything longer than 4 uninterrupted seconds without a detected face triggers a violation.
 const FACE_STABILITY_LIMIT_MS = 4000;
 
-function handleFaceDetectionResult(predictions) {
-    const count = predictions.length;
-
-    if (count === 0) {
+// Bare-minimum check: is a face visible right now, or not? No multi-face
+// logic, no object detection — just presence/absence, which is what proctoring
+// actually needs and the one thing this can reliably check even on a slow
+// device/connection.
+function handleFaceDetectionResult(faceFound) {
+    if (!faceFound) {
         if (!noFaceSince) noFaceSince = Date.now();
-        multiFaceStreak = 0;
         const elapsedMs = Date.now() - noFaceSince;
         const secondsLeft = Math.max(0, Math.ceil((FACE_STABILITY_LIMIT_MS - elapsedMs) / 1000));
         setProctorStatus('warn', `No face detected (${secondsLeft}s)`);
@@ -1431,39 +1406,9 @@ function handleFaceDetectionResult(predictions) {
             noFaceSince = null;
             window.registerViolation('no-face', 'Eyes or face not detected. Please stay focused.');
         }
-    } else if (count > 1) {
-        noFaceSince = null;
-        multiFaceStreak++;
-        setProctorStatus('warn', 'Multiple faces detected');
-        // Require two consecutive detections (~1.6s) to avoid a single-frame false positive.
-        if (multiFaceStreak >= 2) {
-            multiFaceStreak = 0;
-            window.registerViolation('multiple-faces', 'Multiple faces were detected in the camera frame.');
-        }
     } else {
         noFaceSince = null;
-        multiFaceStreak = 0;
         setProctorStatus('ok', 'Proctoring Active');
-    }
-}
-
-// Object/Device-in-View detection: flags phones, other laptops/tablets, books, or remotes
-// appearing in the camera frame — a common way to sneak in a second screen or notes.
-function handleObjectDetectionResult(predictions) {
-    const suspicious = predictions.find(p =>
-        SUSPICIOUS_OBJECT_CLASSES.includes(p.class) && p.score >= OBJECT_DETECTION_CONFIDENCE
-    );
-
-    if (suspicious) {
-        objectDetectStreak++;
-        // Require two consecutive positive frames (~1.6s) before warning, to avoid flagging
-        // on a single misclassified frame.
-        if (objectDetectStreak >= 2) {
-            objectDetectStreak = 0;
-            window.registerViolation('object-detected', 'Unauthorized device detected in view.');
-        }
-    } else {
-        objectDetectStreak = 0;
     }
 }
 
