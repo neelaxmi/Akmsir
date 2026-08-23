@@ -1,0 +1,21 @@
+# Cache the self-hosted face-api.js library + model weight files aggressively.
+# These are pinned (face-api.js@0.22.2, tiny_face_detector weights) and will
+# never change under these filenames — so it's safe to tell every browser and
+# Netlify's own edge CDN to cache them for a full year and never re-check.
+#
+# NOTE: if you already have a netlify.toml in this project, merge the
+# [[headers]] block below into it instead of using this file as-is —
+# Netlify only reads one netlify.toml per site.
+
+[[headers]]
+  for = "/vendor/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/quiz/sw-proctor-cache.js"
+  [headers.values]
+    # The service worker file itself should NOT be cached long-term — the
+    # browser needs to re-check it on every page load so updates to it are
+    # picked up quickly.
+    Cache-Control = "public, max-age=0, must-revalidate"
