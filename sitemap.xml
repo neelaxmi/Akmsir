@@ -24,32 +24,4 @@
     <loc>https://Akmsir.netlify.app/quiz/quizzes.html</loc>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/about-owner.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/ajay-sir.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/amit-gupta-sir.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/prateek-jain.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/ramesh-sharda.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/seep-mam.html</loc>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://Akmsir.netlify.app/teachers/test-series.html</loc>
-    <priority>0.7</priority>
-  </url>
 </urlset>
