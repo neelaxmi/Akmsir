@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
     apiKey: "AIzaSyAOJmK4igVb_P8cV6jLfZhFPGFmAZfVvRE",
     authDomain: "classupdates.netlify.app",
@@ -17,6 +16,7 @@ let CURRENT_USER_ID = null;
 let currentQuizId = null;
 let isLoginMode = true;
 let userGeminiApiKey = null;
+let userGrokApiKey = null; 
 let userData = null;
 
 
@@ -28,7 +28,7 @@ const authEls = {
     authName: document.getElementById('auth-name'),
     authClass: document.getElementById('auth-class'),
     authUsername: document.getElementById('auth-username'),
-    registrationFields: document.getElementById('registration-fields'), 
+    registrationFields: document.getElementById('registration-fields'),
     authGeminiKeyContainer: document.getElementById('auth-gemini-key-container'),
     whyGeminiBtn: document.getElementById('why-gemini-btn'),
     whyGeminiModal: document.getElementById('why-gemini-modal'),
@@ -97,7 +97,7 @@ authEls.authBtn.onclick = async () => {
                 class: userClass,
                 username: username,
                 email: email,
-                bookmarks: [], 
+                bookmarks: [],
                 geminiApiKey: geminiKey || null,
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -112,7 +112,6 @@ authEls.authBtn.onclick = async () => {
     }
 };
 
-// Google Login Logic
 document.getElementById('google-login-btn').onclick = async () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     
@@ -120,9 +119,8 @@ document.getElementById('google-login-btn').onclick = async () => {
         const result = await auth.signInWithPopup(provider);
         const user = result.user;
         
-        // Check if user document exists in Firestore, if not, create it
         const userDoc = await db.collection('users').doc(user.uid).get();
-
+        
         if (!userDoc.exists) {
             await db.collection('users').doc(user.uid).set({
                 uid: user.uid,
@@ -134,7 +132,7 @@ document.getElementById('google-login-btn').onclick = async () => {
                 createdAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         }
-
+        
     } catch (error) {
         authEls.authError.textContent = error.message;
         authEls.authError.classList.remove('hidden');
@@ -142,55 +140,55 @@ document.getElementById('google-login-btn').onclick = async () => {
 };
 
 
-// Auth State Change
 auth.onAuthStateChanged(user => {
     if (user) {
-
+        
         CURRENT_USER_ID = user.uid;
         authEls.authBox.classList.add('hidden');
-
+        
         db.collection('users').doc(CURRENT_USER_ID).onSnapshot(doc => {
-
+            
             if (doc.exists) {
                 userData = doc.data();
                 userGeminiApiKey = userData.geminiApiKey;
+                userGrokApiKey = userData.grokApiKey;
                 console.log("✅ User profile loaded/updated.");
             } else {
                 console.warn("⚠️ No user profile found.");
             }
-
+            
         }, e => {
             console.error("❌ Error fetching user data.", e);
         });
-
+        
         const params = new URLSearchParams(window.location.search);
         currentQuizId = params.get('uid');
-
+        
         if (currentQuizId) {
-
+            
             if (typeof loadQuiz !== 'undefined') {
                 loadQuiz(currentQuizId);
             }
-
+            
         } else {
-
+            
             const errorArea = document.getElementById('error-message-area');
-
+            
             if (errorArea) {
                 document.getElementById('error-text').textContent =
                     "Quiz ID is missing from the URL.";
-
+                
                 errorArea.classList.remove('hidden');
             }
-
+            
             authEls.loader.classList.remove('hidden');
         }
-
+        
     } else {
-
+        
         authEls.loader.classList.add('hidden');
         authEls.authBox.classList.remove('hidden');
-
+        
     }
 });
 window.toggleBookmark = async (questionId) => {
@@ -217,26 +215,23 @@ window.toggleBookmark = async (questionId) => {
 
 
 
-// Telegram se login hone ke baad ye function chalega
 function onTelegramAuth(user) {
     console.log("Telegram se login hua:", user);
-
-    // Google wale logic ki tarah Firestore mein data save kar rahe hain
+    
     const userRef = db.collection('users').doc('tg_' + user.id);
-
+    
     userRef.set({
-        uid: 'tg_' + user.id,
-        name: user.first_name + (user.last_name ? ' ' + user.last_name : ''),
-        username: user.username || 'N/A',
-        auth_provider: 'telegram',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }) // merge: true taaki purana data delete na ho
-    .then(() => {
-        // Data save hone ke baad user ko quizzes page par bhej do
-        window.location.href = "quizzes.html"; 
-    })
-    .catch((error) => {
-        console.error("Error saving Telegram user: ", error);
-        alert("Login me problem aayi, wapas try karo.");
-    });
+            uid: 'tg_' + user.id,
+            name: user.first_name + (user.last_name ? ' ' + user.last_name : ''),
+            username: user.username || 'N/A',
+            auth_provider: 'telegram',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }) 
+        .then(() => {
+            window.location.href = "quizzes.html";
+        })
+        .catch((error) => {
+            console.error("Error saving Telegram user: ", error);
+            alert("Login me problem aayi, wapas try karo.");
+        });
 }
