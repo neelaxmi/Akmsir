@@ -7,18 +7,14 @@ let userAnswers = {};
 let visitedQuestions = {};
 let markedForReview = {};
 let timeLeft = 0;
+let quizStartDurationSeconds = 0;
 let timerInterval = null;
 let isPaused = false;
 let currentMode = 'test';
 let checkedQuestions = {};
-
-// True only when the currently-loaded quiz document has `test_quiz: true` in Firebase.
-// This is the single source of truth for all "strict test mode" lockdown behavior:
-// no manual question navigation, no timer customization, no practice/quiz-mode choice.
 let currentQuizIsTest = false;
-let lockedTestDurationMinutes = null; // set from Firebase data when currentQuizIsTest, read directly (not from the <select>) so it can't be tampered with
-const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; // used only if a locked quiz has no durationMinutes set
-
+let lockedTestDurationMinutes = null; 
+const DEFAULT_TEST_MODE_MINUTES_FALLBACK = 20; 
 const quizEls = {
     loader: document.getElementById('loading-screen'),
     container: document.getElementById('quiz-container'),
@@ -29,11 +25,9 @@ const quizEls = {
     progressBar: document.getElementById('progress-bar'),
     prev: document.getElementById('prev-btn'),
     next: document.getElementById('next-btn'),
-    // Updated Footer Buttons
     finalSubmit: document.getElementById('final-submit-btn'),
     clearBtn: document.getElementById('clear-btn'),
     markBtn: document.getElementById('mark-review-btn'),
-    
     pause: document.getElementById('pause-btn'),
     resume: document.getElementById('resume-btn'),
     pausedOverlay: document.getElementById('paused-overlay'),
@@ -46,14 +40,10 @@ const quizEls = {
     startBtn: document.getElementById('btn-start-custom'),
     setupTitle: document.getElementById('setup-quiz-title'),
     viewLastBtn: document.getElementById('btn-view-last-result'),
-
-    // Custom Submit Modal
     endQuizModal: document.getElementById('end-quiz-modal'),
     confirmSubmitModalBtn: document.getElementById('modal-confirm-submit'),
     cancelSubmitModalBtn: document.getElementById('modal-cancel-submit'),
     endQuizEarlyBtn: document.getElementById('end-quiz-early-btn'),
-
-    // Warnings
     warningBanner: document.getElementById('warning-banner'),
     warningsLeftCount: document.getElementById('warnings-left-count'),
     warningText: document.getElementById('warning-text')
@@ -83,19 +73,7 @@ const preQuizEls = {
     modeRadios: () => document.querySelectorAll('input[name="proctor_selection_mode"]')
 };
 
-// ============================================================
-// EARLY / BACKGROUND MODEL WARM-UP
-// The single biggest thing we can do for slow connections is start the
-// ~6-8MB download *before* the person reaches the "Enable Camera" button —
-// while they're still reading instructions or picking test duration. By the
-// time they click Enable, the models may already be fully (or partly)
-// loaded, so the real wait they experience is much shorter than the raw
-// download would suggest. This never blocks the UI and any failure here is
-// silently ignored — the real (foreground) attempt in the enable-button
-// handler will just retry it with its own timeout/diagnostics.
-// ============================================================
 let modelWarmupStarted = false;
-
 let faceModel = null;              // true once face-api.js's tiny_face_detector net is loaded
 let proctorStream = null;          // MediaStream from getUserMedia (never transmitted anywhere)
 let proctorDetectionTimer = null;  // setInterval handle for the detection loop
@@ -107,14 +85,6 @@ let pendingResume = false;         // true when the camera-consent step was trig
 function warmUpProctoringAssets() {
     if (modelWarmupStarted) return;
     modelWarmupStarted = true;
-    // Retry a few times with backoff instead of giving up after one timeout —
-    // nothing in the UI is waiting on this anymore, so it's fine for this to
-    // take a while on a genuinely bad connection. Success is cached by
-    // loadFaceModel()'s own guard, so once it lands it stays landed for the
-    // rest of the session. The model is tiny (~190KB, face-api.js's
-    // tiny_face_detector, self-hosted as plain static files — no more Google-
-    // proxied downloads), so this should normally land within a few seconds
-    // even on a poor connection.
     loadWithRetry(() => loadFaceModel(30000), 4, 'face-detection model');
 }
 
@@ -137,43 +107,19 @@ async function loadWithRetry(loaderFn, maxAttempts, label) {
     return null;
 }
 
-// Kick it off the instant "CBT Mode" is selected, wherever that radio lives.
-// IMPORTANT: this must run AFTER `let faceModel` etc. above are declared —
-// warmUpProctoringAssets() -> loadFaceModel() reads `faceModel` synchronously,
-// and calling it while those `let`s are still in their temporal dead zone
-// throws "Cannot access 'faceModel' before initialization" (this was a real
-// bug that silently broke every single attempt, regardless of network speed —
-// found via the browser console, not something a timeout/retry could ever
-// fix since it wasn't a network problem at all).
 document.addEventListener('change', (e) => {
     if (e.target && e.target.name === 'proctor_selection_mode' && e.target.value === 'cbt') {
         warmUpProctoringAssets();
     }
 });
-// Also cover the case where CBT is already the default-checked option and
-// the person never touches the radio at all. quiz.js runs after the DOM
-// (it's loaded near the end of <body>), so we can just check immediately —
-// no need to wait for DOMContentLoaded, which may have already fired.
 const initiallyChecked = document.querySelector('input[name="proctor_selection_mode"]:checked');
 if (initiallyChecked && initiallyChecked.value === 'cbt') warmUpProctoringAssets();
 
-// Unified violation / warning system (covers tab-switch, no-face, multi-face, fullscreen-exit)
 let violationCount = 0;
 const MAX_VIOLATIONS = 3;          // exactly 3 warnings allowed; the 4th triggers auto-submit
 let violationLog = [];
 let violationModalOpen = false;
 
-// ============================================================
-// MULTILINGUAL TRANSLATOR (client-side, all 22 Scheduled Indian Languages)
-// Translates question text, option text, and static UI labels on demand.
-// KaTeX/LaTeX math segments are extracted before translation and restored
-// verbatim afterwards so formulas are never mangled.
-// NOTE: this uses Google's public (unofficial, unauthenticated) translate
-// endpoint for demo purposes. It is rate-limited and not guaranteed —
-// for production, swap translateText() below for a paid/official
-// Cloud Translation API call (or a self-hosted i18next backend using
-// pre-translated JSON bundles for your fixed UI strings).
-// ============================================================
 let currentLanguage = 'en';
 const translationCache = new Map(); // `${lang}::${text}` -> translated text
 const langEls = { select: document.getElementById('language-select') };
@@ -218,7 +164,6 @@ async function translateText(text, targetLang) {
     }
 }
 
-// Applies currentLanguage to every [data-i18n-default] label (buttons, headers, etc).
 async function applyStaticUILanguage(lang) {
     const nodes = document.querySelectorAll('[data-i18n-default]');
     await Promise.all(Array.from(nodes).map(async (node) => {
@@ -227,8 +172,6 @@ async function applyStaticUILanguage(lang) {
     }));
 }
 
-// Translates the currently-rendered question text + options in place.
-// Source-of-truth English data on `questions[currentIndex]` is never mutated.
 async function applyQuestionLanguage(lang) {
     const q = questions[currentIndex];
     if (!q) return;
@@ -277,9 +220,6 @@ const renderMath = (element = document.body) => {
     }
 };
 
-// Expose globally so the Question Palette buttons can jump to questions.
-// Disable Navigation: in strict Test Mode, manual jumping to an arbitrary
-// question number is not allowed — only sequential Next/Previous.
 window.goToQuestion = (index) => {
     if (currentQuizIsTest) return;
     if (index >= 0 && index < questions.length) {
@@ -288,7 +228,6 @@ window.goToQuestion = (index) => {
     }
 };
 
-// Update the right-side palette UI
 const updateQuestionPalette = () => {
     if (currentQuizIsTest) return; // Disable Navigation: no palette/grid to update in strict Test Mode
     if (typeof window.renderQuestionPalette === 'function') {
@@ -427,23 +366,19 @@ const renderQuestion = () => {
         }
     }
     
-    // Update Palette UI on every render
     updateQuestionPalette();
     renderMath(quizEls.container);
-
-    // Re-translate the freshly-rendered question/options if a non-English language is active
     if (currentLanguage !== 'en') {
         applyQuestionLanguage(currentLanguage);
     }
 };
 
-// ====== NEW BUTTON ACTIONS ======
 
 if(quizEls.clearBtn) {
     quizEls.clearBtn.onclick = () => {
         const qId = questions[currentIndex].id;
         delete userAnswers[qId];
-        delete markedForReview[qId]; // Optional: unmark when clearing
+        delete markedForReview[qId]; 
         renderQuestion();
     };
 }
@@ -459,10 +394,9 @@ if(quizEls.markBtn) {
     };
 }
 
-// Custom Modal Submit Triggers
 const triggerEndModal = () => {
     if(quizEls.endQuizModal) quizEls.endQuizModal.classList.remove('hidden');
-    togglePause(true); // Pause timer while deciding
+    togglePause(true); 
 };
 
 if(quizEls.endQuizEarlyBtn) quizEls.endQuizEarlyBtn.onclick = triggerEndModal;
@@ -478,11 +412,10 @@ if(quizEls.cancelSubmitModalBtn) {
 if(quizEls.confirmSubmitModalBtn) {
     quizEls.confirmSubmitModalBtn.onclick = () => {
         if(quizEls.endQuizModal) quizEls.endQuizModal.classList.add('hidden');
-        submitQuiz(false); // Ensure you have submitQuiz() defined in your files
+        submitQuiz(false); 
     };
 }
 
-// ====== END NEW BUTTON ACTIONS ======
 
 const startTimer = () => {
     clearInterval(timerInterval);
@@ -511,11 +444,8 @@ const togglePause = (state) => {
     }
 };
 
-// STEP 1 — nothing about the quiz (not even the practice/timer setup modal) is reachable
-// until the person has read the instructions, ticked the consent box, and picked a mode.
 function showPreQuizInitModal() {
     if (!preQuizEls.modal) {
-        // Fallback if this page doesn't have the new modal markup: behave as before.
         proctoringEnabled = false;
         if (quizEls.setupModal) quizEls.setupModal.classList.remove('hidden');
         return;
@@ -541,17 +471,6 @@ if (preQuizEls.continueBtn) {
     };
 }
 
-// ===== STEP 0: Paid Quiz Token Gate =====
-// Runs even before Pre-Quiz Init. If a quiz has isPaid: true in Firestore,
-// nothing about it — not the resume-attempt modal, not pre-quiz-init-modal,
-// not setup-modal — is shown until a valid, single-use token has been
-// redeemed for THIS quiz in THIS browser tab's session. See the gating
-// check at the top of loadQuiz() below.
-
-// Fill this in once token.html is actually deployed (see the "Paid Quiz
-// Tokens" section of IMPLEMENTATION-NOTES.md). Left as an obvious
-// placeholder rather than a guessed domain, so this button never silently
-// points at somewhere that doesn't exist.
 const TOKEN_PORTAL_URL = "/token.html";
 
 const tokenUnlockEls = {
@@ -565,11 +484,6 @@ const tokenUnlockEls = {
 
 let tokenGateQuizId = null;
 let tokenGateOnUnlocked = null;
-
-// sessionStorage (not localStorage) is deliberate: an unlock is good for
-// this tab's session/attempt, not forever on this device — closing the tab
-// and coming back later asks for a token again, same as every other
-// "before you begin" step already on this page.
 const tokenUnlockSessionKey = (quizId) => `paidQuizUnlocked_${quizId}`;
 
 function isQuizUnlockedInSession(quizId) {
@@ -581,11 +495,6 @@ function markQuizUnlockedInSession(quizId) {
     catch (e) { /* sessionStorage unavailable — worst case the tab just asks again, not a hard failure */ }
 }
 
-// Shows the lock screen and remembers (a) which quiz this is for and (b)
-// what to do once it's unlocked. `onUnlocked` is just loadQuiz(uid) again —
-// re-running it is the simplest way to "hand over control to the standard
-// proctoring/quiz initialization routine" without duplicating everything
-// loadQuiz already does below the gate.
 function showTokenUnlockModal(quizId, quizTitle, onUnlocked) {
     tokenGateQuizId = quizId;
     tokenGateOnUnlocked = onUnlocked;
@@ -600,21 +509,6 @@ function showTokenUnlockModal(quizId, quizTitle, onUnlocked) {
     if (tokenUnlockEls.input) tokenUnlockEls.input.focus();
 }
 
-// Atomic single-use redemption. This is a self-contained copy of
-// Services.quizTokens.verifyAndDelete from the admin dashboard's
-// firebase-services.js — this page is a separate deployed app and can't
-// import that file, but the logic (and the quiz_tokens/{quizId}/tokens data
-// it operates on) is identical.
-//
-// The lookup-by-code has to be a query (queries are the only way to find a
-// doc when you only know a field value, not its ID) — but this SDK's
-// transaction.get() only accepts a DocumentReference, not a Query, so the
-// query itself runs outside the transaction to find the candidate doc's
-// reference. The actual race-safe check-and-delete then happens inside the
-// transaction via t.get(docRef): if two students race for the same code,
-// the loser's t.get() sees the doc already gone (or Firestore auto-retries
-// the whole transaction against fresher data) and it throws instead of
-// deleting an already-deleted doc.
 async function verifyAndConsumeToken(quizId, rawCode) {
     const code = String(rawCode || '').trim();
     if (!/^\d{6}$/.test(code)) {
@@ -681,20 +575,31 @@ if (tokenUnlockEls.input) {
 
 const loadQuiz = async (uid) => {
     quizEls.loader.classList.remove('hidden');
-    
-    const doc = await db.collection('quizzes').doc(uid).get();
+
+    let doc = await db.collection('quizzes').doc(uid).get();
+
+    if (!doc.exists) {
+        try {
+            const aliasDoc = await db.collection('quiz_aliases').doc(uid).get();
+            if (aliasDoc.exists && aliasDoc.data().quizId) {
+                uid = aliasDoc.data().quizId; // switch to the real doc id for everything below
+                doc = await db.collection('quizzes').doc(uid).get();
+            }
+        } catch (e) {
+            console.warn('Alias lookup failed:', e);
+        }
+    }
+
     if(!doc.exists) {
         document.getElementById('error-text').textContent = "Quiz not found or deleted.";
         document.getElementById('error-message-area').classList.remove('hidden');
         return;
     }
+
+    currentQuizId = uid;
+
     const data = doc.data();
 
-    // ===== Pre-Flight Gating Check (Step 0) =====
-    // Must happen before ANYTHING else below — including the resume-attempt
-    // check and showPreQuizInitModal() — so a paid quiz can't be reached by
-    // racing the page load or by a saved in-progress attempt. If unlocked,
-    // this falls straight through to the normal flow beneath it unchanged.
     if (data.isPaid === true && !isQuizUnlockedInSession(uid)) {
         quizEls.loader.classList.add('hidden');
         showTokenUnlockModal(uid, data.title, () => loadQuiz(uid));
@@ -705,39 +610,34 @@ const loadQuiz = async (uid) => {
     quizEls.setupTitle.textContent = data.title;
     allQuestions = data.questions.map((q,i)=>({...q, id:`Q${i+1}`}));
 
-    // Strict Test Mode lockdown flag — comes straight from Firebase and is never
-    // settable by anything in the client. Everything below that reads this
-    // variable is defense-in-depth: even if someone re-enables a disabled
-    // <select> via devtools, beginSelectedQuiz() re-forces the values below.
     currentQuizIsTest = data.test_quiz === true;
 
-    // --- MODULE 2: PRACTICE INCORRECT ---
-    // If the dashboard sent us here in retry-incorrect mode, filter the freshly-loaded
-    // question bank down to just the questions the user got wrong on that attempt.
     const urlParams = new URLSearchParams(window.location.search);
+    const retryModeParam = urlParams.get('mode'); // 'retry-incorrect' | 'retry-unattempted' | null
     let retryIncorrectActive = false;
-    if (urlParams.get('mode') === 'retry-incorrect') {
+    let retryModeLabel = '';
+    if (retryModeParam === 'retry-incorrect' || retryModeParam === 'retry-unattempted') {
         try {
             const retryConfig = JSON.parse(sessionStorage.getItem('retryQuizConfig') || 'null');
-            if (retryConfig && retryConfig.mode === 'retry-incorrect' && retryConfig.quizId === uid
+            if (retryConfig && retryConfig.mode === retryModeParam && retryConfig.quizId === uid
                 && Array.isArray(retryConfig.questionIds) && retryConfig.questionIds.length > 0) {
                 const wantedIds = new Set(retryConfig.questionIds);
                 const filtered = allQuestions.filter(q => wantedIds.has(q.id));
                 if (filtered.length > 0) {
                     allQuestions = filtered;
                     retryIncorrectActive = true;
+                    retryModeLabel = retryModeParam === 'retry-incorrect' ? 'Practice Incorrect' : 'Practice Unattempted';
                 }
             }
         } catch (e) {
             console.warn("Could not parse retryQuizConfig, falling back to full quiz:", e);
         } finally {
-            // One-shot: consume the config so a normal reload/relaunch of this quiz isn't filtered
             sessionStorage.removeItem('retryQuizConfig');
         }
     }
 
     quizEls.setupTitle.textContent = retryIncorrectActive
-        ? `${data.title} — Practice Incorrect (${allQuestions.length} Qs)`
+        ? `${data.title} — ${retryModeLabel} (${allQuestions.length} Qs)`
         : data.title;
 
     quizEls.setupSet.innerHTML = '';
@@ -762,8 +662,6 @@ const loadQuiz = async (uid) => {
     const maxDurationMin = data.durationMinutes || Math.ceil(totalQ * 1); 
 
     if (currentQuizIsTest) {
-        // Force Fixed Timer: only the quiz's own default duration is offered,
-        // and the control itself is disabled so it can't be changed at all.
         const fixedMin = data.durationMinutes || DEFAULT_TEST_MODE_MINUTES_FALLBACK;
         lockedTestDurationMinutes = fixedMin;
         const lockedOpt = document.createElement('option');
@@ -793,8 +691,6 @@ const loadQuiz = async (uid) => {
         lockedTestDurationMinutes = null;
     }
 
-    // Force Test Mode: hide the Practice/Quiz mode picker entirely and pin the
-    // hidden radio group to "test" so nothing downstream needs special-casing.
     const modeBlock = document.getElementById('mode-select-block');
     const lockedBanner = document.getElementById('test-mode-locked-banner');
     if (currentQuizIsTest) {
@@ -822,18 +718,15 @@ const loadQuiz = async (uid) => {
             questions = allQuestions;
             currentIndex = s.currentIndex; 
             timeLeft = s.timeLeft; 
+            quizStartDurationSeconds = typeof s.quizStartDurationSeconds === 'number' ? s.quizStartDurationSeconds : s.timeLeft;
             userAnswers = s.userAnswers;
             
-            // Restore saved states if they exist
             if(s.visitedQuestions) visitedQuestions = s.visitedQuestions;
             if(s.markedForReview) markedForReview = s.markedForReview;
             proctoringEnabled = !!s.proctoringEnabled;
 
             quizEls.resumeModal.classList.add('hidden');
 
-            // Resuming a saved attempt skips Pre-Quiz Init (consent/mode were already given
-            // when this attempt was first started). But the camera stream itself doesn't
-            // survive a page reload, so a CBT attempt still needs a fresh consent + camera step.
             if (proctoringEnabled && proctorEls.consentModal) {
                 pendingResume = true;
                 if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
@@ -852,15 +745,8 @@ const loadQuiz = async (uid) => {
     }
 
     quizEls.startBtn.onclick = () => {
-        // Capture the chosen setup options, then hand off to the proctoring
-        // consent step before any quiz content is actually shown — but only
-        // if the person picked "CBT Mode" back in Pre-Quiz Init. Normal Mode
-        // skips the camera entirely for a faster start.
         const modeInput = document.querySelector('input[name="quiz_mode"]:checked');
         pendingStartConfig = {
-            // Defense-in-depth: for a test_quiz, ignore whatever the DOM says and
-            // force Test Mode + the fixed duration server-side, so re-enabling a
-            // disabled control via devtools can't actually change the outcome.
             mode: currentQuizIsTest ? 'test' : (modeInput ? modeInput.value : 'test'),
             selectedTime: currentQuizIsTest
                 ? (lockedTestDurationMinutes || DEFAULT_TEST_MODE_MINUTES_FALLBACK)
@@ -873,19 +759,17 @@ const loadQuiz = async (uid) => {
             proctorEls.consentModal.classList.remove('hidden');
             if (proctorEls.consentError) proctorEls.consentError.classList.add('hidden');
         } else {
-            // Normal Mode (or proctoring UI missing from the page): start immediately, no camera.
             beginSelectedQuiz();
         }
     };
 };
 
-// Applies the captured setup choices and actually starts the quiz session.
-// Called only after camera + face-model + fullscreen setup succeeds.
 const beginSelectedQuiz = () => {
     const cfg = pendingStartConfig;
     if (!cfg) return;
     currentMode = cfg.mode;
     timeLeft = cfg.selectedTime * 60;
+    quizStartDurationSeconds = timeLeft; // remember the real starting duration for result.js's Total Time calc
     const [start, end] = cfg.rangeVal.split('-').map(Number);
 
     questions = allQuestions.slice(start, end);
@@ -906,27 +790,12 @@ const beginSelectedQuiz = () => {
     startQuizSession();
 };
 
-// ============================================================
-// ============================================================
-// PROCTOR SETUP: camera-only gate, AI models load in the background
-// Starting the test only requires local camera permission — never a big
-// network download. Face/object-detection models load in the background
-// (see warmUpProctoringAssets, kicked off as soon as CBT Mode is picked —
-// and retried with backoff) and switch on automatically whenever they're
-// ready, however long that takes. This is the fix for slow/filtered
-// college & hostel networks where the AI model *weights* (fetched by the
-// libraries from Google's own servers — storage.googleapis.com, tfhub.dev —
-// regardless of where the small JS wrapper files are hosted) could
-// previously block the whole test waiting on ~6-8MB that some routers
-// throttle or block outright.
-// ============================================================
 
 if (proctorEls.cancelBtn) {
     proctorEls.cancelBtn.onclick = () => {
         stopProctoring();
         if (proctorEls.consentModal) proctorEls.consentModal.classList.add('hidden');
         if (pendingResume) {
-            // Cancelling a resume attempt sends them back to the resume choice, not fresh setup.
             pendingResume = false;
             if (quizEls.resumeModal) quizEls.resumeModal.classList.remove('hidden');
         } else if (quizEls.setupModal) {
@@ -945,8 +814,6 @@ function hideProctorFailureUI() {
     if (proctorEls.fallbackNormalBtn) proctorEls.fallbackNormalBtn.classList.add('hidden');
 }
 
-// Lets the person give up on CBT/proctored mode after a failed attempt and
-// continue the same quiz unproctored instead of being stuck.
 if (proctorEls.fallbackNormalBtn) {
     proctorEls.fallbackNormalBtn.onclick = () => {
         stopProctoring();
@@ -970,23 +837,9 @@ if (proctorEls.enableBtn) {
         proctorEls.enableBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Requesting camera access...';
 
         try {
-            // Camera permission is a *local* browser dialog — it doesn't
-            // depend on internet speed at all, so this is the only thing
-            // that gates starting the test.
             if (!proctorStream) await setupProctorCamera();
 
-            // AI models (face/object detection) are NOT required to start.
-            // They keep downloading in the background — via warmUpProctoringAssets(),
-            // which retries several times with backoff — and switch on
-            // automatically the moment they're ready (see setProctorStatus
-            // below and the `if (faceModel)` guard in the detection loop).
-            // This is the actual fix for slow/filtered college & hostel
-            // networks: previously the whole test was held hostage waiting
-            // for ~6-8MB of Google-hosted model weights that some routers
-            // throttle or block outright — now the student is never blocked
-            // by that, only by the camera permission itself.
             warmUpProctoringAssets();
-
             requestFullscreenMode();
             proctorEls.consentModal.classList.add('hidden');
             hideProctorFailureUI();
@@ -1012,8 +865,6 @@ if (proctorEls.enableBtn) {
                 proctorEls.consentError.classList.remove('hidden');
             }
 
-            // Always offer the escape hatch — proctored mode isn't worth blocking
-            // someone from taking the test at all.
             if (proctorEls.fallbackNormalBtn) proctorEls.fallbackNormalBtn.classList.remove('hidden');
 
             resetEnableBtn();
@@ -1026,9 +877,6 @@ const startQuizSession = () => {
     
     quizEls.container.classList.remove('hidden');
     quizEls.time.textContent = formatTime(timeLeft);
-
-    // Disable Navigation: strict Test Mode hides the question palette/grid so
-    // there's no way to jump around — Next/Previous only.
     const paletteToggleBtn = document.getElementById('palette-toggle-btn');
     const paletteAside = document.getElementById('question-palette');
     if (currentQuizIsTest) {
@@ -1036,8 +884,6 @@ const startQuizSession = () => {
         if (paletteAside) paletteAside.classList.add('hidden');
     } else {
         if (paletteToggleBtn) paletteToggleBtn.classList.remove('hidden');
-        // paletteAside itself is opened/closed by the existing drawer toggle logic;
-        // just make sure it isn't left force-hidden from a previous test_quiz attempt.
         if (paletteAside) paletteAside.classList.remove('hidden');
     }
 
@@ -1048,16 +894,10 @@ const startQuizSession = () => {
         setupAntiCheatingMeasures();
     }
 
-    // Pick up any violation count persisted from before a reload, then begin
-    // local face-proctoring now that the quiz UI is visible — CBT Mode only.
     restoreViolationState();
     if (proctoringEnabled) {
         if (proctorEls.widget) proctorEls.widget.classList.remove('hidden');
         startFaceDetectionLoop();
-        // The AI model may not have finished downloading yet (see
-        // warmUpProctoringAssets — it no longer blocks test start). Reflect
-        // that honestly instead of claiming "Active" before it actually is;
-        // watchForFaceModelReady() flips this the moment it lands.
         if (faceModel) {
             setProctorStatus('ok', 'Proctoring Active');
         } else {
@@ -1084,6 +924,7 @@ const saveProgress = async () => {
     await db.collection('user_progress').doc(CURRENT_USER_ID).collection('saved_quizzes').doc(currentQuizId).set({
         currentIndex, 
         timeLeft, 
+        quizStartDurationSeconds, // so a resumed attempt still knows its real total duration
         userAnswers, 
         visitedQuestions,
         markedForReview,
@@ -1095,8 +936,6 @@ const saveProgress = async () => {
 if(quizEls.prev) quizEls.prev.onclick = () => { if(currentIndex>0) { currentIndex--; renderQuestion(); }};
 if(quizEls.next) quizEls.next.onclick = () => { 
     if(currentIndex<questions.length-1) { 
-        // Auto-unmark if they click standard next? (Optional NTA rule)
-        // delete markedForReview[questions[currentIndex].id]; 
         currentIndex++; 
         renderQuestion(); 
     }
@@ -1183,13 +1022,6 @@ function showAntiCheatAlert(message, isCritical = false) {
     }
 }
 
-// ============================================================
-// UNIFIED VIOLATION / "3-WARNING RULE" ENGINE
-// Every anti-cheat signal (tab switch, no-face, fullscreen exit) funnels
-// through this single counter so the 3-warning limit is bulletproof and
-// cannot be bypassed by mixing violation types. State is persisted to
-// sessionStorage only — never sent to any server.
-// ============================================================
 
 function quizActive() {
     return !!(quizContainer && !quizContainer.classList.contains('hidden') &&
@@ -1218,7 +1050,6 @@ function restoreViolationState() {
     } catch (e) { /* ignore */ }
 }
 
-// type: 'tab-switch' | 'no-face' | 'fullscreen-exit'
 window.registerViolation = function (type, message) {
     if (!quizActive() || violationModalOpen) return;
 
@@ -1228,7 +1059,6 @@ window.registerViolation = function (type, message) {
 
     togglePause(true);
 
-    // 4th violation (exceeds the 3-warning limit) -> immediate auto-submit, no dialog to dismiss.
     if (violationCount > MAX_VIOLATIONS) {
         stopFaceDetectionLoop();
         showAntiCheatAlert(`Maximum warnings (${MAX_VIOLATIONS}) exceeded — your quiz is being auto-submitted.`, true);
@@ -1268,14 +1098,6 @@ function handleVisibilityChange() {
         window.registerViolation('tab-switch', 'Tab switching / window minimizing detected!');
     }
 }
-
-// ============================================================
-// LOCAL FACE PROCTORING (TensorFlow.js + BlazeFace)
-// All frames are read straight from the live <video> element into
-// GPU/CPU memory for inference and immediately discarded. Nothing
-// is written to disk, drawn to a shareable canvas, or transmitted.
-// ============================================================
-
 async function setupProctorCamera() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Camera access is not supported in this browser.');
@@ -1291,10 +1113,7 @@ async function setupProctorCamera() {
 }
 
 
-// Waits for a global (`faceapi`) to become available. Needed because it comes
-// from a `defer`red <script> tag — on a slow connection the user can reach
-// the consent modal and click "Enable" before the script has actually
-// finished downloading/parsing.
+
 function waitForGlobal(name, timeoutMs) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
@@ -1308,22 +1127,13 @@ function waitForGlobal(name, timeoutMs) {
     });
 }
 
-// face-api.js's tiny_face_detector: ~190KB total (a small manifest.json +
-// one .bin shard), self-hosted as plain static files in /vendor/models/ —
-// no tfhub.dev/storage.googleapis.com redirects involved at all, which is
-// what was actually causing the timeouts with blazeface/coco-ssd (their
-// model weights are proxied through Google's infrastructure regardless of
-// where the small JS wrapper library itself is hosted).
 async function loadFaceModel(remainingMs = 12000) {
-    // Already loaded (e.g. it finished loading in the background after a
-    // previous attempt timed out) — reuse it instantly, no re-download.
     if (faceModel) return faceModel;
-
     console.log("Loading face-api tiny face detector...");
     await waitForGlobal('faceapi', remainingMs);
     await faceapi.nets.tinyFaceDetector.loadFromUri('/vendor/models');
 
-    faceModel = true; // face-api.js keeps the loaded net internally on faceapi.nets.tinyFaceDetector
+    faceModel = true; 
     console.log("Face model loaded successfully.");
     return faceModel;
 }
@@ -1336,10 +1146,6 @@ function setProctorStatus(state, text) {
     }
 }
 
-// Polls for the face-detection model finishing its background download
-// (warmUpProctoringAssets + loadWithRetry) and flips the widget from
-// "AI loading…" to "Proctoring Active" the moment it's ready — without ever
-// having blocked the student from starting the test in the first place.
 let faceModelWatcherInterval = null;
 function watchForFaceModelReady() {
     if (faceModelWatcherInterval) return;
@@ -1348,9 +1154,6 @@ function watchForFaceModelReady() {
             clearInterval(faceModelWatcherInterval);
             faceModelWatcherInterval = null;
             if (proctoringEnabled && quizActive()) {
-                // startFaceDetectionLoop() no-ops if faceModel isn't set yet, so
-                // the very first call (at quiz start) did nothing — this is the
-                // real, delayed start of proctoring now that the model is ready.
                 startFaceDetectionLoop();
                 setProctorStatus('ok', 'Proctoring Active');
             }
@@ -1360,7 +1163,6 @@ function watchForFaceModelReady() {
 
 function startFaceDetectionLoop() {
     stopFaceDetectionLoop();
-    // CBT Mode only — Normal Mode never touches the camera.
     if (!proctoringEnabled || !faceModel || !proctorEls.video) return;
 
     proctorDetectionTimer = setInterval(async () => {
@@ -1368,9 +1170,6 @@ function startFaceDetectionLoop() {
         if (proctorEls.video.readyState < 2) return;
 
         try {
-            // detectSingleFace stops as soon as it finds one face instead of
-            // scanning for all of them — exactly the "just face present or
-            // not" check we need, and a bit lighter on CPU per frame too.
             const detection = await faceapi.detectSingleFace(
                 proctorEls.video,
                 new faceapi.TinyFaceDetectorOptions()
@@ -1387,14 +1186,8 @@ function stopFaceDetectionLoop() {
     proctorDetectionTimer = null;
 }
 
-// Eye/Face Stability timer: face or eye focus must be visible to the camera continuously.
-// Anything longer than 4 uninterrupted seconds without a detected face triggers a violation.
 const FACE_STABILITY_LIMIT_MS = 4000;
 
-// Bare-minimum check: is a face visible right now, or not? No multi-face
-// logic, no object detection — just presence/absence, which is what proctoring
-// actually needs and the one thing this can reliably check even on a slow
-// device/connection.
 function handleFaceDetectionResult(faceFound) {
     if (!faceFound) {
         if (!noFaceSince) noFaceSince = Date.now();
@@ -1443,18 +1236,7 @@ function handleFullscreenChange() {
 document.addEventListener('fullscreenchange', handleFullscreenChange);
 document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
 document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-
-// Safety net: always release the camera if the tab is closed/navigated away from.
 window.addEventListener('beforeunload', () => { stopProctoring(); });
-
-// ============================================================
-// KEYBOARD / CLIPBOARD LOCKS
-// Note: browser sandboxing means JS can intercept most in-page
-// shortcuts (copy/paste/devtools/print-screen key) but cannot
-// truly prevent OS-level switches like Alt+Tab — those are instead
-// caught via the Visibility API above when the tab loses focus.
-// ============================================================
-
 document.addEventListener('keydown', (e) => {
     if (!quizActive()) return;
     const key = e.key ? e.key.toLowerCase() : '';
