@@ -7,10 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title> QUIZ CORNER | NEELAXMI QUIZ CENTER </title>
     <script src="/js/head-loader.js"></script>
-    <!-- Face-api.js's model weights are now plain static files self-hosted in
-         /vendor/models/ (see face-api.min.js near the end of <body>) — no
-         Google-proxied domains (tfhub.dev / storage.googleapis.com) involved
-         at all anymore, so no preconnect hints are needed for those. -->
     <meta name="description" content="NEELAXMI - THE HELPER: Physics and Physical Chemistry master classes. Free Quizzes ke liye 'Quizzes' section check karein aur daily updates ke liye 'Notification Corner' par Login karein!">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -492,6 +488,9 @@ input[type=range]::-moz-range-thumb {
             </div>
 
             <div id="view-summary" class="space-y-6 animate-fade-in">
+
+
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="glass-panel rounded-xl p-6 relative overflow-hidden">
                         <dt class="text-sm font-medium text-slate-500 dark:text-slate-400 truncate">Total Score</dt>
@@ -519,6 +518,122 @@ input[type=range]::-moz-range-thumb {
                         <p class="text-xs text-slate-400 mt-2">Based on performance</p>
                     </div>
                 </div>
+
+                <!-- Score hero -->
+                <div class="glass-panel rounded-2xl p-6 sm:p-8 text-center relative overflow-hidden">
+                    <p class="text-xs font-semibold tracking-widest text-slate-400 uppercase mb-2">Your Performance</p>
+                    <div class="flex items-end justify-center gap-2 mb-2">
+                        <span id="neet-score" class="text-6xl sm:text-7xl font-extrabold text-slate-900 dark:text-white leading-none">0</span>
+                        <span class="text-xl sm:text-2xl text-slate-400 font-medium mb-1">/ 720</span>
+                    </div>
+                    <span id="neet-standing-badge" class="inline-block px-4 py-1.5 rounded-full text-sm font-bold mb-4">—</span>
+
+                    <div class="flex items-center justify-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                        <span>Predicted Rank</span>
+                        <button type="button" id="neet-rank-info-btn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="What is predicted rank?">
+                            <i class="fa-solid fa-circle-info text-xs"></i>
+                        </button>
+                    </div>
+                    <p id="neet-rank" class="text-2xl font-bold text-brand-600 dark:text-brand-500 mt-1">—</p>
+                    <p id="neet-rank-tooltip" class="hidden text-xs text-slate-400 max-w-xs mx-auto mt-2">An estimated rank range based on the synthetic score and calibrated historical data. It should not be treated as an official NEET rank.</p>
+
+                    <div class="grid grid-cols-4 gap-2 mt-6 pt-6 border-t border-slate-200/60 dark:border-slate-700/60 text-center">
+                        <div><p id="neet-accuracy" class="text-lg font-bold text-slate-900 dark:text-white">0%</p><p class="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wide">Accuracy</p></div>
+                        <div><p id="neet-correct" class="text-lg font-bold text-emerald-500">0</p><p class="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wide">Correct</p></div>
+                        <div><p id="neet-wrong" class="text-lg font-bold text-red-500">0</p><p class="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wide">Wrong</p></div>
+                        <div><p id="neet-skipped" class="text-lg font-bold text-amber-500">0</p><p class="text-[10px] sm:text-[11px] text-slate-400 uppercase tracking-wide">Skipped</p></div>
+                    </div>
+                </div>
+
+                <!-- Score scale -->
+                <div class="glass-panel rounded-xl p-5 sm:p-6">
+                    <div class="flex items-center justify-between mb-1">
+                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-200">Score Standing</p>
+                        <button type="button" id="neet-score-info-btn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" aria-label="What is synthetic score?">
+                            <i class="fa-solid fa-circle-info text-xs"></i>
+                        </button>
+                    </div>
+                    <p id="neet-score-tooltip" class="hidden text-xs text-slate-400 mb-2">An estimated performance score on a 720-point scale based on quiz performance. It is a calibrated estimate and is not an official NEET score.</p>
+
+                    <div class="relative pt-6 pb-2 mt-2">
+                        <div class="flex h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-red-400" style="width: 63.33%"></div>
+                            <div class="bg-amber-400" style="width: 20%"></div>
+                            <div class="bg-emerald-400" style="width: 16.67%"></div>
+                        </div>
+                        <div id="neet-score-marker" class="absolute top-0 flex flex-col items-center transition-all duration-500" style="left: 0%; transform: translateX(-50%);">
+                            <div class="w-4 h-4 rounded-full bg-slate-900 dark:bg-white border-2 border-white dark:border-slate-900 shadow"></div>
+                            <div class="w-0.5 h-3 bg-slate-900 dark:bg-white"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-[10px] sm:text-xs text-slate-400 font-medium">
+                        <span>0</span><span>456</span><span>600</span><span>720</span>
+                    </div>
+                    <div class="flex justify-between text-[10px] sm:text-xs font-semibold mt-1.5">
+                        <span class="text-red-500">Needs Improvement</span>
+                        <span class="text-amber-500">Good</span>
+                        <span class="text-emerald-500">Very Good</span>
+                    </div>
+                </div>
+
+                <!-- Question performance + accuracy analysis -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-xl p-5 sm:p-6">
+                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-4">Question Performance</p>
+                        <div class="flex items-center gap-5">
+                            <div class="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+                                <div id="neet-donut" class="w-full h-full rounded-full"></div>
+                                <div class="absolute inset-3 rounded-full bg-slate-50 dark:bg-slate-900 flex flex-col items-center justify-center">
+                                    <span id="neet-donut-total" class="text-lg font-bold text-slate-900 dark:text-white">0</span>
+                                    <span class="text-[9px] text-slate-400 uppercase">Total</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 space-y-2 text-sm min-w-0">
+                                <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>Correct</span><span id="neet-donut-correct" class="font-bold text-slate-900 dark:text-white">0</span></div>
+                                <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-red-500 shrink-0"></span>Wrong</span><span id="neet-donut-wrong" class="font-bold text-slate-900 dark:text-white">0</span></div>
+                                <div class="flex items-center justify-between"><span class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 shrink-0"></span>Skipped</span><span id="neet-donut-skipped" class="font-bold text-slate-900 dark:text-white">0</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-5 sm:p-6">
+                        <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-4">Accuracy Analysis</p>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center"><span class="text-xs text-slate-400 uppercase tracking-wide">Accuracy</span><span id="neet-acc-overall" class="text-lg font-bold text-slate-900 dark:text-white">0%</span></div>
+                            <div class="flex justify-between items-center"><span class="text-xs text-slate-400 uppercase tracking-wide">Attempted</span><span id="neet-acc-attempted" class="text-lg font-bold text-slate-900 dark:text-white">0 / 0</span></div>
+                            <div class="flex justify-between items-center"><span class="text-xs text-slate-400 uppercase tracking-wide">Attempt Accuracy</span><span id="neet-acc-attempt" class="text-lg font-bold text-slate-900 dark:text-white">0%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button id="btn-practice-wrong" type="button" class="hidden flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold shadow-sm transition active:scale-[0.98]">
+                        <i class="fa-solid fa-rotate-left"></i> Practice Mistakes (<span id="btn-practice-wrong-count">0</span>)
+                    </button>
+                    <button id="btn-practice-unattempted" type="button" class="hidden flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold shadow-sm transition active:scale-[0.98]">
+                        <i class="fa-solid fa-circle-question"></i> Practice Unattempted (<span id="btn-practice-unattempted-count">0</span>)
+                    </button>
+                </div>
+
+                <div class="glass-panel rounded-xl p-5 sm:p-6">
+                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Performance Summary</p>
+                    <p id="neet-summary-text" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">—</p>
+                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Improvement Suggestions</p>
+                    <ul id="neet-suggestions-list" class="space-y-1.5 text-sm text-slate-600 dark:text-slate-300 list-disc list-inside"></ul>
+                </div>
+
+                <div id="neet-history-wrap" class="glass-panel rounded-xl p-5 sm:p-6 hidden">
+                    <p class="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-4">Performance Trend <span class="text-xs font-normal text-slate-400">(this quiz, past attempts)</span></p>
+                    <div id="neet-hist-bars" class="flex items-end gap-2 h-32 mb-4"></div>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center border-t border-slate-200/60 dark:border-slate-700/60 pt-4">
+                        <div><p id="neet-hist-avg" class="text-base font-bold text-slate-900 dark:text-white">0</p><p class="text-[10px] text-slate-400 uppercase">Average</p></div>
+                        <div><p id="neet-hist-best" class="text-base font-bold text-emerald-500">0</p><p class="text-[10px] text-slate-400 uppercase">Best</p></div>
+                        <div><p id="neet-hist-low" class="text-base font-bold text-red-500">0</p><p class="text-[10px] text-slate-400 uppercase">Lowest</p></div>
+                        <div><p id="neet-hist-avgacc" class="text-base font-bold text-slate-900 dark:text-white">0%</p><p class="text-[10px] text-slate-400 uppercase">Avg Accuracy</p></div>
+                        <div><p id="neet-hist-count" class="text-base font-bold text-slate-900 dark:text-white">0</p><p class="text-[10px] text-slate-400 uppercase">Attempts</p></div>
+                    </div>
+                </div>
+
                 <div class="flex justify-center mt-10">
                     <button onclick="window.location.replace('/quiz/dashboard.html')" class="inline-flex items-center justify-center px-8 py-3 bg-brand-600 hover:bg-brand-500 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
                         Go to Dashboard
@@ -597,11 +712,6 @@ input[type=range]::-moz-range-thumb {
     </div>
 </div>
 
-    <!-- ===== STEP 0: Paid Quiz Token Gate =====
-         For any quiz with isPaid: true, this MUST intercept before pre-quiz-init-modal,
-         setup-modal, or resume-modal are ever shown — see the gating check at the top of
-         loadQuiz() and showTokenUnlockModal() in quiz.js. Not shown at all for free quizzes,
-         and skipped on quizzes already unlocked earlier in this tab's session. -->
     <div id="token-unlock-modal" class="fixed inset-0 z-[58] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
@@ -641,9 +751,6 @@ input[type=range]::-moz-range-thumb {
         </div>
     </div>
 
-    <!-- ===== STEP 1: Pre-Quiz Initialization — Instructions, Consent & Mode Selection =====
-         The quiz (and even the practice/timer setup modal) MUST NOT be reachable until this
-         is completed. Everything here is presentational; no proctoring starts yet. -->
     <div id="pre-quiz-init-modal" class="fixed inset-0 z-[59] bg-slate-900/95 backdrop-blur-md flex items-center justify-center p-4 hidden">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-xl w-full p-6 md:p-8 border border-slate-200 dark:border-slate-700 relative overflow-hidden max-h-[92vh] overflow-y-auto">
             <div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-bl-full -mr-8 -mt-8"></div>
@@ -775,7 +882,6 @@ input[type=range]::-moz-range-thumb {
         </div>
     </div>    
 
-    <!-- ===== Camera / Proctoring Consent Modal (shown before every attempt) ===== -->
     <div id="proctor-consent-modal" class="hidden fixed inset-0 z-[65] bg-slate-900/90 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-700 text-center">
             <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-primary rounded-full flex items-center justify-center mx-auto mb-4">
@@ -812,7 +918,7 @@ input[type=range]::-moz-range-thumb {
                     <i class="fa-solid fa-robot text-2xl"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800 dark:text-white mb-2">Unlock AI Explanations</h2>
-                <p class="text-slate-600 dark:text-slate-400 text-sm">
+                <p id="ai-provider-desc" class="text-slate-600 dark:text-slate-400 text-sm">
                     To get detailed explanations for your answers, please enter your personal <strong>Google Gemini API Key</strong>.
                 </p>
             </div>
@@ -821,10 +927,17 @@ input[type=range]::-moz-range-thumb {
 
             <div class="space-y-4">
                 <div>
+                    <label for="ai-provider-select" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">AI Provider</label>
+                    <select id="ai-provider-select" class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:text-white transition-all outline-none">
+                        <option value="gemini">Google Gemini</option>
+                        <option value="grok">xAI Grok</option>
+                    </select>
+                </div>
+                <div>
                     <label for="gemini-api-key-input" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">API Key</label>
                     <input type="password" id="gemini-api-key-input" placeholder="Paste your API Key here (AIza...)"
                            class="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-primary focus:border-primary dark:bg-slate-700 dark:text-white transition-all outline-none">
-                    <p class="text-xs text-slate-500 mt-1">Your key is saved locally to your profile.</p>
+                    <p class="text-xs text-slate-500 mt-1">Your key is saved to your profile and only used for your own explanation requests.</p>
                 </div>
 
                 <button id="modal-save-gemini-key" class="w-full py-3 bg-primary hover:bg-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-indigo-500/30 transition-all transform active:scale-95">
@@ -832,7 +945,7 @@ input[type=range]::-moz-range-thumb {
                 </button>
                 
                 <div class="grid grid-cols-2 gap-3 pt-2">
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+                    <a id="ai-provider-getkey-link" href="https://aistudio.google.com/app/apikey" target="_blank" class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
                         <i class="fa-solid fa-key mr-2"></i> Get Key
                     </a>
                      <a href="Gemini.html"  class="flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
@@ -909,45 +1022,12 @@ input[type=range]::-moz-range-thumb {
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-    <!-- ===== Client-Side Face Proctoring (100% local — no video/image ever leaves the browser) ===== -->
-    <!-- Switched from blazeface+coco-ssd (TensorFlow.js) to face-api.js's
-         tiny_face_detector: its model weights are plain static files (no
-         tfhub.dev/storage.googleapis.com redirects the way blazeface/coco-ssd
-         work), ~190KB total, and self-hostable with zero risk of a
-         shard-hash mismatch. This is what actually fixed the timeouts on
-         slow/filtered networks — object/phone detection (coco-ssd) has been
-         dropped; only face-presence detection remains.
-
-         Files to download and place in /vendor/ (and /vendor/models/ for the
-         two weight files) — verified against the actual GitHub repo content,
-         NOT the npm package (the npm-published tarball doesn't include the
-         weights/ folder at all — that's why "/weights/..." on the npm CDN
-         path 404s; you have to pull from the GitHub-mode jsDelivr URL below):
-
-           face-api.min.js
-             ← https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js
-
-           models/tiny_face_detector_model-weights_manifest.json
-             ← https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights/tiny_face_detector_model-weights_manifest.json
-
-           models/tiny_face_detector_model-shard1   (NOTE: no file extension!)
-             ← https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights/tiny_face_detector_model-shard1
-
-         IMPORTANT: save that last file with EXACTLY the name
-         "tiny_face_detector_model-shard1" — no .bin, no .txt, no extension
-         at all. Some browsers try to guess an extension when you "Save As";
-         double check the saved filename before uploading. The manifest.json
-         references it by that exact name internally. Both weight files must
-         sit together in /vendor/models/. -->
     <script defer src="/vendor/face-api.min.js"></script>
 
 
 
     <script>
-        // Caches the TF.js/Blazeface/COCO-SSD CDN files after first download so
-        // retries, resumed attempts, and future tests on this device don't
-        // re-download them — a big win on slow connections. Safe no-op if the
-        // browser doesn't support service workers or registration fails.
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw-proctor-cache.js').catch(() => {});
@@ -956,11 +1036,11 @@ input[type=range]::-moz-range-thumb {
     </script>
     <script src="auth.js"></script>
     <script src="quiz.js"></script>
+    <script src="scoring.js"></script>
     <script src="result.js"></script>
     <script src="vedio.js"></script>
     
     <script>
-        // ===== NTA CBT UI: mobile question-palette drawer =====
         (function () {
             const palette = document.getElementById("question-palette");
             const overlay = document.getElementById("palette-drawer-overlay");
@@ -994,13 +1074,9 @@ input[type=range]::-moz-range-thumb {
             openBtn?.addEventListener("click", openPalette);
             closeBtn1?.addEventListener("click", closePalette);
             overlay?.addEventListener("click", closePalette);
-            
-            // Close on Escape for keyboard users
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && window.innerWidth < 1024) closePalette();
             });
-
-            // Auto-close the drawer if the viewport is resized up to desktop width
             window.addEventListener('resize', () => {
                 if (window.innerWidth >= 1024) closePalette();
             });
@@ -1008,7 +1084,6 @@ input[type=range]::-moz-range-thumb {
     </script>
     
     <script>
-        // Advanced Zoom Modal with Scale functionality
         const setupImageModal = () => {
             if (document.getElementById('img-zoom-modal')) return;
 
