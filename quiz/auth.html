@@ -179,7 +179,7 @@
     </script>
     
     <script>
-    // Redirect logic: Run whenever auth state changes
+
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             console.log("User detected, checking destination...");
